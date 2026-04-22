@@ -1,5 +1,3 @@
-
-
 import 'app_failure.dart';
 
 sealed class Result<T> {

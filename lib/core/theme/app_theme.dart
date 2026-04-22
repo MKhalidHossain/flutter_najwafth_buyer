@@ -6,9 +6,16 @@ final class AppTheme {
   const AppTheme._();
 
   static ThemeData light() {
-    final colorScheme = ColorScheme.fromSeed(
-      seedColor: const Color(0xFF2563EB),
+    const colorScheme = ColorScheme(
       brightness: Brightness.light,
+      primary: Color(0xFF6698C6),
+      onPrimary: Colors.white,
+      secondary: Color(0xFF1D5E55),
+      onSecondary: Colors.white,
+      error: Color(0xFFC74848),
+      onError: Colors.white,
+      surface: Color(0xFFF8F1E8),
+      onSurface: Color(0xFF23252B),
     );
 
     return _base(colorScheme);
@@ -24,10 +31,28 @@ final class AppTheme {
   }
 
   static ThemeData _base(ColorScheme colorScheme) {
+    final base = ThemeData(useMaterial3: true, colorScheme: colorScheme);
+    final textTheme = base.textTheme.copyWith(
+      headlineLarge: const TextStyle(fontSize: 28, fontWeight: FontWeight.w700),
+      headlineMedium: const TextStyle(
+        fontSize: 24,
+        fontWeight: FontWeight.w700,
+      ),
+      headlineSmall: const TextStyle(fontSize: 18, fontWeight: FontWeight.w600),
+      titleLarge: const TextStyle(fontSize: 16, fontWeight: FontWeight.w500),
+      titleMedium: const TextStyle(fontSize: 14, fontWeight: FontWeight.w400),
+      bodyLarge: const TextStyle(fontSize: 15, fontWeight: FontWeight.w400),
+      bodyMedium: const TextStyle(fontSize: 14, fontWeight: FontWeight.w400),
+    );
+
     return ThemeData(
       useMaterial3: true,
       colorScheme: colorScheme,
       scaffoldBackgroundColor: colorScheme.surface,
+      textTheme: textTheme.apply(
+        bodyColor: colorScheme.onSurface,
+        displayColor: colorScheme.onSurface,
+      ),
       appBarTheme: AppBarTheme(
         centerTitle: false,
         elevation: 0,
@@ -41,24 +66,71 @@ final class AppTheme {
         shape: RoundedRectangleBorder(borderRadius: AppRadius.small),
       ),
       inputDecorationTheme: InputDecorationTheme(
-        filled: true,
-        fillColor: colorScheme.surfaceContainerHighest.withValues(alpha: .45),
+        filled: false,
+        hintStyle: TextStyle(
+          color: const Color(0xFF888888),
+          fontSize: 16,
+          fontWeight: FontWeight.w400,
+        ),
+        contentPadding: const EdgeInsets.symmetric(
+          horizontal: 16,
+          vertical: 18,
+        ),
         border: OutlineInputBorder(
-          borderRadius: AppRadius.small,
-          borderSide: BorderSide.none,
+          borderRadius: BorderRadius.circular(14),
+          borderSide: const BorderSide(color: Color(0xFFD2CCC4), width: 1.3),
+        ),
+        enabledBorder: OutlineInputBorder(
+          borderRadius: BorderRadius.circular(14),
+          borderSide: const BorderSide(color: Color(0xFFD2CCC4), width: 1.3),
+        ),
+        focusedBorder: OutlineInputBorder(
+          borderRadius: BorderRadius.circular(14),
+          borderSide: const BorderSide(color: Color(0xFF6698C6), width: 1.5),
+        ),
+        errorBorder: OutlineInputBorder(
+          borderRadius: BorderRadius.circular(14),
+          borderSide: const BorderSide(color: Color(0xFFC74848), width: 1.3),
+        ),
+        focusedErrorBorder: OutlineInputBorder(
+          borderRadius: BorderRadius.circular(14),
+          borderSide: const BorderSide(color: Color(0xFFC74848), width: 1.5),
         ),
       ),
       elevatedButtonTheme: ElevatedButtonThemeData(
         style: ElevatedButton.styleFrom(
-          minimumSize: const Size(48, 48),
-          shape: RoundedRectangleBorder(borderRadius: AppRadius.small),
+          elevation: 0,
+          backgroundColor: const Color(0xFF6698C6),
+          foregroundColor: Colors.white,
+          disabledBackgroundColor: const Color(0xFF9CB7D1),
+          minimumSize: const Size(48, 54),
+          padding: const EdgeInsets.symmetric(horizontal: 20, vertical: 14),
+          textStyle: const TextStyle(fontSize: 17, fontWeight: FontWeight.w600),
+          shape: RoundedRectangleBorder(
+            borderRadius: BorderRadius.circular(16),
+          ),
         ),
       ),
-      filledButtonTheme: FilledButtonThemeData(
-        style: FilledButton.styleFrom(
-          minimumSize: const Size(48, 48),
-          shape: RoundedRectangleBorder(borderRadius: AppRadius.small),
+      outlinedButtonTheme: OutlinedButtonThemeData(
+        style: OutlinedButton.styleFrom(
+          backgroundColor: Colors.white.withValues(alpha: .74),
+          foregroundColor: colorScheme.onSurface,
+          side: const BorderSide(color: Color(0xFFDCE5EE), width: 1.2),
+          padding: const EdgeInsets.symmetric(horizontal: 18, vertical: 12),
+          shape: RoundedRectangleBorder(
+            borderRadius: BorderRadius.circular(16),
+          ),
         ),
+      ),
+      checkboxTheme: CheckboxThemeData(
+        shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(4)),
+        side: const BorderSide(color: Color(0xFF8D8D8D), width: 1.2),
+      ),
+      snackBarTheme: SnackBarThemeData(
+        backgroundColor: const Color(0xFF23252B),
+        contentTextStyle: const TextStyle(color: Colors.white),
+        behavior: SnackBarBehavior.floating,
+        shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(14)),
       ),
     );
   }

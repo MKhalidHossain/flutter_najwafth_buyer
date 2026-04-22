@@ -3,7 +3,6 @@ import 'package:flutter/material.dart';
 import '../errors/app_failure.dart';
 import '../theme/app_spacing.dart';
 
-
 final class AppErrorView extends StatelessWidget {
   const AppErrorView({required this.message, this.onRetry, super.key});
 

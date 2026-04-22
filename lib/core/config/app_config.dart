@@ -11,7 +11,7 @@ final class AppConfig {
 
   const AppConfig.development()
     : this(
-        appName: 'Najwafth Driver',
+        appName: 'Najwafth Buyer',
         environment: AppEnvironment.development,
         baseUrl: 'https://api.example.com',
       );

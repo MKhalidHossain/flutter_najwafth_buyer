@@ -5,7 +5,7 @@ import 'core/bootstrap/app_bootstrap.dart';
 
 Future<void> main() async {
   final app = await AppBootstrap.createProviderScope(
-    child: const NajwafthDriverApp(),
+    child: const NajwafthBuyerApp(),
   );
 
   runApp(app);

@@ -4,7 +4,6 @@ import '../errors/app_failure.dart';
 import '../errors/result.dart';
 import '../utils/typedefs.dart';
 
-
 final class ApiClient {
   const ApiClient(this._dio);
 

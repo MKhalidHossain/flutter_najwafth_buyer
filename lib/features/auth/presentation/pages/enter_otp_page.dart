@@ -1,0 +1,202 @@
+import 'dart:async';
+
+import 'package:flutter/material.dart';
+import 'package:flutter/services.dart';
+import 'package:flutter_riverpod/flutter_riverpod.dart';
+
+import '../../application/auth_controller.dart';
+import '../auth_routes.dart';
+import '../widgets/auth_scaffold.dart';
+import '../widgets/auth_widgets.dart';
+
+class EnterOtpPage extends ConsumerStatefulWidget {
+  const EnterOtpPage({super.key});
+
+  @override
+  ConsumerState<EnterOtpPage> createState() => _EnterOtpPageState();
+}
+
+class _EnterOtpPageState extends ConsumerState<EnterOtpPage> {
+  late final List<TextEditingController> _controllers;
+  late final List<FocusNode> _focusNodes;
+  Timer? _timer;
+
+  bool _isSubmitting = false;
+  int _secondsLeft = 0;
+
+  @override
+  void initState() {
+    super.initState();
+    _controllers = List.generate(
+      6,
+      (_) => TextEditingController(),
+      growable: false,
+    );
+    _focusNodes = List.generate(6, (_) => FocusNode(), growable: false);
+    _syncTimer();
+    _timer = Timer.periodic(const Duration(seconds: 1), (_) => _syncTimer());
+  }
+
+  @override
+  void dispose() {
+    _timer?.cancel();
+    for (final controller in _controllers) {
+      controller.dispose();
+    }
+    for (final node in _focusNodes) {
+      node.dispose();
+    }
+    super.dispose();
+  }
+
+  void _syncTimer() {
+    final seconds = ref.read(authControllerProvider).secondsUntilResend;
+    if (!mounted) {
+      return;
+    }
+    setState(() => _secondsLeft = seconds);
+  }
+
+  String get _otpValue =>
+      _controllers.map((controller) => controller.text.trim()).join();
+
+  Future<void> _verifyOtp() async {
+    if (_otpValue.length != 6) {
+      _showMessage('Enter the complete 6-digit OTP.');
+      return;
+    }
+
+    setState(() => _isSubmitting = true);
+    try {
+      await ref.read(authControllerProvider.notifier).verifyOtp(_otpValue);
+      if (!mounted) {
+        return;
+      }
+      Navigator.of(context).pushReplacementNamed(AuthRoutes.resetPassword);
+    } on AuthFlowException catch (error) {
+      _showMessage(error.message);
+    } finally {
+      if (mounted) {
+        setState(() => _isSubmitting = false);
+      }
+    }
+  }
+
+  Future<void> _resendOtp() async {
+    try {
+      final otp = await ref.read(authControllerProvider.notifier).resendOtp();
+      _showMessage('Demo OTP: $otp');
+      _syncTimer();
+    } on AuthFlowException catch (error) {
+      _showMessage(error.message);
+    }
+  }
+
+  void _showMessage(String message) {
+    ScaffoldMessenger.of(context)
+      ..hideCurrentSnackBar()
+      ..showSnackBar(SnackBar(content: Text(message)));
+  }
+
+  @override
+  Widget build(BuildContext context) {
+    final authState = ref.watch(authControllerProvider);
+
+    if (!authState.hasPendingOtp) {
+      WidgetsBinding.instance.addPostFrameCallback((_) {
+        if (mounted) {
+          Navigator.of(context).pushReplacementNamed(AuthRoutes.forgotPassword);
+        }
+      });
+    }
+
+    return AuthScaffold(
+      child: Column(
+        children: [
+          const BrandHeader(topSpacing: 80, bottomSpacing: 20),
+          const AuthTitleBlock(title: 'Enter OTP', bottomSpacing: 24),
+          LayoutBuilder(
+            builder: (context, constraints) {
+              const spacing = 8.0;
+              final boxWidth = ((constraints.maxWidth - (spacing * 5)) / 6)
+                  .clamp(42.0, 58.0);
+
+              return Row(
+                mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                children: List.generate(
+                  6,
+                  (index) => SizedBox(
+                    width: boxWidth,
+                    child: TextField(
+                      controller: _controllers[index],
+                      focusNode: _focusNodes[index],
+                      textAlign: TextAlign.center,
+                      keyboardType: TextInputType.number,
+                      textInputAction: index == 5
+                          ? TextInputAction.done
+                          : TextInputAction.next,
+                      inputFormatters: [
+                        FilteringTextInputFormatter.digitsOnly,
+                        LengthLimitingTextInputFormatter(1),
+                      ],
+                      style: Theme.of(context).textTheme.headlineLarge
+                          ?.copyWith(
+                            fontWeight: FontWeight.w700,
+                            color: const Color(0xFF293C66),
+                          ),
+                      decoration: InputDecoration(
+                        contentPadding: const EdgeInsets.symmetric(
+                          vertical: 24,
+                        ),
+                        filled: false,
+                        border: OutlineInputBorder(
+                          borderRadius: BorderRadius.circular(16),
+                        ),
+                      ),
+                      onChanged: (value) {
+                        if (value.isNotEmpty &&
+                            index < _focusNodes.length - 1) {
+                          _focusNodes[index + 1].requestFocus();
+                        } else if (value.isEmpty && index > 0) {
+                          _focusNodes[index - 1].requestFocus();
+                        }
+                      },
+                      onSubmitted: (_) {
+                        if (index == 5) {
+                          _verifyOtp();
+                        }
+                      },
+                    ),
+                  ),
+                ),
+              );
+            },
+          ),
+          const SizedBox(height: 20),
+          Text(
+            _secondsLeft > 0
+                ? 'Resend code in ${_secondsLeft}s'
+                : 'You can resend the OTP now',
+            style: Theme.of(context).textTheme.titleLarge?.copyWith(
+              color: const Color(0xFF717171),
+              fontWeight: FontWeight.w400,
+            ),
+          ),
+          const SizedBox(height: 16),
+          InlineAuthLink(
+            leadingText: 'Didn’t Receive OTP?',
+            actionText: 'RESEND OTP',
+            onTap: _secondsLeft == 0 ? _resendOtp : () {},
+          ),
+          const SizedBox(height: 24),
+          AuthPrimaryButton(
+            label: 'Verify Now',
+            onPressed: _verifyOtp,
+            isBusy: _isSubmitting,
+          ),
+          const SizedBox(height: 16),
+        ],
+      ),
+    );
+  }
+}

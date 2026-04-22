@@ -13,10 +13,10 @@ import 'package:flutter_test/flutter_test.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 
 void main() {
-  testWidgets('Counter increments smoke test', (WidgetTester tester) async {
+  testWidgets('shows splash shell on launch', (WidgetTester tester) async {
     SharedPreferences.setMockInitialValues({});
     final app = await AppBootstrap.createProviderScope(
-      child: const NajwafthDriverApp(),
+      child: const NajwafthBuyerApp(),
     );
 
     await tester.pumpWidget(app);

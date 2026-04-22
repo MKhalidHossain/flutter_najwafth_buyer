@@ -2,7 +2,6 @@ import 'package:flutter/widgets.dart';
 
 import '../theme/app_spacing.dart';
 
-
 final class AppGap extends StatelessWidget {
   const AppGap(this.size, {super.key});
 

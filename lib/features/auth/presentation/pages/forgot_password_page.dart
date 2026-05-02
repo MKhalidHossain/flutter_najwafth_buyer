@@ -74,6 +74,7 @@ class _ForgotPasswordPageState extends ConsumerState<ForgotPasswordPage> {
             const AuthTitleBlock(
               title: 'Reset password',
               subtitle: 'Enter your email to receive the OTP',
+              centered: true,
             ),
             const AuthFieldLabel('Your Email'),
             AuthTextField(

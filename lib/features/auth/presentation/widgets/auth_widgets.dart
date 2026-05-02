@@ -43,49 +43,59 @@ class AuthTitleBlock extends StatelessWidget {
     required this.title,
     this.subtitle,
     this.bottomSpacing = 28,
+    this.centered = true,
   });
 
   final String title;
   final String? subtitle;
   final double bottomSpacing;
+  final bool centered;
 
   @override
   Widget build(BuildContext context) {
     final theme = Theme.of(context);
     final compact = MediaQuery.sizeOf(context).width < 390;
+    final crossAxisAlignment = centered
+        ? CrossAxisAlignment.center
+        : CrossAxisAlignment.start;
+    final textAlign = centered ? TextAlign.center : TextAlign.start;
 
     return Padding(
       padding: EdgeInsets.only(
         bottom: compact ? bottomSpacing - 8 : bottomSpacing,
       ),
-      child: Column(
-        crossAxisAlignment: CrossAxisAlignment.center,
-        children: [
-          Text(
-            title,
-            textAlign: TextAlign.center,
-            style:
-                (compact
-                        ? theme.textTheme.headlineSmall
-                        : theme.textTheme.headlineMedium)
-                    ?.copyWith(
-                      fontWeight: FontWeight.w700,
-                      color: const Color(0xFF23252B),
-                    ),
-          ),
-          if (subtitle != null) ...[
-            const SizedBox(height: 8),
+      child: Align(
+        alignment: centered ? Alignment.center : Alignment.centerLeft,
+        child: Column(
+          mainAxisSize: MainAxisSize.min,
+          crossAxisAlignment: crossAxisAlignment,
+          children: [
             Text(
-              subtitle!,
-              textAlign: TextAlign.center,
-              style: theme.textTheme.titleLarge?.copyWith(
-                color: const Color(0xFF818181),
-                fontWeight: FontWeight.w400,
-                fontSize: compact ? 14 : 16,
-              ),
+              title,
+              textAlign: textAlign,
+              style:
+                  (compact
+                          ? theme.textTheme.headlineSmall
+                          : theme.textTheme.headlineMedium)
+                      ?.copyWith(
+                        fontWeight: FontWeight.w700,
+                        color: const Color(0xFF23252B),
+                      ),
             ),
+            if (subtitle != null) ...[
+              const SizedBox(height: 8),
+              Text(
+                subtitle!,
+                textAlign: textAlign,
+                style: theme.textTheme.titleLarge?.copyWith(
+                  color: const Color(0xFF818181),
+                  fontWeight: FontWeight.w400,
+                  fontSize: compact ? 14 : 16,
+                ),
+              ),
+            ],
           ],
-        ],
+        ),
       ),
     );
   }

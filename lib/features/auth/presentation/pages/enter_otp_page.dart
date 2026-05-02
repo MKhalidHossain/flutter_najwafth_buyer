@@ -84,8 +84,8 @@ class _EnterOtpPageState extends ConsumerState<EnterOtpPage> {
 
   Future<void> _resendOtp() async {
     try {
-      final otp = await ref.read(authControllerProvider.notifier).resendOtp();
-      _showMessage('Demo OTP: $otp');
+      await ref.read(authControllerProvider.notifier).resendOtp();
+      _showMessage('OTP resent to your email.');
       _syncTimer();
     } on AuthFlowException catch (error) {
       _showMessage(error.message);

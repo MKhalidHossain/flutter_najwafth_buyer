@@ -13,7 +13,7 @@ final class AppConfig {
     : this(
         appName: 'Najwafth Buyer',
         environment: AppEnvironment.development,
-        baseUrl: 'https://api.example.com',
+        baseUrl: 'https://api.example.com/api/v1',
       );
 
   final String appName;

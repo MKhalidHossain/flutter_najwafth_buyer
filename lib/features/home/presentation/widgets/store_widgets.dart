@@ -3,7 +3,10 @@ import 'package:intl/intl.dart';
 
 import '../../domain/store_models.dart';
 
-final _currencyFormatter = NumberFormat.currency(symbol: '\$', decimalDigits: 2);
+final _currencyFormatter = NumberFormat.currency(
+  symbol: '\$',
+  decimalDigits: 2,
+);
 
 String formatPrice(double value) => _currencyFormatter.format(value);
 
@@ -51,11 +54,7 @@ class StorePageScaffold extends StatelessWidget {
 }
 
 class StoreSearchField extends StatelessWidget {
-  const StoreSearchField({
-    super.key,
-    required this.hintText,
-    this.onChanged,
-  });
+  const StoreSearchField({super.key, required this.hintText, this.onChanged});
 
   final String hintText;
   final ValueChanged<String>? onChanged;
@@ -69,7 +68,11 @@ class StoreSearchField extends StatelessWidget {
         filled: true,
         fillColor: const Color(0xFFF4F5F8),
         contentPadding: const EdgeInsets.symmetric(horizontal: 14, vertical: 0),
-        prefixIcon: const Icon(Icons.search, color: Color(0xFF738194), size: 20),
+        prefixIcon: const Icon(
+          Icons.search,
+          color: Color(0xFF738194),
+          size: 20,
+        ),
         suffixIcon: Container(
           margin: const EdgeInsets.all(6),
           decoration: BoxDecoration(
@@ -219,11 +222,7 @@ class BookCard extends StatelessWidget {
                   height: compact ? 110 : 118,
                 ),
                 if (trailing != null)
-                  Positioned(
-                    top: 8,
-                    right: 8,
-                    child: trailing!,
-                  ),
+                  Positioned(top: 8, right: 8, child: trailing!),
               ],
             ),
             const SizedBox(height: 8),
@@ -280,11 +279,7 @@ class BookCard extends StatelessWidget {
 }
 
 class BookGridTile extends StatelessWidget {
-  const BookGridTile({
-    super.key,
-    required this.book,
-    required this.onTap,
-  });
+  const BookGridTile({super.key, required this.book, required this.onTap});
 
   final BookItem book;
   final VoidCallback onTap;
@@ -298,7 +293,12 @@ class BookGridTile extends StatelessWidget {
         borderRadius: BorderRadius.circular(14),
         border: Border.all(color: const Color(0xFFE8EBF0)),
       ),
-      child: BookCard(book: book, onTap: onTap, width: double.infinity, compact: true),
+      child: BookCard(
+        book: book,
+        onTap: onTap,
+        width: double.infinity,
+        compact: true,
+      ),
     );
   }
 }
@@ -433,11 +433,7 @@ class _BookCoverFallback extends StatelessWidget {
 }
 
 class CartBadgeButton extends StatelessWidget {
-  const CartBadgeButton({
-    super.key,
-    required this.count,
-    required this.onTap,
-  });
+  const CartBadgeButton({super.key, required this.count, required this.onTap});
 
   final int count;
   final VoidCallback onTap;
@@ -451,7 +447,10 @@ class CartBadgeButton extends StatelessWidget {
         children: [
           IconButton(
             onPressed: onTap,
-            icon: const Icon(Icons.shopping_bag_outlined, color: Color(0xFF364152)),
+            icon: const Icon(
+              Icons.shopping_bag_outlined,
+              color: Color(0xFF364152),
+            ),
           ),
           if (count > 0)
             Positioned(
@@ -502,7 +501,10 @@ class QuantitySelector extends StatelessWidget {
       child: Row(
         mainAxisSize: MainAxisSize.min,
         children: [
-          _QuantityButton(icon: Icons.remove, onTap: () => onChanged(quantity - 1)),
+          _QuantityButton(
+            icon: Icons.remove,
+            onTap: () => onChanged(quantity - 1),
+          ),
           Padding(
             padding: const EdgeInsets.symmetric(horizontal: 12),
             child: Text(
@@ -514,7 +516,10 @@ class QuantitySelector extends StatelessWidget {
               ),
             ),
           ),
-          _QuantityButton(icon: Icons.add, onTap: () => onChanged(quantity + 1)),
+          _QuantityButton(
+            icon: Icons.add,
+            onTap: () => onChanged(quantity + 1),
+          ),
         ],
       ),
     );

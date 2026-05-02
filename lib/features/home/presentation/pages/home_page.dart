@@ -164,9 +164,58 @@ class _HomeTab extends ConsumerWidget {
                 child: Column(
                   crossAxisAlignment: CrossAxisAlignment.start,
                   children: [
-                    Text(authState.fullName, style: const TextStyle(fontSize: 12, fontWeight: FontWeight.w600)),
-                    const Text('Hi, Good Morning!', style: TextStyle(fontSize: 10, color: Color(0xFF9CA6B3))),
+                    Text(authState.fullName, style: const TextStyle(fontSize: 16, fontWeight: FontWeight.w600)),
+                    const Text('Hi, Good Morning!', style: TextStyle(fontSize: 12, color: Color(0xFF9CA6B3))),
                   ],
+                ),
+              ),
+              GestureDetector(
+                onTap: () {
+                  // TODO: Navigate to notifications
+                },
+                child: Container(
+                  width: 40,
+                  height: 40,
+                  decoration: const BoxDecoration(
+                    color: Color(0xFFDCE3EC),
+                    shape: BoxShape.circle,
+                  ),
+                  child: Stack(
+                    alignment: Alignment.center,
+                    children: [
+                      const Icon(
+                        Icons.notifications_none_outlined,
+                        color: Color(0xFF6A7788),
+                        size: 26,
+                      ),
+                      Positioned(
+                        top: 4,
+                        right: 4,
+                        child: Container(
+                          padding: const EdgeInsets.all(2),
+                          decoration: BoxDecoration(
+                            color: const Color(0xFFFF3B30),
+                            shape: BoxShape.circle,
+                            border: Border.all(color: Colors.white, width: 2),
+                          ),
+                          constraints: const BoxConstraints(
+                            minWidth: 18,
+                            minHeight: 18,
+                          ),
+                          child: const Center(
+                            child: Text(
+                              '3',
+                              style: TextStyle(
+                                color: Colors.white,
+                                fontSize: 10,
+                                fontWeight: FontWeight.bold,
+                              ),
+                            ),
+                          ),
+                        ),
+                      ),
+                    ],
+                  ),
                 ),
               ),
             ],

@@ -3,6 +3,7 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 
 import '../../application/store_controller.dart';
 import '../../domain/store_models.dart';
+import '../widgets/featured_book_card.dart';
 import '../widgets/store_widgets.dart';
 
 class FeaturedPage extends StatelessWidget {
@@ -26,10 +27,7 @@ class FeaturedPage extends StatelessWidget {
       appBar: AppBar(
         elevation: 0,
         backgroundColor: const Color(0xFFF5F6F8),
-        leading: IconButton(
-          onPressed: () => Navigator.of(context).pop(),
-          icon: const Icon(Icons.chevron_left, color: Color(0xFF1F2933), size: 20),
-        ),
+        leading: BackButton(),
         titleSpacing: 0,
         title: const Text(
           'Featured Bookstores',
@@ -68,18 +66,26 @@ class FeaturedPage extends StatelessWidget {
               final category = categories[index];
               return GestureDetector(
                 onTap: () => onCategoryTap(category),
-                child: Column(
-                  children: [
-                    Expanded(
-                      child: Container(
-                        width: double.infinity,
-                        decoration: BoxDecoration(
-                          color: Colors.white,
-                          borderRadius: BorderRadius.circular(12),
-                          border: Border.all(color: const Color(0xFFE7EBF0)),
-                        ),
-                        child: Padding(
-                          padding: const EdgeInsets.all(7),
+                child: Container(
+                  padding: EdgeInsets.all(7),
+                  width: double.infinity,
+                  decoration: BoxDecoration(
+                    color: Colors.grey[300],
+                    borderRadius: BorderRadius.circular(12),
+                    border: Border.all(color: const Color(0xFFE7EBF0)),
+                  ),
+
+                  // color: Colors.red,
+                  child: Column(
+                    children: [
+                      Expanded(
+                        child: Container(
+                          width: double.infinity,
+                          decoration: BoxDecoration(
+                            color: Colors.white,
+                            borderRadius: BorderRadius.circular(12),
+                            border: Border.all(color: const Color(0xFFE7EBF0)),
+                          ),
                           child: ClipRRect(
                             borderRadius: BorderRadius.circular(8),
                             child: Image.asset(
@@ -89,19 +95,19 @@ class FeaturedPage extends StatelessWidget {
                           ),
                         ),
                       ),
-                    ),
-                    const SizedBox(height: 6),
-                    Text(
-                      category.name,
-                      maxLines: 1,
-                      overflow: TextOverflow.ellipsis,
-                      style: const TextStyle(
-                        fontSize: 13,
-                        fontWeight: FontWeight.w500,
-                        color: Color(0xFF374151),
+                      const SizedBox(height: 6),
+                      Text(
+                        category.name,
+                        maxLines: 1,
+                        overflow: TextOverflow.ellipsis,
+                        style: const TextStyle(
+                          fontSize: 14,
+                          fontWeight: FontWeight.w700,
+                          color: Color(0xFF374151),
+                        ),
                       ),
-                    ),
-                  ],
+                    ],
+                  ),
                 ),
               );
             },
@@ -131,14 +137,14 @@ class FeaturedPage extends StatelessWidget {
           ),
           const SizedBox(height: 12),
           SizedBox(
-            height: 268,
+            height: 280,
             child: ListView.separated(
               scrollDirection: Axis.horizontal,
               itemCount: popularBooks.length,
               separatorBuilder: (_, _) => const SizedBox(width: 12),
               itemBuilder: (context, index) => SizedBox(
-                width: 210,
-                child: _FeaturedBookCard(
+                width: 230,
+                child: FeaturedBookCard(
                   book: popularBooks[index],
                   onTap: () => onBookTap(popularBooks[index]),
                 ),
@@ -186,83 +192,4 @@ class _FeaturedSearchBar extends StatelessWidget {
   }
 }
 
-class _FeaturedBookCard extends ConsumerWidget {
-  const _FeaturedBookCard({required this.book, required this.onTap});
 
-  final BookItem book;
-  final VoidCallback onTap;
-
-  @override
-  Widget build(BuildContext context, WidgetRef ref) {
-    return GestureDetector(
-      onTap: onTap,
-      child: Container(
-        padding: const EdgeInsets.all(10),
-        decoration: BoxDecoration(
-          color: Colors.white,
-          borderRadius: BorderRadius.circular(14),
-          border: Border.all(color: const Color(0xFFE9EDF2)),
-        ),
-        child: Column(
-          crossAxisAlignment: CrossAxisAlignment.start,
-          children: [
-            Expanded(
-              child: BookCover(
-                title: book.title,
-                imageAsset: book.coverImageAsset,
-                color: book.coverColor,
-                accentColor: book.coverAccent,
-                height: double.infinity,
-                radius: 12,
-              ),
-            ),
-            const SizedBox(height: 8),
-            Text(
-              book.title,
-              maxLines: 2,
-              overflow: TextOverflow.ellipsis,
-              style: const TextStyle(fontSize: 13.5, fontWeight: FontWeight.w600),
-            ),
-            Row(
-              children: [
-                const Icon(Icons.star, color: Color(0xFFFFC83A), size: 13),
-                const SizedBox(width: 4),
-                Text(
-                  book.rating.toStringAsFixed(1),
-                  style: const TextStyle(fontSize: 13, color: Color(0xFF6E7784)),
-                ),
-              ],
-            ),
-            Text(
-              book.author,
-              maxLines: 1,
-              overflow: TextOverflow.ellipsis,
-              style: const TextStyle(fontSize: 11, color: Color(0xFFAFB7C1)),
-            ),
-            Row(
-              children: [
-                Text(
-                  formatPrice(book.price),
-                  style: const TextStyle(
-                    fontSize: 19,
-                    color: Color(0xFF3694F4),
-                    fontWeight: FontWeight.w600,
-                  ),
-                ),
-                const Spacer(),
-                GestureDetector(
-                  onTap: () => ref.read(storeControllerProvider.notifier).addToCart(book),
-                  child: const CircleAvatar(
-                    radius: 13,
-                    backgroundColor: Color(0xFF5A91C4),
-                    child: Icon(Icons.add, color: Colors.white, size: 16),
-                  ),
-                ),
-              ],
-            ),
-          ],
-        ),
-      ),
-    );
-  }
-}

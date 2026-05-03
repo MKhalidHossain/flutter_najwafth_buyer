@@ -44,7 +44,13 @@ class BookCardMini extends ConsumerWidget {
                 Text(book.rating.toStringAsFixed(1), style: const TextStyle(fontSize: 14, color: Color(0xFF6E7784))),
               ],
             ),
-            Text(book.author, maxLines: 1, overflow: TextOverflow.ellipsis, style: const TextStyle(fontSize: 12, color: Color(0xFFAFB7C1))),
+            Row(
+              children: [
+                Icon(Icons.location_on_outlined,color: Color(0xFF5A91C4),size: 18,),
+                const SizedBox(width: 6,),
+                Text(book.author, maxLines: 1, overflow: TextOverflow.ellipsis, style: const TextStyle(fontSize: 12, color: Color(0xFFAFB7C1))),
+              ],
+            ),
             Row(
               children: [
                 Text(formatPrice(book.price), style: const TextStyle(fontSize: 16, color: Color(0xFF3694F4), fontWeight: FontWeight.w600)),

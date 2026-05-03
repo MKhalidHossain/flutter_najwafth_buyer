@@ -20,7 +20,7 @@ class BooksGridPage extends StatelessWidget {
     return Scaffold(
       backgroundColor: const Color(0xFFF5F6F8),
       appBar: AppBar(
-        title: Text(title, style: const TextStyle(fontSize: 18, fontWeight: FontWeight.w600)),
+        title: Text(title, style: const TextStyle(fontSize: 18, fontWeight: FontWeight.w700)),
         backgroundColor: const Color(0xFFF5F6F8),
       ),
       body: GridView.builder(
@@ -30,7 +30,7 @@ class BooksGridPage extends StatelessWidget {
           crossAxisCount: 2,
           mainAxisSpacing: 10,
           crossAxisSpacing: 10,
-          childAspectRatio: .63,
+          childAspectRatio: .75,
         ),
         itemBuilder: (context, index) => BookCardMini(book: books[index], onTap: () => onBookTap(books[index])),
       ),

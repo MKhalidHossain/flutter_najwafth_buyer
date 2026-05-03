@@ -4,6 +4,8 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 import '../../../core/storage/key_value_storage.dart';
 import '../../../core/storage/storage_providers.dart';
 import '../domain/store_models.dart';
+import '../../order/application/order_controller.dart';
+import '../../order/domain/order_models.dart';
 
 final storeCatalogProvider = Provider<List<BookItem>>((ref) {
   return const [
@@ -374,6 +376,8 @@ final class StoreController extends Notifier<StoreState> {
       cartQuantities: const {},
       lastOrder: receipt,
     );
+
+    ref.read(orderControllerProvider.notifier).addOrder(OrderModel.fromReceipt(receipt));
 
     return receipt;
   }

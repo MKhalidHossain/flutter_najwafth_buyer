@@ -7,7 +7,7 @@ import '../../application/store_controller.dart';
 import '../../domain/store_models.dart';
 import '../widgets/cart_tab.dart';
 import '../widgets/home_tab.dart';
-import '../widgets/orders_tab.dart';
+import '../../../order/presentation/widgets/orders_tab.dart';
 import '../widgets/profile_tab.dart';
 import 'book_details_page.dart';
 import 'books_grid_page.dart';

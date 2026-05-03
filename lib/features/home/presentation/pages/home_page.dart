@@ -3,15 +3,15 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 
 import '../../../auth/application/auth_controller.dart';
 import '../../../auth/presentation/auth_routes.dart';
+import '../../../cart_order/presentation/pages/book_details_page.dart';
+import '../../../cart_order/presentation/pages/checkout_page.dart';
 import '../../application/store_controller.dart';
 import '../../domain/store_models.dart';
-import '../widgets/cart_tab.dart';
+import '../../../cart_order/presentation/widgets/cart_tab.dart';
 import '../widgets/home_tab.dart';
 import '../../../order/presentation/widgets/orders_tab.dart';
 import '../widgets/profile_tab.dart';
-import 'book_details_page.dart';
 import 'books_grid_page.dart';
-import 'checkout_page.dart';
 import 'featured_page.dart';
 
 class HomePage extends ConsumerWidget {
@@ -52,7 +52,10 @@ class _StoreShellState extends ConsumerState<_StoreShell> {
         onCartTap: _openCheckout,
       ),
       OrdersTab(onCheckoutTap: _openCheckout),
-      CartTab(onCheckoutTap: _openCheckout, cartCount: storeState.totalItems),
+      CartTab(
+        onCheckoutTap: _openCheckout,
+        onHomeTap: () => setState(() => _currentIndex = 0),
+      ),
       ProfileTab(
         onSignOutTap: _signOut,
         selectedLanguage: storeState.selectedLanguage,

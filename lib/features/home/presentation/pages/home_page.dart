@@ -49,6 +49,7 @@ class _StoreShellState extends ConsumerState<_StoreShell> {
         onBookTap: _openBookDetails,
         onFeaturedTap: _openFeatured,
         onPopularTap: _openPopular,
+        onCartTap: _openCheckout,
       ),
       OrdersTab(onCheckoutTap: _openCheckout),
       CartTab(onCheckoutTap: _openCheckout, cartCount: storeState.totalItems),

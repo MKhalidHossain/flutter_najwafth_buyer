@@ -326,6 +326,7 @@ class BookCover extends StatelessWidget {
     if (imageAsset != null) {
       return Container(
         height: height,
+        width: double.infinity,
         decoration: BoxDecoration(
           borderRadius: BorderRadius.circular(radius),
           boxShadow: const [
@@ -340,6 +341,7 @@ class BookCover extends StatelessWidget {
           borderRadius: BorderRadius.circular(radius),
           child: Image.asset(
             imageAsset!,
+            width: double.infinity,
             fit: BoxFit.cover,
             errorBuilder: (_, _, _) => _BookCoverFallback(
               title: title,
@@ -382,6 +384,7 @@ class _BookCoverFallback extends StatelessWidget {
   Widget build(BuildContext context) {
     return Container(
       height: height,
+      width: double.infinity,
       decoration: BoxDecoration(
         borderRadius: BorderRadius.circular(radius),
         gradient: LinearGradient(

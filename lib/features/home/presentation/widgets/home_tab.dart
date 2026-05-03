@@ -3,6 +3,7 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 
 
 import '../../../auth/application/auth_controller.dart';
+import '../../application/store_controller.dart';
 import '../../domain/store_models.dart';
 import 'book_card_mini.dart';
 import 'home_search_bar.dart';
@@ -17,6 +18,7 @@ class HomeTab extends ConsumerWidget {
     required this.onBookTap,
     required this.onFeaturedTap,
     required this.onPopularTap,
+    required this.onCartTap,
   });
 
   final List<BookItem> featuredBooks;
@@ -25,10 +27,13 @@ class HomeTab extends ConsumerWidget {
   final ValueChanged<BookItem> onBookTap;
   final VoidCallback onFeaturedTap;
   final VoidCallback onPopularTap;
+  final VoidCallback onCartTap;
 
   @override
   Widget build(BuildContext context, WidgetRef ref) {
     final authState = ref.watch(authControllerProvider);
+    final storeState = ref.watch(storeControllerProvider);
+    final cartItemCount = storeState.totalItems;
     return SafeArea(
       child: ListView(
         padding: const EdgeInsets.fromLTRB(12, 8, 12, 16),
@@ -51,9 +56,7 @@ class HomeTab extends ConsumerWidget {
                 ),
               ),
               GestureDetector(
-                onTap: () {
-                  // TODO: Navigate to notifications
-                },
+                onTap: onCartTap,
                 child: Container(
                   width: 40,
                   height: 40,
@@ -69,32 +72,33 @@ class HomeTab extends ConsumerWidget {
                         color: Colors.black,
                         size: 30,
                       ),
-                      Positioned(
-                        top: 4,
-                        right: 4,
-                        child: Container(
-                          padding: const EdgeInsets.all(2),
-                          decoration: BoxDecoration(
-                            color: const Color(0xFFFF3B30),
-                            shape: BoxShape.circle,
-                            border: Border.all(color: Colors.white, width: 2),
-                          ),
-                          constraints: const BoxConstraints(
-                            minWidth: 18,
-                            minHeight: 18,
-                          ),
-                          child: const Center(
-                            child: Text(
-                              '3',
-                              style: TextStyle(
-                                color: Colors.white,
-                                fontSize: 12,
-                                fontWeight: FontWeight.bold,
+                      if (cartItemCount > 0)
+                        Positioned(
+                          top: 4,
+                          right: 4,
+                          child: Container(
+                            padding: const EdgeInsets.all(2),
+                            decoration: BoxDecoration(
+                              color: const Color(0xFFFF3B30),
+                              shape: BoxShape.circle,
+                              border: Border.all(color: Colors.white, width: 2),
+                            ),
+                            constraints: const BoxConstraints(
+                              minWidth: 18,
+                              minHeight: 18,
+                            ),
+                            child: Center(
+                              child: Text(
+                                '$cartItemCount',
+                                style: const TextStyle(
+                                  color: Colors.white,
+                                  fontSize: 12,
+                                  fontWeight: FontWeight.bold,
+                                ),
                               ),
                             ),
                           ),
                         ),
-                      ),
                     ],
                   ),
                 ),

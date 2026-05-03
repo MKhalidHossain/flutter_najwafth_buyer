@@ -10,7 +10,8 @@ import '../../domain/store_models.dart';
 import '../../../cart_order/presentation/widgets/cart_tab.dart';
 import '../widgets/home_tab.dart';
 import '../../../order/presentation/widgets/orders_tab.dart';
-import '../widgets/profile_tab.dart';
+import '../../../profile/presentation/widgets/profile_tab.dart';
+import '../../../profile/presentation/pages/notifications_page.dart';
 import 'books_grid_page.dart';
 import 'featured_page.dart';
 
@@ -47,19 +48,14 @@ class _StoreShellState extends ConsumerState<_StoreShell> {
         categories: categories,
         popularBooks: popularBooks,
         onBookTap: _openBookDetails,
-        onFeaturedTap: _openFeatured,
-        onPopularTap: _openPopular,
-        onCartTap: _openCheckout,
+        onNotificationsTap: _openNotifications, onFeaturedTap: () {  }, onPopularTap: () {  },
       ),
       OrdersTab(onCheckoutTap: _openCheckout),
       CartTab(
         onCheckoutTap: _openCheckout,
         onHomeTap: () => setState(() => _currentIndex = 0),
       ),
-      ProfileTab(
-        onSignOutTap: _signOut,
-        selectedLanguage: storeState.selectedLanguage,
-      ),
+      const ProfileTab(),
     ];
 
     return Scaffold(
@@ -128,6 +124,10 @@ class _StoreShellState extends ConsumerState<_StoreShell> {
 
   void _openCheckout() {
     Navigator.of(context).push(MaterialPageRoute<void>(builder: (_) => const CheckoutPage()));
+  }
+
+  void _openNotifications() {
+    Navigator.of(context).push(MaterialPageRoute<void>(builder: (_) => const NotificationsPage()));
   }
 
   Future<void> _signOut() async {

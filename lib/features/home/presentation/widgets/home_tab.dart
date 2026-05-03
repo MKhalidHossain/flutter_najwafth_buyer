@@ -18,7 +18,7 @@ class HomeTab extends ConsumerWidget {
     required this.onBookTap,
     required this.onFeaturedTap,
     required this.onPopularTap,
-    required this.onCartTap,
+    required this.onNotificationsTap,
   });
 
   final List<BookItem> featuredBooks;
@@ -27,7 +27,7 @@ class HomeTab extends ConsumerWidget {
   final ValueChanged<BookItem> onBookTap;
   final VoidCallback onFeaturedTap;
   final VoidCallback onPopularTap;
-  final VoidCallback onCartTap;
+  final VoidCallback onNotificationsTap;
 
   @override
   Widget build(BuildContext context, WidgetRef ref) {
@@ -56,7 +56,7 @@ class HomeTab extends ConsumerWidget {
                 ),
               ),
               GestureDetector(
-                onTap: onCartTap,
+                onTap: onNotificationsTap,
                 child: Container(
                   width: 40,
                   height: 40,

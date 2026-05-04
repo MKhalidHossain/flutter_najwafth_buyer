@@ -66,14 +66,19 @@ class FeaturedBookCard extends ConsumerWidget {
             ),
             Row(
               children: [
-                Text(
-                  formatPrice(book.price),
-                  style: const TextStyle(
-                    fontSize: 19,
-                    color: Color(0xFF3694F4),
-                    fontWeight: FontWeight.w600,
+                Flexible(
+                  child: Text(
+                    formatPrice(book.price),
+                    maxLines: 1,
+                    overflow: TextOverflow.ellipsis,
+                    style: const TextStyle(
+                      fontSize: 19,
+                      color: Color(0xFF3694F4),
+                      fontWeight: FontWeight.w600,
+                    ),
                   ),
                 ),
+                const SizedBox(width: 4),
                 const Spacer(),
                 GestureDetector(
                   onTap: () => ref

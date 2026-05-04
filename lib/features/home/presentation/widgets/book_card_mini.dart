@@ -46,14 +46,24 @@ class BookCardMini extends ConsumerWidget {
             ),
             Row(
               children: [
-                Icon(Icons.location_on_outlined,color: Color(0xFF5A91C4),size: 18,),
-                const SizedBox(width: 6,),
-                Text(book.author, maxLines: 1, overflow: TextOverflow.ellipsis, style: const TextStyle(fontSize: 12, color: Color(0xFFAFB7C1))),
+                const Icon(Icons.location_on_outlined, color: Color(0xFF5A91C4), size: 18),
+                const SizedBox(width: 6),
+                Expanded(
+                  child: Text(book.author, maxLines: 1, overflow: TextOverflow.ellipsis, style: const TextStyle(fontSize: 12, color: Color(0xFFAFB7C1))),
+                ),
               ],
             ),
             Row(
               children: [
-                Text(formatPrice(book.price), style: const TextStyle(fontSize: 16, color: Color(0xFF3694F4), fontWeight: FontWeight.w600)),
+                Flexible(
+                  child: Text(
+                    formatPrice(book.price), 
+                    style: const TextStyle(fontSize: 16, color: Color(0xFF3694F4), fontWeight: FontWeight.w600),
+                    overflow: TextOverflow.ellipsis,
+                    maxLines: 1,
+                  ),
+                ),
+                const SizedBox(width: 4),
                 const Spacer(),
                 GestureDetector(
                   onTap: () => ref.read(storeControllerProvider.notifier).addToCart(book),

@@ -24,7 +24,7 @@ class ReviewBottomSheet extends StatelessWidget {
             children: [
               CircleAvatar(
                 radius: 20,
-                backgroundImage: NetworkImage('https://i.pravatar.cc/150?img=5'), // Dummy avatar
+                backgroundImage: AssetImage('assets/images/profile_placeholder.png'), // Dummy avatar
               ),
               SizedBox(width: 12),
               Text(

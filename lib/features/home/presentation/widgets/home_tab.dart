@@ -1,7 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 
-
 import '../../../auth/application/auth_controller.dart';
 import '../../application/store_controller.dart';
 import '../../domain/store_models.dart';
@@ -9,7 +8,7 @@ import 'book_card_mini.dart';
 import 'home_search_bar.dart';
 import 'section_title.dart';
 
-class HomeTab extends ConsumerWidget {
+class HomeTab extends ConsumerStatefulWidget {
   const HomeTab({
     super.key,
     required this.featuredBooks,
@@ -30,10 +29,19 @@ class HomeTab extends ConsumerWidget {
   final VoidCallback onNotificationsTap;
 
   @override
-  Widget build(BuildContext context, WidgetRef ref) {
+  ConsumerState<HomeTab> createState() => _HomeTabState();
+}
+
+class _HomeTabState extends ConsumerState<HomeTab> {
+  String _searchQuery = '';
+
+  @override
+  Widget build(BuildContext context) {
     final authState = ref.watch(authControllerProvider);
     final storeState = ref.watch(storeControllerProvider);
     final cartItemCount = storeState.totalItems;
+    final allBooks = ref.watch(storeCatalogProvider);
+
     return SafeArea(
       child: ListView(
         padding: const EdgeInsets.fromLTRB(12, 8, 12, 16),
@@ -42,21 +50,30 @@ class HomeTab extends ConsumerWidget {
             children: [
               const CircleAvatar(
                 radius: 20,
+                backgroundImage: AssetImage('assets/images/profile_placeholder.png'),
                 backgroundColor: Color(0xFFDCE3EC),
-                child: Icon(Icons.person, color: Color(0xFF6A7788), size: 32),
               ),
               const SizedBox(width: 8),
               Expanded(
                 child: Column(
                   crossAxisAlignment: CrossAxisAlignment.start,
                   children: [
-                    Text(authState.fullName, style: const TextStyle(fontSize: 16, fontWeight: FontWeight.w600)),
-                    const Text('Hi, Good Morning!', style: TextStyle(fontSize: 12, color: Color(0xFF9CA6B3))),
+                    Text(
+                      authState.fullName,
+                      style: const TextStyle(
+                        fontSize: 16,
+                        fontWeight: FontWeight.w600,
+                      ),
+                    ),
+                    const Text(
+                      'Hi, Good Morning!',
+                      style: TextStyle(fontSize: 12, color: Color(0xFF9CA6B3)),
+                    ),
                   ],
                 ),
               ),
               GestureDetector(
-                onTap: onNotificationsTap,
+                onTap: widget.onNotificationsTap,
                 child: Container(
                   width: 40,
                   height: 40,
@@ -106,117 +123,219 @@ class HomeTab extends ConsumerWidget {
             ],
           ),
           const SizedBox(height: 12),
-          const HomeSearchBar(),
-          const SizedBox(height: 14),
-          SectionTitle(title: 'Featured Bookstores', actionText: 'See all', onActionTap: onFeaturedTap),
-          const SizedBox(height: 10),
-          GridView.builder(
-            shrinkWrap: true,
-            physics: const NeverScrollableScrollPhysics(),
-            itemCount: featuredBooks.length.clamp(0, 6).toInt(),
-            gridDelegate: const SliverGridDelegateWithFixedCrossAxisCount(
-              crossAxisCount: 2,
-              mainAxisSpacing: 10,
-              crossAxisSpacing: 10,
-              childAspectRatio: .75,
-            ),
-            itemBuilder: (context, index) => BookCardMini(book: featuredBooks[index], onTap: () => onBookTap(featuredBooks[index])),
-          ),
-          const SizedBox(height: 14),
-          SectionTitle(title: 'Categories', actionText: 'See all', onActionTap: onFeaturedTap),
-          const SizedBox(height: 10),
-          LayoutBuilder(
-            builder: (context, constraints) {
-              final screenWidth = constraints.maxWidth;
-              final itemWidth = (screenWidth * 0.2).clamp(68.0, 86.0).toDouble();
-              final thumbSize = (itemWidth * 0.82).clamp(54.0, 68.0).toDouble();
-              final horizontalGap = (screenWidth * 0.018).clamp(6.0, 10.0).toDouble();
-              final listHeight = (thumbSize + 28).toDouble();
-
-              return SizedBox(
-                height: listHeight,
-                child: ListView.separated(
-                  scrollDirection: Axis.horizontal,
-                  itemCount: categories.length,
-                  separatorBuilder: (_, _) => SizedBox(width: horizontalGap),
-                  itemBuilder: (context, index) {
-                    final category = categories[index];
-                    final previewPath = category.previewImageAsset;
-
-                    return SizedBox(
-                      width: itemWidth,
-                      child: Column(
-                        children: [
-                          Container(
-                            width: thumbSize,
-                            height: thumbSize,
-                            decoration: BoxDecoration(
-                              color: Colors.white,
-                              borderRadius: BorderRadius.circular(10),
-                              border: Border.all(color: const Color(0xFFE8ECF1)),
-                            ),
-                            child: Padding(
-                              padding: const EdgeInsets.all(7),
-                              child: ClipRRect(
-                                borderRadius: BorderRadius.circular(7),
-                                child: previewPath == null || previewPath.isEmpty
-                                    ? const Icon(Icons.menu_book_outlined, color: Color(0xFF9CA6B3))
-                                    : Image.asset(
-                                        previewPath,
-                                        fit: BoxFit.cover,
-                                        errorBuilder: (_, __, ___) =>
-                                            const Icon(Icons.menu_book_outlined, color: Color(0xFF9CA6B3)),
-                                      ),
-                              ),
-                            ),
-                          ),
-                          const SizedBox(height: 4),
-                          Text(category.name, maxLines: 1, overflow: TextOverflow.ellipsis, style: const TextStyle(fontSize: 10)),
-                        ],
-                      ),
-                    );
-                  },
-                ),
-              );
+          HomeSearchBar(
+            onChanged: (value) {
+              setState(() {
+                _searchQuery = value;
+              });
             },
           ),
-          const SizedBox(height: 8),
-          SectionTitle(title: 'Popular Books', actionText: 'See all', onActionTap: onPopularTap),
-          const SizedBox(height: 10),
-          LayoutBuilder(
-            builder: (context, constraints) {
-              final screenWidth = constraints.maxWidth;
-              final itemWidth = (screenWidth * 0.38).clamp(120.0, 170.0).toDouble();
-              final listHeight = (itemWidth * 1.55).clamp(185.0, 280.0).toDouble();
+          if (_searchQuery.isNotEmpty)
+            ..._buildSearchResults(allBooks)
+          else ...[
+            const SizedBox(height: 14),
+            SectionTitle(
+              title: 'Featured Bookstores',
+              actionText: 'See all',
+              onActionTap: widget.onFeaturedTap,
+            ),
+            const SizedBox(height: 10),
+            GridView.builder(
+              shrinkWrap: true,
+              physics: const NeverScrollableScrollPhysics(),
+              itemCount: widget.featuredBooks.length.clamp(0, 6).toInt(),
+              gridDelegate: const SliverGridDelegateWithFixedCrossAxisCount(
+                crossAxisCount: 2,
+                mainAxisSpacing: 10,
+                crossAxisSpacing: 10,
+                childAspectRatio: .75,
+              ),
+              itemBuilder: (context, index) => BookCardMini(
+                book: widget.featuredBooks[index],
+                onTap: () => widget.onBookTap(widget.featuredBooks[index]),
+              ),
+            ),
+            const SizedBox(height: 14),
+            SectionTitle(
+              title: 'Categories',
+              actionText: 'See all',
+              onActionTap: widget.onFeaturedTap,
+            ),
+            const SizedBox(height: 10),
+            LayoutBuilder(
+              builder: (context, constraints) {
+                final screenWidth = constraints.maxWidth;
+                final itemWidth = (screenWidth * 0.2)
+                    .clamp(68.0, 86.0)
+                    .toDouble();
+                final thumbSize = (itemWidth * 0.82)
+                    .clamp(54.0, 68.0)
+                    .toDouble();
+                final horizontalGap = (screenWidth * 0.018)
+                    .clamp(6.0, 10.0)
+                    .toDouble();
+                final listHeight = (thumbSize + 28).toDouble();
 
-              if (popularBooks.isEmpty) {
                 return SizedBox(
                   height: listHeight,
-                  child: const Center(
-                    child: Text(
-                      'No popular books available',
-                      style: TextStyle(color: Color(0xFF9CA6B3), fontSize: 13),
+                  child: ListView.separated(
+                    scrollDirection: Axis.horizontal,
+                    itemCount: widget.categories.length,
+                    separatorBuilder: (_, _) => SizedBox(width: horizontalGap),
+                    itemBuilder: (context, index) {
+                      final category = widget.categories[index];
+                      final previewPath = category.previewImageAsset;
+
+                      return SizedBox(
+                        width: itemWidth,
+                        child: Container(
+                          color: Colors.grey[200],
+                          child: Column(
+                            mainAxisAlignment: MainAxisAlignment.center,
+                            children: [
+                              Container(
+                                width: thumbSize,
+                                height: thumbSize,
+                                decoration: BoxDecoration(
+                                  color: Colors.white,
+                                  borderRadius: BorderRadius.circular(10),
+                                  border: Border.all(
+                                    color: const Color(0xFFE8ECF1),
+                                  ),
+                                ),
+                                child: ClipRRect(
+                                  borderRadius: BorderRadius.circular(7),
+                                  child:
+                                      previewPath == null || previewPath.isEmpty
+                                      ? const Icon(
+                                          Icons.menu_book_outlined,
+                                          color: Color(0xFF9CA6B3),
+                                        )
+                                      : Image.asset(
+                                          previewPath,
+                                          fit: BoxFit.cover,
+                                          errorBuilder: (_, __, ___) =>
+                                              const Icon(
+                                                Icons.menu_book_outlined,
+                                                color: Color(0xFF9CA6B3),
+                                              ),
+                                        ),
+                                ),
+                              ),
+                              const SizedBox(height: 4),
+                              Text(
+                                category.name,
+                                maxLines: 1,
+                                overflow: TextOverflow.ellipsis,
+                                style: const TextStyle(
+                                  fontSize: 12,
+                                  fontWeight: FontWeight.w600,
+                                ),
+                              ),
+                            ],
+                          ),
+                        ),
+                      );
+                    },
+                  ),
+                );
+              },
+            ),
+            const SizedBox(height: 8),
+            SectionTitle(
+              title: 'Popular Books',
+              actionText: 'See all',
+              onActionTap: widget.onPopularTap,
+            ),
+            const SizedBox(height: 10),
+            LayoutBuilder(
+              builder: (context, constraints) {
+                final screenWidth = constraints.maxWidth;
+                final itemWidth = (screenWidth * 0.38)
+                    .clamp(120.0, 170.0)
+                    .toDouble();
+                final listHeight = (itemWidth * 1.55)
+                    .clamp(185.0, 280.0)
+                    .toDouble();
+
+                if (widget.popularBooks.isEmpty) {
+                  return SizedBox(
+                    height: listHeight,
+                    child: const Center(
+                      child: Text(
+                        'No popular books available',
+                        style: TextStyle(
+                          color: Color(0xFF9CA6B3),
+                          fontSize: 13,
+                        ),
+                      ),
+                    ),
+                  );
+                }
+
+                return SizedBox(
+                  height: listHeight,
+                  child: ListView.separated(
+                    scrollDirection: Axis.horizontal,
+                    itemCount: widget.popularBooks.length,
+                    separatorBuilder: (_, _) => SizedBox(
+                      width: (screenWidth * 0.025).clamp(8.0, 14.0).toDouble(),
+                    ),
+                    itemBuilder: (context, i) => SizedBox(
+                      width: itemWidth,
+                      child: BookCardMini(
+                        book: widget.popularBooks[i],
+                        onTap: () => widget.onBookTap(widget.popularBooks[i]),
+                      ),
                     ),
                   ),
                 );
-              }
-
-              return SizedBox(
-                height: listHeight,
-                child: ListView.separated(
-                  scrollDirection: Axis.horizontal,
-                  itemCount: popularBooks.length,
-                  separatorBuilder: (_, _) => SizedBox(width: (screenWidth * 0.025).clamp(8.0, 14.0).toDouble()),
-                  itemBuilder: (context, i) => SizedBox(
-                    width: itemWidth,
-                    child: BookCardMini(book: popularBooks[i], onTap: () => onBookTap(popularBooks[i])),
-                  ),
-                ),
-              );
-            },
-          ),
+              },
+            ),
+          ],
         ],
       ),
     );
+  }
+
+  List<Widget> _buildSearchResults(List<BookItem> allBooks) {
+    final query = _searchQuery.toLowerCase();
+    final filteredBooks = allBooks.where((book) {
+      return book.title.toLowerCase().contains(query) ||
+          book.author.toLowerCase().contains(query) ||
+          book.price.toString().contains(query);
+    }).toList();
+
+    return [
+      const SizedBox(height: 14),
+      const SectionTitle(title: 'Search Results'),
+      const SizedBox(height: 10),
+      if (filteredBooks.isEmpty)
+        const Padding(
+          padding: EdgeInsets.all(32.0),
+          child: Center(
+            child: Text(
+              'No books match your search.',
+              style: TextStyle(color: Color(0xFF9CA6B3), fontSize: 14),
+            ),
+          ),
+        )
+      else
+        GridView.builder(
+          shrinkWrap: true,
+          physics: const NeverScrollableScrollPhysics(),
+          itemCount: filteredBooks.length,
+          gridDelegate: const SliverGridDelegateWithFixedCrossAxisCount(
+            crossAxisCount: 2,
+            mainAxisSpacing: 10,
+            crossAxisSpacing: 10,
+            childAspectRatio: .75,
+          ),
+          itemBuilder: (context, index) => BookCardMini(
+            book: filteredBooks[index],
+            onTap: () => widget.onBookTap(filteredBooks[index]),
+          ),
+        ),
+    ];
   }
 }

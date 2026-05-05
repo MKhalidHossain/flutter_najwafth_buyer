@@ -4,6 +4,7 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'dart:convert';
 
 import '../config/app_config.dart';
+import '../storage/storage_providers.dart';
 import 'api_client.dart';
 
 final appConfigProvider = Provider<AppConfig>((ref) {
@@ -12,6 +13,7 @@ final appConfigProvider = Provider<AppConfig>((ref) {
 
 final dioProvider = Provider<Dio>((ref) {
   final config = ref.watch(appConfigProvider);
+  final storage = ref.watch(keyValueStorageProvider);
 
   final dio = Dio(
     BaseOptions(
@@ -25,6 +27,10 @@ final dioProvider = Provider<Dio>((ref) {
   dio.interceptors.add(
     InterceptorsWrapper(
       onRequest: (options, handler) {
+        final token = storage.readString('buyer_access_token');
+        if (token != null && token.isNotEmpty) {
+          options.headers['Authorization'] = 'Bearer $token';
+        }
         if (kDebugMode) {
           _printLine(
             '[API][REQ] ${options.method} ${options.baseUrl}${options.path}',

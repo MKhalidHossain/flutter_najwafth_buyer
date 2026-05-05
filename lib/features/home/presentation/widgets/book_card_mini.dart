@@ -29,6 +29,7 @@ class BookCardMini extends ConsumerWidget {
               child: BookCover(
                 title: book.title,
                 imageAsset: book.coverImageAsset,
+                imageUrl: book.coverImageUrl,
                 color: book.coverColor,
                 accentColor: book.coverAccent,
                 height: double.infinity,

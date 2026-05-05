@@ -20,10 +20,10 @@ class CartTab extends ConsumerWidget {
     final storeState = ref.watch(storeControllerProvider);
     final catalog = ref.watch(storeCatalogProvider);
 
-    final cartItems = storeState.cartQuantities.entries.map((e) {
-      final book = catalog.firstWhere((b) => b.id == e.key);
-      return MapEntry(book, e.value);
-    }).toList();
+    final cartItems = storeState.cartQuantities.entries
+        .where((e) => catalog.any((b) => b.id == e.key))
+        .map((e) => MapEntry(catalog.firstWhere((b) => b.id == e.key), e.value))
+        .toList();
 
     return Scaffold(
       backgroundColor: Colors.white,

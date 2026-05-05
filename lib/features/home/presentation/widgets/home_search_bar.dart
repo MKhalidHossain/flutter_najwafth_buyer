@@ -1,13 +1,16 @@
 import 'package:flutter/material.dart';
 
 class HomeSearchBar extends StatelessWidget {
-  const HomeSearchBar({super.key});
+  const HomeSearchBar({super.key, this.onChanged});
+
+  final ValueChanged<String>? onChanged;
 
   @override
   Widget build(BuildContext context) {
     return SizedBox(
       height: 50,
       child: TextField(
+        onChanged: onChanged,
         decoration: InputDecoration(
           hintText: 'Search books, authors, stores...',
           hintStyle: const TextStyle(fontSize: 12, color: Color(0xFFA6AFBA)),

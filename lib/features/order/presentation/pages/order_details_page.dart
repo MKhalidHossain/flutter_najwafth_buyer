@@ -243,14 +243,23 @@ class OrderDetailsPage extends StatelessWidget {
                       ),
                       child: ClipRRect(
                         borderRadius: BorderRadius.circular(8),
-                        child: Image.asset(
-                          item.coverImageAsset,
-                          fit: BoxFit.cover,
-                          errorBuilder: (_, __, ___) => Container(
-                            color: item.coverColor,
-                            child: const Icon(Icons.book, color: Colors.white),
-                          ),
-                        ),
+                        child: item.coverImageUrl != null
+                            ? Image.network(
+                                item.coverImageUrl!,
+                                fit: BoxFit.cover,
+                                errorBuilder: (ctx, err, st) => Container(
+                                  color: item.coverColor,
+                                  child: const Icon(Icons.book, color: Colors.white),
+                                ),
+                              )
+                            : Image.asset(
+                                item.coverImageAsset ?? '',
+                                fit: BoxFit.cover,
+                                errorBuilder: (ctx, err, st) => Container(
+                                  color: item.coverColor,
+                                  child: const Icon(Icons.book, color: Colors.white),
+                                ),
+                              ),
                       ),
                     ),
                     const SizedBox(width: 12),
@@ -296,10 +305,17 @@ class OrderDetailsPage extends StatelessWidget {
                                   shape: BoxShape.circle,
                                   border: Border.all(color: Colors.white, width: 2),
                                   color: item.coverColor,
-                                  image: DecorationImage(
-                                    image: AssetImage(item.coverImageAsset),
-                                    fit: BoxFit.cover,
-                                  ),
+                                  image: item.coverImageUrl != null
+                                      ? DecorationImage(
+                                          image: NetworkImage(item.coverImageUrl!),
+                                          fit: BoxFit.cover,
+                                        )
+                                      : item.coverImageAsset != null
+                                          ? DecorationImage(
+                                              image: AssetImage(item.coverImageAsset!),
+                                              fit: BoxFit.cover,
+                                            )
+                                          : null,
                                 ),
                               ),
                               const Spacer(),

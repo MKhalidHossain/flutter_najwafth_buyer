@@ -93,8 +93,8 @@ class _ResetPasswordPageState extends ConsumerState<ResetPasswordPage> {
           children: [
             const BrandHeader(topSpacing: 72, bottomSpacing: 24),
             const AuthTitleBlock(
-              title: 'Reset New password',
-              subtitle: 'Enter your new password and confirm password',
+              title: 'Reset Password',
+              subtitle: 'Enter and confirm your new password',
             ),
             const AuthFieldLabel('New Password'),
             AuthTextField(

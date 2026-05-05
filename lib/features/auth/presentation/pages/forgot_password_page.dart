@@ -34,7 +34,7 @@ class _ForgotPasswordPageState extends ConsumerState<ForgotPasswordPage> {
 
     setState(() => _isSubmitting = true);
     try {
-      final otp = await ref
+      await ref
           .read(authControllerProvider.notifier)
           .requestOtp(_emailController.text);
 
@@ -42,9 +42,13 @@ class _ForgotPasswordPageState extends ConsumerState<ForgotPasswordPage> {
         return;
       }
 
-      ScaffoldMessenger.of(context)
-        ..hideCurrentSnackBar()
-        ..showSnackBar(SnackBar(content: Text('Demo OTP: $otp')));
+      ScaffoldMessenger.of(context).showSnackBar(
+        const SnackBar(
+          content: Text(
+            'An OTP has been sent to your email address.',
+          ),
+        ),
+      );
 
       Navigator.of(context).pushNamed(AuthRoutes.enterOtp);
     } on AuthFlowException catch (error) {

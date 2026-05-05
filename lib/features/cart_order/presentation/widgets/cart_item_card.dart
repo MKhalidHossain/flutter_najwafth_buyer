@@ -40,14 +40,23 @@ class CartItemCard extends StatelessWidget {
             ),
             child: ClipRRect(
               borderRadius: BorderRadius.circular(8),
-              child: Image.asset(
-                book.coverImageAsset,
-                fit: BoxFit.cover,
-                errorBuilder: (_, __, ___) => Container(
-                  color: book.coverColor,
-                  child: const Icon(Icons.book, color: Colors.white),
-                ),
-              ),
+              child: book.coverImageUrl != null
+                  ? Image.network(
+                      book.coverImageUrl!,
+                      fit: BoxFit.cover,
+                      errorBuilder: (ctx, err, st) => Container(
+                        color: book.coverColor,
+                        child: const Icon(Icons.book, color: Colors.white),
+                      ),
+                    )
+                  : Image.asset(
+                      book.coverImageAsset ?? '',
+                      fit: BoxFit.cover,
+                      errorBuilder: (ctx, err, st) => Container(
+                        color: book.coverColor,
+                        child: const Icon(Icons.book, color: Colors.white),
+                      ),
+                    ),
             ),
           ),
           const SizedBox(width: 12),
@@ -124,12 +133,11 @@ class CartItemCard extends StatelessWidget {
                           ),
                         ),
                         Text(
-                          '\$${(book.price + 2.0).toStringAsFixed(2)}', // Dummy old price
+                          'Total: \$${(book.price * quantity).toStringAsFixed(2)}',
                           style: const TextStyle(
                             fontSize: 10,
                             fontWeight: FontWeight.w500,
                             color: Color(0xFF8E98A5),
-                            decoration: TextDecoration.lineThrough,
                           ),
                         ),
                       ],

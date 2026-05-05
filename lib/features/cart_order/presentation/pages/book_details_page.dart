@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 
+import '../../../home/application/book_provider.dart';
 import '../../../home/application/store_controller.dart';
 import '../../../home/domain/store_models.dart';
 
@@ -15,9 +16,14 @@ class BookDetailsPage extends ConsumerStatefulWidget {
 
 class _BookDetailsPageState extends ConsumerState<BookDetailsPage> {
   int _quantity = 1;
+  bool _descriptionExpanded = false;
 
   @override
   Widget build(BuildContext context) {
+    final bookAsync = ref.watch(bookDetailProvider(widget.book.id));
+    final book = bookAsync.asData?.value ?? widget.book;
+    final isLoading = bookAsync.isLoading;
+
     return Scaffold(
       backgroundColor: Colors.white,
       appBar: AppBar(
@@ -30,13 +36,28 @@ class _BookDetailsPageState extends ConsumerState<BookDetailsPage> {
           icon: const Icon(Icons.chevron_left, color: Color(0xFF243041), size: 28),
         ),
         title: Text(
-          widget.book.title,
+          book.title,
+          maxLines: 1,
+          overflow: TextOverflow.ellipsis,
           style: const TextStyle(
             fontSize: 18,
             fontWeight: FontWeight.w600,
             color: Color(0xFF243041),
           ),
         ),
+        actions: [
+          if (isLoading)
+            const Padding(
+              padding: EdgeInsets.only(right: 16),
+              child: Center(
+                child: SizedBox(
+                  width: 16,
+                  height: 16,
+                  child: CircularProgressIndicator(strokeWidth: 2, color: Color(0xFF5A91C4)),
+                ),
+              ),
+            ),
+        ],
       ),
       body: Column(
         children: [
@@ -44,7 +65,7 @@ class _BookDetailsPageState extends ConsumerState<BookDetailsPage> {
             child: ListView(
               padding: const EdgeInsets.all(16),
               children: [
-                // Book Cover
+                // ── Cover Image ──────────────────────────────────────
                 Container(
                   width: double.infinity,
                   height: 240,
@@ -54,24 +75,18 @@ class _BookDetailsPageState extends ConsumerState<BookDetailsPage> {
                   ),
                   child: ClipRRect(
                     borderRadius: BorderRadius.circular(16),
-                    child: Image.asset(
-                      widget.book.coverImageAsset,
-                      fit: BoxFit.cover,
-                      errorBuilder: (_, __, ___) => Container(
-                        color: widget.book.coverColor,
-                        child: const Icon(Icons.book, color: Colors.white, size: 48),
-                      ),
-                    ),
+                    child: _buildCoverImage(book),
                   ),
                 ),
                 const SizedBox(height: 20),
-                // Title and Rating
+
+                // ── Title + Rating ────────────────────────────────────
                 Row(
                   crossAxisAlignment: CrossAxisAlignment.start,
                   children: [
                     Expanded(
                       child: Text(
-                        widget.book.title,
+                        book.title,
                         style: const TextStyle(
                           fontSize: 20,
                           fontWeight: FontWeight.w700,
@@ -82,7 +97,7 @@ class _BookDetailsPageState extends ConsumerState<BookDetailsPage> {
                     const Icon(Icons.star, color: Color(0xFFFFC107), size: 18),
                     const SizedBox(width: 4),
                     Text(
-                      widget.book.rating.toStringAsFixed(1),
+                      book.rating.toStringAsFixed(1),
                       style: const TextStyle(
                         fontSize: 14,
                         fontWeight: FontWeight.w600,
@@ -92,9 +107,10 @@ class _BookDetailsPageState extends ConsumerState<BookDetailsPage> {
                   ],
                 ),
                 const SizedBox(height: 4),
-                // Author
+
+                // ── Author ────────────────────────────────────────────
                 Text(
-                  widget.book.author,
+                  book.author,
                   style: const TextStyle(
                     fontSize: 13,
                     color: Color(0xFF8E98A5),
@@ -102,19 +118,25 @@ class _BookDetailsPageState extends ConsumerState<BookDetailsPage> {
                   ),
                 ),
                 const SizedBox(height: 8),
-                // Location
+
+                // ── Shop / Location ───────────────────────────────────
                 Row(
                   children: [
                     const Icon(Icons.location_on_outlined, size: 14, color: Color(0xFF5A91C4)),
                     const SizedBox(width: 4),
-                    const Text(
-                      '123 Library, Book City',
-                      style: TextStyle(fontSize: 12, color: Color(0xFF8E98A5)),
+                    Expanded(
+                      child: Text(
+                        book.shopName ?? '123 Library, Book City',
+                        maxLines: 1,
+                        overflow: TextOverflow.ellipsis,
+                        style: const TextStyle(fontSize: 12, color: Color(0xFF8E98A5)),
+                      ),
                     ),
                   ],
                 ),
                 const SizedBox(height: 12),
-                // Category Chip
+
+                // ── Category chip ─────────────────────────────────────
                 Align(
                   alignment: Alignment.centerLeft,
                   child: Container(
@@ -124,7 +146,7 @@ class _BookDetailsPageState extends ConsumerState<BookDetailsPage> {
                       borderRadius: BorderRadius.circular(20),
                     ),
                     child: Text(
-                      widget.book.categoryName,
+                      book.categoryName.isNotEmpty ? book.categoryName : 'General',
                       style: const TextStyle(
                         fontSize: 12,
                         color: Color(0xFF5A91C4),
@@ -134,7 +156,8 @@ class _BookDetailsPageState extends ConsumerState<BookDetailsPage> {
                   ),
                 ),
                 const SizedBox(height: 24),
-                // Description
+
+                // ── Description ───────────────────────────────────────
                 const Text(
                   'Description',
                   style: TextStyle(
@@ -145,7 +168,11 @@ class _BookDetailsPageState extends ConsumerState<BookDetailsPage> {
                 ),
                 const SizedBox(height: 8),
                 Text(
-                  widget.book.description,
+                  book.description.isNotEmpty
+                      ? book.description
+                      : 'No description available.',
+                  maxLines: _descriptionExpanded ? null : 3,
+                  overflow: _descriptionExpanded ? null : TextOverflow.ellipsis,
                   style: const TextStyle(
                     fontSize: 13,
                     height: 1.5,
@@ -154,10 +181,10 @@ class _BookDetailsPageState extends ConsumerState<BookDetailsPage> {
                 ),
                 const SizedBox(height: 4),
                 GestureDetector(
-                  onTap: () {}, // Optional
-                  child: const Text(
-                    'Read more',
-                    style: TextStyle(
+                  onTap: () => setState(() => _descriptionExpanded = !_descriptionExpanded),
+                  child: Text(
+                    _descriptionExpanded ? 'Show less' : 'Read more',
+                    style: const TextStyle(
                       fontSize: 13,
                       color: Color(0xFF5A91C4),
                       fontWeight: FontWeight.w500,
@@ -165,7 +192,8 @@ class _BookDetailsPageState extends ConsumerState<BookDetailsPage> {
                   ),
                 ),
                 const SizedBox(height: 24),
-                // Price and Stepper
+
+                // ── Price + Quantity stepper ──────────────────────────
                 Row(
                   mainAxisAlignment: MainAxisAlignment.spaceBetween,
                   crossAxisAlignment: CrossAxisAlignment.end,
@@ -174,7 +202,7 @@ class _BookDetailsPageState extends ConsumerState<BookDetailsPage> {
                       crossAxisAlignment: CrossAxisAlignment.start,
                       children: [
                         Text(
-                          '\$${widget.book.price.toStringAsFixed(2)}',
+                          '\$${(book.price * _quantity).toStringAsFixed(2)}',
                           style: const TextStyle(
                             fontSize: 24,
                             fontWeight: FontWeight.w700,
@@ -182,7 +210,7 @@ class _BookDetailsPageState extends ConsumerState<BookDetailsPage> {
                           ),
                         ),
                         Text(
-                          '\$${(widget.book.price + 2).toStringAsFixed(2)}',
+                          '\$${(book.price * 1.20 * _quantity).toStringAsFixed(2)}',
                           style: const TextStyle(
                             fontSize: 14,
                             color: Color(0xFF8E98A5),
@@ -224,9 +252,7 @@ class _BookDetailsPageState extends ConsumerState<BookDetailsPage> {
                             ),
                           ),
                           GestureDetector(
-                            onTap: () {
-                              setState(() => _quantity++);
-                            },
+                            onTap: () => setState(() => _quantity++),
                             child: Container(
                               width: 32,
                               decoration: BoxDecoration(
@@ -247,14 +273,15 @@ class _BookDetailsPageState extends ConsumerState<BookDetailsPage> {
               ],
             ),
           ),
-          // Bottom Add to Cart Button
+
+          // ── Add to Cart button ────────────────────────────────────
           Container(
             padding: const EdgeInsets.all(16),
             decoration: BoxDecoration(
               color: Colors.white,
               boxShadow: [
                 BoxShadow(
-                  color: Colors.black.withOpacity(0.05),
+                  color: Colors.black.withValues(alpha: 0.05),
                   offset: const Offset(0, -4),
                   blurRadius: 12,
                 ),
@@ -265,18 +292,19 @@ class _BookDetailsPageState extends ConsumerState<BookDetailsPage> {
               child: SizedBox(
                 width: double.infinity,
                 child: ElevatedButton.icon(
-                  onPressed: _addToCart,
+                  onPressed: book.stock ? () => _addToCart(book) : null,
                   style: ElevatedButton.styleFrom(
                     backgroundColor: const Color(0xFF5A91C4),
+                    disabledBackgroundColor: const Color(0xFFBDCAD8),
                     padding: const EdgeInsets.symmetric(vertical: 16),
                     shape: RoundedRectangleBorder(
                       borderRadius: BorderRadius.circular(8),
                     ),
                   ),
                   icon: const Icon(Icons.shopping_cart_outlined, color: Colors.white, size: 20),
-                  label: const Text(
-                    'Add to Cart',
-                    style: TextStyle(
+                  label: Text(
+                    book.stock ? 'Add to Cart' : 'Out of Stock',
+                    style: const TextStyle(
                       fontSize: 16,
                       fontWeight: FontWeight.w600,
                       color: Colors.white,
@@ -291,9 +319,34 @@ class _BookDetailsPageState extends ConsumerState<BookDetailsPage> {
     );
   }
 
-  void _addToCart() {
-    ref.read(storeControllerProvider.notifier).addToCart(widget.book, quantity: _quantity);
-    ScaffoldMessenger.of(context).showSnackBar(SnackBar(content: Text('${widget.book.title} added to cart')));
+  Widget _buildCoverImage(BookItem book) {
+    final fallback = Container(
+      color: book.coverColor,
+      child: const Icon(Icons.book, color: Colors.white, size: 48),
+    );
+    if (book.coverImageUrl != null && book.coverImageUrl!.isNotEmpty) {
+      return Image.network(
+        book.coverImageUrl!,
+        fit: BoxFit.cover,
+        errorBuilder: (ctx, err, st) => fallback,
+        loadingBuilder: (_, child, progress) => progress == null ? child : fallback,
+      );
+    }
+    if (book.coverImageAsset != null && book.coverImageAsset!.isNotEmpty) {
+      return Image.asset(
+        book.coverImageAsset!,
+        fit: BoxFit.cover,
+        errorBuilder: (ctx, err, st) => fallback,
+      );
+    }
+    return fallback;
+  }
+
+  void _addToCart(BookItem book) {
+    ref.read(storeControllerProvider.notifier).addToCart(book, quantity: _quantity);
+    ScaffoldMessenger.of(context).showSnackBar(
+      SnackBar(content: Text('${book.title} added to cart')),
+    );
     Navigator.of(context).pop();
   }
 }

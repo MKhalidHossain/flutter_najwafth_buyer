@@ -30,9 +30,10 @@ class _CheckoutPageState extends ConsumerState<CheckoutPage> {
     final storeState = ref.watch(storeControllerProvider);
     final catalog = ref.watch(storeCatalogProvider);
 
-    final cartItems = storeState.cartQuantities.entries.map((e) {
-      return catalog.firstWhere((b) => b.id == e.key);
-    }).toList();
+    final cartItems = storeState.cartQuantities.entries
+        .where((e) => catalog.any((b) => b.id == e.key))
+        .map((e) => catalog.firstWhere((b) => b.id == e.key))
+        .toList();
     
     final subtotal = ref.read(storeControllerProvider.notifier).subtotal(cartItems);
     final deliveryFee = ref.read(storeControllerProvider.notifier).deliveryFee(cartItems);

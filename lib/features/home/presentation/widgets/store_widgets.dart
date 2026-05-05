@@ -217,6 +217,7 @@ class BookCard extends StatelessWidget {
                 BookCover(
                   title: book.title,
                   imageAsset: book.coverImageAsset,
+                  imageUrl: book.coverImageUrl,
                   color: book.coverColor,
                   accentColor: book.coverAccent,
                   height: compact ? 110 : 118,
@@ -308,6 +309,7 @@ class BookCover extends StatelessWidget {
     super.key,
     required this.title,
     this.imageAsset,
+    this.imageUrl,
     required this.color,
     required this.accentColor,
     this.height = 118,
@@ -316,6 +318,7 @@ class BookCover extends StatelessWidget {
 
   final String title;
   final String? imageAsset;
+  final String? imageUrl;
   final Color color;
   final Color accentColor;
   final double height;
@@ -323,44 +326,53 @@ class BookCover extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    if (imageAsset != null) {
-      return Container(
-        height: height,
-        width: double.infinity,
-        decoration: BoxDecoration(
-          borderRadius: BorderRadius.circular(radius),
-          boxShadow: const [
-            BoxShadow(
-              color: Color(0x12000000),
-              blurRadius: 14,
-              offset: Offset(0, 8),
-            ),
-          ],
-        ),
-        child: ClipRRect(
-          borderRadius: BorderRadius.circular(radius),
-          child: Image.asset(
-            imageAsset!,
-            width: double.infinity,
-            fit: BoxFit.cover,
-            errorBuilder: (_, _, _) => _BookCoverFallback(
-              title: title,
-              color: color,
-              accentColor: accentColor,
-              height: height,
-              radius: radius,
-            ),
-          ),
-        ),
-      );
-    }
-
-    return _BookCoverFallback(
+    final fallback = _BookCoverFallback(
       title: title,
       color: color,
       accentColor: accentColor,
       height: height,
       radius: radius,
+    );
+
+    Widget? imageWidget;
+
+    if (imageUrl != null && imageUrl!.isNotEmpty) {
+      imageWidget = Image.network(
+        imageUrl!,
+        width: double.infinity,
+        fit: BoxFit.cover,
+        errorBuilder: (ctx, err, st) => fallback,
+        loadingBuilder: (_, child, progress) =>
+            progress == null ? child : fallback,
+      );
+    } else if (imageAsset != null && imageAsset!.isNotEmpty) {
+      imageWidget = Image.asset(
+        imageAsset!,
+        width: double.infinity,
+        fit: BoxFit.cover,
+        errorBuilder: (ctx, err, st) => fallback,
+      );
+    }
+
+    if (imageWidget == null) return fallback;
+
+    return Container(
+      height: height,
+      width: double.infinity,
+      decoration: BoxDecoration(
+        borderRadius: BorderRadius.circular(radius),
+        boxShadow: const [
+          BoxShadow(
+            color: Color(0x12000000),
+            blurRadius: 14,
+            offset: Offset(0, 8),
+          ),
+        ],
+      ),
+      child: ClipRRect(
+        borderRadius: BorderRadius.circular(radius),
+        child: imageWidget,
+      ),
     );
   }
 }

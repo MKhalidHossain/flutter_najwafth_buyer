@@ -22,6 +22,7 @@ final class NajwafthBuyerApp extends ConsumerWidget {
     final config = ref.watch(appConfigProvider);
 
     return MaterialApp(
+      
       title: config.appName,
       debugShowCheckedModeBanner: config.isDevelopment,
       theme: AppTheme.light(),

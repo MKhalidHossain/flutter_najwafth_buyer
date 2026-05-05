@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import '../../../auth/application/auth_controller.dart';
+import '../../application/profile_controller.dart';
 import '../../../auth/presentation/auth_routes.dart';
 import '../pages/edit_profile_page.dart';
 import '../pages/change_password_page.dart';
@@ -22,6 +23,9 @@ class _ProfileTabState extends ConsumerState<ProfileTab> {
   @override
   Widget build(BuildContext context) {
     final authState = ref.watch(authControllerProvider);
+    final profileAsync = ref.watch(profileControllerProvider);
+    final profile = profileAsync.asData?.value;
+
     return Scaffold(
       backgroundColor: Colors.white,
       appBar: AppBar(
@@ -47,12 +51,14 @@ class _ProfileTabState extends ConsumerState<ProfileTab> {
             children: [
               const CircleAvatar(
                 radius: 30,
-                backgroundImage: AssetImage('assets/images/profile_placeholder.png'), // Need a placeholder
+                backgroundImage: AssetImage('assets/images/profile_placeholder.png'),
                 backgroundColor: Color(0xFFF3F8FC),
               ),
               const SizedBox(width: 16),
               Text(
-                authState.fullName,
+                (profile?.name.isNotEmpty ?? false)
+                    ? profile!.name
+                    : authState.fullName,
                 style: const TextStyle(
                   fontSize: 20,
                   fontWeight: FontWeight.w700,

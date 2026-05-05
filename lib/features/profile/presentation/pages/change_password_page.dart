@@ -1,16 +1,20 @@
 import 'package:flutter/material.dart';
+import 'package:flutter_riverpod/flutter_riverpod.dart';
 
-class ChangePasswordPage extends StatefulWidget {
+import '../../application/profile_controller.dart';
+
+class ChangePasswordPage extends ConsumerStatefulWidget {
   const ChangePasswordPage({super.key});
 
   @override
-  State<ChangePasswordPage> createState() => _ChangePasswordPageState();
+  ConsumerState<ChangePasswordPage> createState() => _ChangePasswordPageState();
 }
 
-class _ChangePasswordPageState extends State<ChangePasswordPage> {
+class _ChangePasswordPageState extends ConsumerState<ChangePasswordPage> {
   final _currentController = TextEditingController();
   final _newController = TextEditingController();
   final _confirmController = TextEditingController();
+  bool _isSaving = false;
 
   @override
   void dispose() {
@@ -18,6 +22,46 @@ class _ChangePasswordPageState extends State<ChangePasswordPage> {
     _newController.dispose();
     _confirmController.dispose();
     super.dispose();
+  }
+
+  Future<void> _save() async {
+    FocusScope.of(context).unfocus();
+    if (_currentController.text.isEmpty ||
+        _newController.text.isEmpty ||
+        _confirmController.text.isEmpty) {
+      _showMessage('Please fill in all required password fields.');
+      return;
+    }
+    if (_newController.text != _confirmController.text) {
+      _showMessage('New password and confirm password do not match.');
+      return;
+    }
+
+    setState(() => _isSaving = true);
+    try {
+      await ref.read(profileControllerProvider.notifier).changePassword(
+            currentPassword: _currentController.text,
+            newPassword: _newController.text,
+            confirmPassword: _confirmController.text,
+          );
+      if (!mounted) {
+        return;
+      }
+      _showMessage('Password changed successfully.');
+      Navigator.pop(context);
+    } on Exception catch (error) {
+      _showMessage(error.toString().replaceFirst('Exception: ', ''));
+    } finally {
+      if (mounted) {
+        setState(() => _isSaving = false);
+      }
+    }
+  }
+
+  void _showMessage(String message) {
+    ScaffoldMessenger.of(context)
+      ..hideCurrentSnackBar()
+      ..showSnackBar(SnackBar(content: Text(message)));
   }
 
   @override
@@ -55,7 +99,7 @@ class _ChangePasswordPageState extends State<ChangePasswordPage> {
             SizedBox(
               width: double.infinity,
               child: ElevatedButton(
-                onPressed: () => Navigator.pop(context),
+                onPressed: _isSaving ? null : _save,
                 style: ElevatedButton.styleFrom(
                   backgroundColor: const Color(0xFF5A91C4),
                   padding: const EdgeInsets.symmetric(vertical: 16),
@@ -63,14 +107,23 @@ class _ChangePasswordPageState extends State<ChangePasswordPage> {
                     borderRadius: BorderRadius.circular(8),
                   ),
                 ),
-                child: const Text(
-                  'Save',
-                  style: TextStyle(
-                    color: Colors.white,
-                    fontSize: 16,
-                    fontWeight: FontWeight.w600,
-                  ),
-                ),
+                child: _isSaving
+                    ? const SizedBox(
+                        width: 18,
+                        height: 18,
+                        child: CircularProgressIndicator(
+                          strokeWidth: 2,
+                          valueColor: AlwaysStoppedAnimation<Color>(Colors.white),
+                        ),
+                      )
+                    : const Text(
+                        'Save',
+                        style: TextStyle(
+                          color: Colors.white,
+                          fontSize: 16,
+                          fontWeight: FontWeight.w600,
+                        ),
+                      ),
               ),
             ),
             const SizedBox(height: 20),

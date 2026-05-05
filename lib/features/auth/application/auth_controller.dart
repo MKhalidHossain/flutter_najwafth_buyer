@@ -434,6 +434,19 @@ final class AuthController extends Notifier<AuthState> {
     _log('logout:done', state);
   }
 
+  Future<void> updateProfileBasics({
+    required String fullName,
+    String? phone,
+  }) async {
+    state = state.copyWith(
+      fullName: fullName.trim().isEmpty ? state.fullName : fullName.trim(),
+      phone: phone == null ? state.phone : phone.trim(),
+    );
+    await _storage.writeString(_AuthStorageKeys.fullName, state.fullName);
+    await _storage.writeString(_AuthStorageKeys.phone, state.phone);
+    _log('updateProfileBasics:done', state);
+  }
+
   void _logStep(String message) {
     if (!kDebugMode) {
       return;

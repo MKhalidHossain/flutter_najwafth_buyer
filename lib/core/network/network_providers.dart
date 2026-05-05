@@ -73,6 +73,14 @@ String _readable(dynamic value) {
     return 'null';
   }
 
+  if (value is FormData) {
+    final fields = value.fields.map((e) => '${e.key}: ${e.value}').toList();
+    final files = value.files
+        .map((e) => '${e.key}: ${e.value.filename ?? 'file'}')
+        .toList();
+    return 'FormData{\n  fields: $fields,\n  files: $files\n}';
+  }
+
   if (value is Map || value is List) {
     const encoder = JsonEncoder.withIndent('  ');
     return encoder.convert(value);

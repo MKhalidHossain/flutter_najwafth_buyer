@@ -61,6 +61,24 @@ final class ApiClient {
     );
   }
 
+  Future<Result<T>> patch<T>(
+    String path, {
+    Object? data,
+    JsonMap? queryParameters,
+    Options? options,
+    T Function(dynamic data)? parser,
+  }) {
+    return _request(
+      () => _dio.patch<dynamic>(
+        path,
+        data: data,
+        queryParameters: queryParameters,
+        options: options,
+      ),
+      parser,
+    );
+  }
+
   Future<Result<T>> delete<T>(
     String path, {
     Object? data,

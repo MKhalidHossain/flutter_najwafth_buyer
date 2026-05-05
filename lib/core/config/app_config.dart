@@ -13,7 +13,10 @@ final class AppConfig {
     : this(
         appName: 'Najwafth Buyer',
         environment: AppEnvironment.development,
-        baseUrl: 'https://api.example.com',
+        baseUrl: const String.fromEnvironment(
+          'API_BASE_URL',
+          defaultValue: 'http://localhost:5001/api/v1',
+        ),
       );
 
   final String appName;

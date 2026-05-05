@@ -1,10 +1,9 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 
-import '../../../auth/application/auth_controller.dart';
-import '../../../auth/presentation/auth_routes.dart';
 import '../../../cart_order/presentation/pages/book_details_page.dart';
 import '../../../cart_order/presentation/pages/checkout_page.dart';
+import '../../application/book_provider.dart';
 import '../../application/store_controller.dart';
 import '../../domain/store_models.dart';
 import '../../../cart_order/presentation/widgets/cart_tab.dart';
@@ -36,20 +35,28 @@ class _StoreShellState extends ConsumerState<_StoreShell> {
 
   @override
   Widget build(BuildContext context) {
-    final books = ref.watch(storeCatalogProvider);
+    final booksAsync = ref.watch(booksAsyncProvider);
     final categories = ref.watch(storeCategoriesProvider);
-    final storeState = ref.watch(storeControllerProvider);
-    final featuredBooks = books.where((b) => b.isFeatured).toList();
-    final popularBooks = books.where((b) => b.isPopular).toList();
+
+    final homeTab = booksAsync.when(
+      loading: () => const _BooksLoadingView(),
+      error: (error, _) => _BooksErrorView(
+        message: error.toString(),
+        onRetry: () => ref.invalidate(booksAsyncProvider),
+      ),
+      data: (books) => HomeTab(
+        featuredBooks: books.take(6).toList(),
+        categories: categories,
+        popularBooks: books,
+        onBookTap: _openBookDetails,
+        onNotificationsTap: _openNotifications,
+        onFeaturedTap: _openFeatured,
+        onPopularTap: _openPopular,
+      ),
+    );
 
     final pages = [
-      HomeTab(
-        featuredBooks: featuredBooks,
-        categories: categories,
-        popularBooks: popularBooks,
-        onBookTap: _openBookDetails,
-        onNotificationsTap: _openNotifications, onFeaturedTap: () {  }, onPopularTap: () {  },
-      ),
+      homeTab,
       OrdersTab(onCheckoutTap: _openCheckout),
       CartTab(
         onCheckoutTap: _openCheckout,
@@ -85,7 +92,7 @@ class _StoreShellState extends ConsumerState<_StoreShell> {
   }
 
   void _openFeatured() {
-    final books = ref.read(storeCatalogProvider).where((b) => b.isFeatured).toList();
+    final books = ref.read(storeCatalogProvider);
     Navigator.of(context).push(
       MaterialPageRoute<void>(
         builder: (_) => FeaturedPage(
@@ -99,7 +106,7 @@ class _StoreShellState extends ConsumerState<_StoreShell> {
   }
 
   void _openPopular() {
-    final books = ref.read(storeCatalogProvider).where((b) => b.isPopular).toList();
+    final books = ref.read(storeCatalogProvider);
     Navigator.of(context).push(
       MaterialPageRoute<void>(
         builder: (_) => BooksGridPage(title: 'Popular Books', books: books, onBookTap: _openBookDetails),
@@ -108,10 +115,17 @@ class _StoreShellState extends ConsumerState<_StoreShell> {
   }
 
   void _openCategory(BookCategory category) {
-    final books = ref.read(storeCatalogProvider).where((b) => b.categoryId == category.id).toList();
+    final all = ref.read(storeCatalogProvider);
+    final filtered = all
+        .where((b) => b.categoryName.toLowerCase() == category.name.toLowerCase())
+        .toList();
     Navigator.of(context).push(
       MaterialPageRoute<void>(
-        builder: (_) => BooksGridPage(title: category.name, books: books, onBookTap: _openBookDetails),
+        builder: (_) => BooksGridPage(
+          title: category.name,
+          books: filtered.isEmpty ? all : filtered,
+          onBookTap: _openBookDetails,
+        ),
       ),
     );
   }
@@ -130,9 +144,62 @@ class _StoreShellState extends ConsumerState<_StoreShell> {
     Navigator.of(context).push(MaterialPageRoute<void>(builder: (_) => const NotificationsPage()));
   }
 
-  Future<void> _signOut() async {
-    await ref.read(authControllerProvider.notifier).logout();
-    if (!mounted) return;
-    Navigator.of(context).pushNamedAndRemoveUntil(AuthRoutes.signIn, (route) => false);
+}
+
+class _BooksLoadingView extends StatelessWidget {
+  const _BooksLoadingView();
+
+  @override
+  Widget build(BuildContext context) {
+    return const Scaffold(
+      backgroundColor: Color(0xFFF5F6F8),
+      body: Center(child: CircularProgressIndicator(color: Color(0xFF5A91C4))),
+    );
+  }
+}
+
+class _BooksErrorView extends StatelessWidget {
+  const _BooksErrorView({required this.message, required this.onRetry});
+
+  final String message;
+  final VoidCallback onRetry;
+
+  @override
+  Widget build(BuildContext context) {
+    return Scaffold(
+      backgroundColor: const Color(0xFFF5F6F8),
+      body: Center(
+        child: Padding(
+          padding: const EdgeInsets.all(24),
+          child: Column(
+            mainAxisSize: MainAxisSize.min,
+            children: [
+              const Icon(Icons.cloud_off_outlined, size: 56, color: Color(0xFF9CA6B3)),
+              const SizedBox(height: 16),
+              const Text(
+                'Could not load books',
+                style: TextStyle(fontSize: 16, fontWeight: FontWeight.w600, color: Color(0xFF243041)),
+              ),
+              const SizedBox(height: 8),
+              Text(
+                message,
+                textAlign: TextAlign.center,
+                style: const TextStyle(fontSize: 13, color: Color(0xFF8E98A5)),
+              ),
+              const SizedBox(height: 24),
+              ElevatedButton.icon(
+                onPressed: onRetry,
+                style: ElevatedButton.styleFrom(
+                  backgroundColor: const Color(0xFF5A91C4),
+                  shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(8)),
+                ),
+                icon: const Icon(Icons.refresh, color: Colors.white),
+                label: const Text('Retry', style: TextStyle(color: Colors.white)),
+              ),
+            ],
+          ),
+        ),
+      ),
+    );
   }
 }

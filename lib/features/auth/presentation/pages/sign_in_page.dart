@@ -92,14 +92,19 @@ class _SignInPageState extends ConsumerState<SignInPage> {
               validator: (value) =>
                   Validators.minLength(value, 8, label: 'Password'),
               prefixIcon: const Icon(Icons.lock_outline_rounded),
-              suffixIcon: IconButton(
-                onPressed: () {
+              suffixIcon: GestureDetector(
+                onTap: () {
                   setState(() => _obscurePassword = !_obscurePassword);
                 },
-                icon: Icon(
-                  _obscurePassword
-                      ? Icons.visibility_off_outlined
-                      : Icons.visibility_outlined,
+                behavior: HitTestBehavior.opaque,
+                child: Padding(
+                  padding: const EdgeInsets.symmetric(horizontal: 12.0),
+                  child: Icon(
+                    _obscurePassword
+                        ? Icons.visibility_off_outlined
+                        : Icons.visibility_outlined,
+                    color: const Color(0xFF818181),
+                  ),
                 ),
               ),
             ),

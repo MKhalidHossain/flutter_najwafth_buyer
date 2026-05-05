@@ -1,7 +1,8 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import '../../../auth/application/auth_controller.dart';
-import '../../../home/application/store_controller.dart';
+import '../../application/profile_controller.dart';
+import '../../../auth/presentation/auth_routes.dart';
 import '../pages/edit_profile_page.dart';
 import '../pages/change_password_page.dart';
 import '../pages/order_history_page.dart';
@@ -21,6 +22,10 @@ class _ProfileTabState extends ConsumerState<ProfileTab> {
 
   @override
   Widget build(BuildContext context) {
+    final authState = ref.watch(authControllerProvider);
+    final profileAsync = ref.watch(profileControllerProvider);
+    final profile = profileAsync.asData?.value;
+
     return Scaffold(
       backgroundColor: Colors.white,
       appBar: AppBar(
@@ -46,13 +51,15 @@ class _ProfileTabState extends ConsumerState<ProfileTab> {
             children: [
               const CircleAvatar(
                 radius: 30,
-                backgroundImage: AssetImage('assets/images/profile_placeholder.png'), // Need a placeholder
+                backgroundImage: AssetImage('assets/images/profile_placeholder.png'),
                 backgroundColor: Color(0xFFF3F8FC),
               ),
               const SizedBox(width: 16),
-              const Text(
-                'Madiha Aroa',
-                style: TextStyle(
+              Text(
+                (profile?.name.isNotEmpty ?? false)
+                    ? profile!.name
+                    : authState.fullName,
+                style: const TextStyle(
                   fontSize: 20,
                   fontWeight: FontWeight.w700,
                   color: Color(0xFF243041),
@@ -169,9 +176,13 @@ class _ProfileTabState extends ConsumerState<ProfileTab> {
             onTap: () async {
               final confirm = await LogoutDialog.show(context);
               if (confirm == true) {
-                ref.read(authControllerProvider.notifier).logout();
+                await ref.read(authControllerProvider.notifier).logout();
+                if (mounted) {
+                  Navigator.of(context).pushNamedAndRemoveUntil(AuthRoutes.signIn, (route) => false);
+                }
               }
             },
+            behavior: HitTestBehavior.opaque,
             child: const Padding(
               padding: EdgeInsets.symmetric(vertical: 12),
               child: Row(

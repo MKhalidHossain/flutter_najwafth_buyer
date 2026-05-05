@@ -42,23 +42,62 @@ final class BookItem {
     required this.id,
     required this.title,
     required this.author,
-    required this.coverImageAsset,
+    this.coverImageAsset,
+    this.coverImageUrl,
     required this.price,
-    required this.rating,
-    required this.reviewCount,
-    required this.description,
-    required this.categoryId,
-    required this.categoryName,
-    required this.coverColor,
-    required this.coverAccent,
+    this.rating = 0.0,
+    this.reviewCount = 0,
+    this.description = '',
+    this.categoryId = '',
+    this.categoryName = '',
+    this.coverColor = const Color(0xFF4A7CC8),
+    this.coverAccent = const Color(0xFFE8F0FE),
+    this.stock = true,
+    this.shopName,
     this.isFeatured = false,
     this.isPopular = false,
   });
 
+  factory BookItem.fromJson(Map<String, dynamic> json) {
+    final category = json['category'];
+    final shop = json['shopId'];
+
+    String categoryId = '';
+    String categoryName = '';
+    if (category is Map<String, dynamic>) {
+      categoryId = category['_id']?.toString() ?? '';
+      categoryName = category['name']?.toString() ?? '';
+    } else if (category != null) {
+      categoryId = category.toString();
+    }
+
+    String? shopName;
+    if (shop is Map<String, dynamic>) {
+      shopName = shop['name']?.toString();
+    }
+
+    final coverImage = json['coverImage']?.toString();
+
+    return BookItem(
+      id: json['_id']?.toString() ?? '',
+      title: json['title']?.toString() ?? '',
+      author: json['author']?.toString() ?? '',
+      coverImageUrl: (coverImage != null && coverImage.isNotEmpty) ? coverImage : null,
+      price: (json['price'] as num?)?.toDouble() ?? 0.0,
+      description: json['description']?.toString() ?? '',
+      categoryId: categoryId,
+      categoryName: categoryName,
+      stock: json['stock'] as bool? ?? true,
+      shopName: shopName,
+      isPopular: true,
+    );
+  }
+
   final String id;
   final String title;
   final String author;
-  final String coverImageAsset;
+  final String? coverImageAsset;
+  final String? coverImageUrl;
   final double price;
   final double rating;
   final int reviewCount;
@@ -67,6 +106,8 @@ final class BookItem {
   final String categoryName;
   final Color coverColor;
   final Color coverAccent;
+  final bool stock;
+  final String? shopName;
   final bool isFeatured;
   final bool isPopular;
 }

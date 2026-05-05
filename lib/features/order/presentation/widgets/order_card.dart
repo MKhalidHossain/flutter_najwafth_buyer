@@ -36,14 +36,23 @@ class OrderCard extends StatelessWidget {
                 ),
                 child: ClipRRect(
                   borderRadius: BorderRadius.circular(8),
-                  child: Image.asset(
-                    firstItem.coverImageAsset,
-                    fit: BoxFit.cover,
-                    errorBuilder: (_, __, ___) => Container(
-                      color: firstItem.coverColor,
-                      child: const Icon(Icons.book, color: Colors.white),
-                    ),
-                  ),
+                  child: firstItem.coverImageUrl != null
+                      ? Image.network(
+                          firstItem.coverImageUrl!,
+                          fit: BoxFit.cover,
+                          errorBuilder: (ctx, err, st) => Container(
+                            color: firstItem.coverColor,
+                            child: const Icon(Icons.book, color: Colors.white),
+                          ),
+                        )
+                      : Image.asset(
+                          firstItem.coverImageAsset ?? '',
+                          fit: BoxFit.cover,
+                          errorBuilder: (ctx, err, st) => Container(
+                            color: firstItem.coverColor,
+                            child: const Icon(Icons.book, color: Colors.white),
+                          ),
+                        ),
                 ),
               ),
             const SizedBox(width: 12),
@@ -152,10 +161,17 @@ class OrderCard extends StatelessWidget {
                                       width: 2,
                                     ),
                                     color: item.coverColor,
-                                    image: DecorationImage(
-                                      image: AssetImage(item.coverImageAsset),
-                                      fit: BoxFit.cover,
-                                    ),
+                                    image: item.coverImageUrl != null
+                                        ? DecorationImage(
+                                            image: NetworkImage(item.coverImageUrl!),
+                                            fit: BoxFit.cover,
+                                          )
+                                        : item.coverImageAsset != null
+                                            ? DecorationImage(
+                                                image: AssetImage(item.coverImageAsset!),
+                                                fit: BoxFit.cover,
+                                              )
+                                            : null,
                                   ),
                                 ),
                               );

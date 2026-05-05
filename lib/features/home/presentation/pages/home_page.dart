@@ -48,7 +48,9 @@ class _StoreShellState extends ConsumerState<_StoreShell> {
         categories: categories,
         popularBooks: popularBooks,
         onBookTap: _openBookDetails,
-        onNotificationsTap: _openNotifications, onFeaturedTap: () {  }, onPopularTap: () {  },
+        onNotificationsTap: _openNotifications,
+        onFeaturedTap: _openFeatured,
+        onPopularTap: _openPopular,
       ),
       OrdersTab(onCheckoutTap: _openCheckout),
       CartTab(

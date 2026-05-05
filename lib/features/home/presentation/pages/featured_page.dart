@@ -1,10 +1,7 @@
 import 'package:flutter/material.dart';
-import 'package:flutter_riverpod/flutter_riverpod.dart';
 
-import '../../application/store_controller.dart';
 import '../../domain/store_models.dart';
 import '../widgets/featured_book_card.dart';
-import '../widgets/store_widgets.dart';
 
 class FeaturedPage extends StatelessWidget {
   const FeaturedPage({

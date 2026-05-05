@@ -1,6 +1,5 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
-import 'dart:math';
 
 import '../../../home/application/store_controller.dart';
 import '../../../home/domain/store_models.dart';

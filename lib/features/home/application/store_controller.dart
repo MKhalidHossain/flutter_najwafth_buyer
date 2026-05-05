@@ -1,4 +1,3 @@
-import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 
 import '../../../core/storage/key_value_storage.dart';
@@ -7,6 +6,7 @@ import '../domain/store_models.dart';
 import '../../order/application/order_controller.dart';
 import '../../order/domain/order_models.dart';
 import 'book_provider.dart';
+import 'category_provider.dart';
 
 // Sync view of the async books cache — returns [] while loading
 final storeCatalogProvider = Provider<List<BookItem>>((ref) {
@@ -14,48 +14,12 @@ final storeCatalogProvider = Provider<List<BookItem>>((ref) {
 });
 
 final storeCategoriesProvider = Provider<List<BookCategory>>((ref) {
-  return const [
-    BookCategory(
-      id: 'classic',
-      name: 'Classic',
-      color: Color(0xFFF0C08B),
-      previewImageAsset: 'assets/images/books/book_cover_01.png',
-    ),
-    BookCategory(
-      id: 'fiction',
-      name: 'Fiction',
-      color: Color(0xFF7B91C5),
-      previewImageAsset: 'assets/images/books/book_cover_02.png',
-    ),
-    BookCategory(
-      id: 'romance',
-      name: 'Romance',
-      color: Color(0xFFF29F95),
-      previewImageAsset: 'assets/images/books/book_cover_03.png',
-    ),
-    BookCategory(
-      id: 'horror',
-      name: 'Horror',
-      color: Color(0xFF545A66),
-      previewImageAsset: 'assets/images/books/book_cover_04.png',
-    ),
-    BookCategory(
-      id: 'adventure',
-      name: 'Adventure',
-      color: Color(0xFF6FB2A5),
-      previewImageAsset: 'assets/images/books/book_cover_05.png',
-    ),
-    BookCategory(
-      id: 'mystery',
-      name: 'Mystery',
-      color: Color(0xFFB8A270),
-      previewImageAsset: 'assets/images/books/book_cover_06.png',
-    ),
-  ];
+  return ref.watch(categoriesAsyncProvider).asData?.value ?? const [];
 });
 
-final storeControllerProvider =
-    NotifierProvider<StoreController, StoreState>(StoreController.new);
+final storeControllerProvider = NotifierProvider<StoreController, StoreState>(
+  StoreController.new,
+);
 
 final class StoreState {
   const StoreState({
@@ -123,7 +87,11 @@ final class StoreController extends Notifier<StoreState> {
 
   void addToCart(BookItem book, {int quantity = 1}) {
     final updated = Map<String, int>.from(state.cartQuantities);
-    updated.update(book.id, (value) => value + quantity, ifAbsent: () => quantity);
+    updated.update(
+      book.id,
+      (value) => value + quantity,
+      ifAbsent: () => quantity,
+    );
     state = state.copyWith(cartQuantities: updated, clearLastOrder: true);
   }
 
@@ -163,7 +131,10 @@ final class StoreController extends Notifier<StoreState> {
         )
         .toList(growable: false);
 
-    final subtotalAmount = items.fold<double>(0, (sum, item) => sum + item.price);
+    final subtotalAmount = items.fold<double>(
+      0,
+      (sum, item) => sum + item.price,
+    );
     final receipt = OrderReceipt(
       orderNumber:
           '#BK${DateTime.now().millisecondsSinceEpoch.toString().substring(7)}',
@@ -176,12 +147,11 @@ final class StoreController extends Notifier<StoreState> {
       paymentMethod: input.paymentMethod,
     );
 
-    state = state.copyWith(
-      cartQuantities: const {},
-      lastOrder: receipt,
-    );
+    state = state.copyWith(cartQuantities: const {}, lastOrder: receipt);
 
-    ref.read(orderControllerProvider.notifier).addOrder(OrderModel.fromReceipt(receipt));
+    ref
+        .read(orderControllerProvider.notifier)
+        .addOrder(OrderModel.fromReceipt(receipt));
 
     return receipt;
   }

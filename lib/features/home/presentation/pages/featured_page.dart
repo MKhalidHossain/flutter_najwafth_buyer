@@ -85,10 +85,31 @@ class FeaturedPage extends StatelessWidget {
                           ),
                           child: ClipRRect(
                             borderRadius: BorderRadius.circular(8),
-                            child: Image.asset(
-                              category.previewImageAsset ?? '',
-                              fit: BoxFit.cover,
-                            ),
+                            child:
+                                (category.previewImageUrl != null &&
+                                    category.previewImageUrl!.isNotEmpty)
+                                ? Image.network(
+                                    category.previewImageUrl!,
+                                    fit: BoxFit.cover,
+                                    errorBuilder: (_, __, ___) => const Icon(
+                                      Icons.menu_book_outlined,
+                                      color: Color(0xFF9CA6B3),
+                                    ),
+                                  )
+                                : (category.previewImageAsset == null ||
+                                      category.previewImageAsset!.isEmpty)
+                                ? const Icon(
+                                    Icons.menu_book_outlined,
+                                    color: Color(0xFF9CA6B3),
+                                  )
+                                : Image.asset(
+                                    category.previewImageAsset!,
+                                    fit: BoxFit.cover,
+                                    errorBuilder: (_, __, ___) => const Icon(
+                                      Icons.menu_book_outlined,
+                                      color: Color(0xFF9CA6B3),
+                                    ),
+                                  ),
                           ),
                         ),
                       ),
@@ -188,5 +209,3 @@ class _FeaturedSearchBar extends StatelessWidget {
     );
   }
 }
-
-

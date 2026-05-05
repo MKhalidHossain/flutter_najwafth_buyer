@@ -3,6 +3,7 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 
 import '../../../cart_order/presentation/pages/book_details_page.dart';
 import '../../../cart_order/presentation/pages/checkout_page.dart';
+import '../../../../core/errors/result.dart';
 import '../../application/book_provider.dart';
 import '../../application/store_controller.dart';
 import '../../domain/store_models.dart';
@@ -77,15 +78,36 @@ class _StoreShellState extends ConsumerState<_StoreShell> {
         unselectedItemColor: const Color(0xFF6F6F72),
         selectedFontSize: 13,
         unselectedFontSize: 13,
-        selectedLabelStyle: const TextStyle(fontWeight: FontWeight.w400, height: 1.25),
-        unselectedLabelStyle: const TextStyle(fontWeight: FontWeight.w400, height: 1.25),
+        selectedLabelStyle: const TextStyle(
+          fontWeight: FontWeight.w400,
+          height: 1.25,
+        ),
+        unselectedLabelStyle: const TextStyle(
+          fontWeight: FontWeight.w400,
+          height: 1.25,
+        ),
         iconSize: 28,
         onTap: (index) => setState(() => _currentIndex = index),
         items: const [
-          BottomNavigationBarItem(icon: Icon(Icons.home_outlined), activeIcon: Icon(Icons.home_outlined), label: 'Home'),
-          BottomNavigationBarItem(icon: Icon(Icons.inventory_2_outlined), activeIcon: Icon(Icons.inventory_2_outlined), label: 'Order'),
-          BottomNavigationBarItem(icon: Icon(Icons.shopping_cart_checkout_outlined), activeIcon: Icon(Icons.shopping_cart_checkout_outlined), label: 'Cart'),
-          BottomNavigationBarItem(icon: Icon(Icons.person_outline), label: 'Profile'),
+          BottomNavigationBarItem(
+            icon: Icon(Icons.home_outlined),
+            activeIcon: Icon(Icons.home_outlined),
+            label: 'Home',
+          ),
+          BottomNavigationBarItem(
+            icon: Icon(Icons.inventory_2_outlined),
+            activeIcon: Icon(Icons.inventory_2_outlined),
+            label: 'Order',
+          ),
+          BottomNavigationBarItem(
+            icon: Icon(Icons.shopping_cart_checkout_outlined),
+            activeIcon: Icon(Icons.shopping_cart_checkout_outlined),
+            label: 'Cart',
+          ),
+          BottomNavigationBarItem(
+            icon: Icon(Icons.person_outline),
+            label: 'Profile',
+          ),
         ],
       ),
     );
@@ -109,16 +131,27 @@ class _StoreShellState extends ConsumerState<_StoreShell> {
     final books = ref.read(storeCatalogProvider);
     Navigator.of(context).push(
       MaterialPageRoute<void>(
-        builder: (_) => BooksGridPage(title: 'Popular Books', books: books, onBookTap: _openBookDetails),
+        builder: (_) => BooksGridPage(
+          title: 'Popular Books',
+          books: books,
+          onBookTap: _openBookDetails,
+        ),
       ),
     );
   }
 
-  void _openCategory(BookCategory category) {
+  Future<void> _openCategory(BookCategory category) async {
     final all = ref.read(storeCatalogProvider);
-    final filtered = all
-        .where((b) => b.categoryName.toLowerCase() == category.name.toLowerCase())
-        .toList();
+    final result = await ref
+        .read(bookRepositoryProvider)
+        .getBooks(categoryId: category.id, limit: 100);
+    final filtered = switch (result) {
+      Success(data: final data) => data.books,
+      ResultFailure() => all.where((b) => b.categoryId == category.id).toList(),
+    };
+
+    if (!mounted) return;
+
     Navigator.of(context).push(
       MaterialPageRoute<void>(
         builder: (_) => BooksGridPage(
@@ -137,13 +170,16 @@ class _StoreShellState extends ConsumerState<_StoreShell> {
   }
 
   void _openCheckout() {
-    Navigator.of(context).push(MaterialPageRoute<void>(builder: (_) => const CheckoutPage()));
+    Navigator.of(
+      context,
+    ).push(MaterialPageRoute<void>(builder: (_) => const CheckoutPage()));
   }
 
   void _openNotifications() {
-    Navigator.of(context).push(MaterialPageRoute<void>(builder: (_) => const NotificationsPage()));
+    Navigator.of(
+      context,
+    ).push(MaterialPageRoute<void>(builder: (_) => const NotificationsPage()));
   }
-
 }
 
 class _BooksLoadingView extends StatelessWidget {
@@ -174,11 +210,19 @@ class _BooksErrorView extends StatelessWidget {
           child: Column(
             mainAxisSize: MainAxisSize.min,
             children: [
-              const Icon(Icons.cloud_off_outlined, size: 56, color: Color(0xFF9CA6B3)),
+              const Icon(
+                Icons.cloud_off_outlined,
+                size: 56,
+                color: Color(0xFF9CA6B3),
+              ),
               const SizedBox(height: 16),
               const Text(
                 'Could not load books',
-                style: TextStyle(fontSize: 16, fontWeight: FontWeight.w600, color: Color(0xFF243041)),
+                style: TextStyle(
+                  fontSize: 16,
+                  fontWeight: FontWeight.w600,
+                  color: Color(0xFF243041),
+                ),
               ),
               const SizedBox(height: 8),
               Text(
@@ -191,10 +235,15 @@ class _BooksErrorView extends StatelessWidget {
                 onPressed: onRetry,
                 style: ElevatedButton.styleFrom(
                   backgroundColor: const Color(0xFF5A91C4),
-                  shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(8)),
+                  shape: RoundedRectangleBorder(
+                    borderRadius: BorderRadius.circular(8),
+                  ),
                 ),
                 icon: const Icon(Icons.refresh, color: Colors.white),
-                label: const Text('Retry', style: TextStyle(color: Colors.white)),
+                label: const Text(
+                  'Retry',
+                  style: TextStyle(color: Colors.white),
+                ),
               ),
             ],
           ),

@@ -50,7 +50,9 @@ class _HomeTabState extends ConsumerState<HomeTab> {
             children: [
               const CircleAvatar(
                 radius: 20,
-                backgroundImage: AssetImage('assets/images/profile_placeholder.png'),
+                backgroundImage: AssetImage(
+                  'assets/images/profile_placeholder.png',
+                ),
                 backgroundColor: Color(0xFFDCE3EC),
               ),
               const SizedBox(width: 8),
@@ -185,6 +187,7 @@ class _HomeTabState extends ConsumerState<HomeTab> {
                     itemBuilder: (context, index) {
                       final category = widget.categories[index];
                       final previewPath = category.previewImageAsset;
+                      final previewUrl = category.previewImageUrl;
 
                       return SizedBox(
                         width: itemWidth,
@@ -206,7 +209,19 @@ class _HomeTabState extends ConsumerState<HomeTab> {
                                 child: ClipRRect(
                                   borderRadius: BorderRadius.circular(7),
                                   child:
-                                      previewPath == null || previewPath.isEmpty
+                                      (previewUrl != null &&
+                                          previewUrl.isNotEmpty)
+                                      ? Image.network(
+                                          previewUrl,
+                                          fit: BoxFit.cover,
+                                          errorBuilder: (_, __, ___) =>
+                                              const Icon(
+                                                Icons.menu_book_outlined,
+                                                color: Color(0xFF9CA6B3),
+                                              ),
+                                        )
+                                      : (previewPath == null ||
+                                            previewPath.isEmpty)
                                       ? const Icon(
                                           Icons.menu_book_outlined,
                                           color: Color(0xFF9CA6B3),

@@ -38,8 +38,7 @@ final class AuthState {
       isAuthenticated:
           storage.readBool(_AuthStorageKeys.isAuthenticated) ?? false,
       fullName: storage.readString(_AuthStorageKeys.fullName) ?? 'Book Lover',
-      email:
-          storage.readString(_AuthStorageKeys.email) ?? 'buyer@bookswheels.com',
+      email: storage.readString(_AuthStorageKeys.email) ?? 'buyer@bookswheels.com',
       phone: storage.readString(_AuthStorageKeys.phone) ?? '+8801712345678',
       password: storage.readString(_AuthStorageKeys.password) ?? 'Password@123',
       accessToken: storage.readString(_AuthStorageKeys.accessToken),

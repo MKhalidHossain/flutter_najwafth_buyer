@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 
 import '../../../auth/application/auth_controller.dart';
+import '../../../notification/application/notification_provider.dart';
 import '../../application/store_controller.dart';
 import '../../domain/store_models.dart';
 import 'book_card_mini.dart';
@@ -38,8 +39,8 @@ class _HomeTabState extends ConsumerState<HomeTab> {
   @override
   Widget build(BuildContext context) {
     final authState = ref.watch(authControllerProvider);
-    final storeState = ref.watch(storeControllerProvider);
-    final cartItemCount = storeState.totalItems;
+    final unreadAsync = ref.watch(unreadNotificationCountProvider);
+    final unreadCount = unreadAsync.asData?.value ?? 0;
     final allBooks = ref.watch(storeCatalogProvider);
 
     return SafeArea(
@@ -91,7 +92,7 @@ class _HomeTabState extends ConsumerState<HomeTab> {
                         color: Colors.black,
                         size: 30,
                       ),
-                      if (cartItemCount > 0)
+                      if (unreadCount > 0)
                         Positioned(
                           top: 4,
                           right: 4,
@@ -108,7 +109,7 @@ class _HomeTabState extends ConsumerState<HomeTab> {
                             ),
                             child: Center(
                               child: Text(
-                                '$cartItemCount',
+                                '$unreadCount',
                                 style: const TextStyle(
                                   color: Colors.white,
                                   fontSize: 12,

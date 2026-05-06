@@ -6,7 +6,6 @@ import '../../../order/domain/order_models.dart';
 import '../../../order/presentation/pages/order_details_page.dart';
 import '../../../order/presentation/widgets/order_card.dart';
 
-
 class OrderHistoryPage extends ConsumerStatefulWidget {
   const OrderHistoryPage({super.key});
 
@@ -19,12 +18,15 @@ class _OrderHistoryPageState extends ConsumerState<OrderHistoryPage> {
 
   @override
   Widget build(BuildContext context) {
-    final orders = ref.watch(orderControllerProvider);
+    final ordersAsync = ref.watch(orderControllerProvider);
+    final orders = ordersAsync.asData?.value ?? const <OrderModel>[];
 
     final filteredOrders = orders.where((order) {
       if (_selectedFilter == 'All') return true;
-      if (_selectedFilter == 'Completed') return order.status == OrderStatus.delivered;
-      if (_selectedFilter == 'Picked') return order.status == OrderStatus.picked;
+      if (_selectedFilter == 'Completed')
+        return order.status == OrderStatus.delivered;
+      if (_selectedFilter == 'Picked')
+        return order.status == OrderStatus.picked;
       return true;
     }).toList();
 
@@ -36,7 +38,11 @@ class _OrderHistoryPageState extends ConsumerState<OrderHistoryPage> {
         surfaceTintColor: Colors.white,
         leading: IconButton(
           onPressed: () => Navigator.pop(context),
-          icon: const Icon(Icons.chevron_left, color: Color(0xFF243041), size: 28),
+          icon: const Icon(
+            Icons.chevron_left,
+            color: Color(0xFF243041),
+            size: 28,
+          ),
         ),
         title: const Text(
           'Order History',
@@ -66,24 +72,43 @@ class _OrderHistoryPageState extends ConsumerState<OrderHistoryPage> {
           ),
           const SizedBox(height: 20),
           Expanded(
-            child: filteredOrders.isEmpty
-                ? const Center(child: Text('No orders found'))
-                : ListView.builder(
-                    padding: const EdgeInsets.symmetric(horizontal: 20),
-                    itemCount: filteredOrders.length,
-                    itemBuilder: (context, index) {
-                      final order = filteredOrders[index];
-                      return OrderCard(
-                        order: order,
-                        onTap: () => Navigator.push(
-                          context,
-                          MaterialPageRoute(
-                            builder: (_) => OrderDetailsPage(order: order),
+            child: ordersAsync.when(
+              loading: () => const Center(
+                child: CircularProgressIndicator(color: Color(0xFF5A91C4)),
+              ),
+              error: (error, _) => Center(
+                child: Column(
+                  mainAxisSize: MainAxisSize.min,
+                  children: [
+                    const Text('Failed to load orders'),
+                    const SizedBox(height: 10),
+                    ElevatedButton(
+                      onPressed: () =>
+                          ref.read(orderControllerProvider.notifier).refresh(),
+                      child: const Text('Retry'),
+                    ),
+                  ],
+                ),
+              ),
+              data: (_) => filteredOrders.isEmpty
+                  ? const Center(child: Text('No orders found'))
+                  : ListView.builder(
+                      padding: const EdgeInsets.symmetric(horizontal: 20),
+                      itemCount: filteredOrders.length,
+                      itemBuilder: (context, index) {
+                        final order = filteredOrders[index];
+                        return OrderCard(
+                          order: order,
+                          onTap: () => Navigator.push(
+                            context,
+                            MaterialPageRoute(
+                              builder: (_) => OrderDetailsPage(order: order),
+                            ),
                           ),
-                        ),
-                      );
-                    },
-                  ),
+                        );
+                      },
+                    ),
+            ),
           ),
         ],
       ),
@@ -102,7 +127,9 @@ class _OrderHistoryPageState extends ConsumerState<OrderHistoryPage> {
           color: isSelected ? const Color(0xFF5A91C4) : Colors.white,
           borderRadius: BorderRadius.circular(8),
           border: Border.all(
-            color: isSelected ? const Color(0xFF5A91C4) : const Color(0xFFE8EBF0),
+            color: isSelected
+                ? const Color(0xFF5A91C4)
+                : const Color(0xFFE8EBF0),
             width: 1,
           ),
         ),

@@ -11,7 +11,7 @@ final class AppConfig {
 
   const AppConfig.development()
     : this(
-        appName: 'Najwafth Buyer',
+        appName: 'Books on wheels',
         environment: AppEnvironment.development,
         baseUrl: const String.fromEnvironment(
           'API_BASE_URL',

@@ -25,6 +25,7 @@ class _ProfileTabState extends ConsumerState<ProfileTab> {
     final authState = ref.watch(authControllerProvider);
     final profileAsync = ref.watch(profileControllerProvider);
     final profile = profileAsync.asData?.value;
+    final avatarUrl = profile?.avatarUrl.trim() ?? '';
 
     return Scaffold(
       backgroundColor: Colors.white,
@@ -49,10 +50,28 @@ class _ProfileTabState extends ConsumerState<ProfileTab> {
           // Profile Header
           Row(
             children: [
-              const CircleAvatar(
+              CircleAvatar(
                 radius: 30,
-                backgroundImage: AssetImage('assets/images/profile_placeholder.png'),
                 backgroundColor: Color(0xFFF3F8FC),
+                child: ClipOval(
+                  child: avatarUrl.isNotEmpty
+                      ? Image.network(
+                          avatarUrl,
+                          width: 60,
+                          height: 60,
+                          fit: BoxFit.cover,
+                          errorBuilder: (_, __, ___) => const Icon(
+                            Icons.person,
+                            size: 30,
+                            color: Color(0xFF9CA6B3),
+                          ),
+                        )
+                      : const Icon(
+                          Icons.person,
+                          size: 30,
+                          color: Color(0xFF9CA6B3),
+                        ),
+                ),
               ),
               const SizedBox(width: 16),
               Text(
@@ -68,7 +87,7 @@ class _ProfileTabState extends ConsumerState<ProfileTab> {
             ],
           ),
           const SizedBox(height: 30),
-          
+
           _ProfileMenuItem(
             icon: Icons.edit_outlined,
             title: 'Edit Profile',
@@ -101,7 +120,8 @@ class _ProfileTabState extends ConsumerState<ProfileTab> {
               MaterialPageRoute(
                 builder: (_) => const StaticContentPage(
                   title: 'About App',
-                  content: 'Lorem Ipsum is simply dummy text of the printing and typesetting industry. Lorem Ipsum has been the industry\'s standard dummy text ever since the 1500s, when an unknown printer took a galley of type and scrambled it to make a type specimen book.',
+                  content:
+                      'Lorem Ipsum is simply dummy text of the printing and typesetting industry. Lorem Ipsum has been the industry\'s standard dummy text ever since the 1500s, when an unknown printer took a galley of type and scrambled it to make a type specimen book.',
                 ),
               ),
             ),
@@ -114,7 +134,8 @@ class _ProfileTabState extends ConsumerState<ProfileTab> {
               MaterialPageRoute(
                 builder: (_) => const StaticContentPage(
                   title: 'Privacy Policy',
-                  content: 'Lorem Ipsum is simply dummy text of the printing and typesetting industry. Lorem Ipsum has been the industry\'s standard dummy text ever since the 1500s, when an unknown printer took a galley of type and scrambled it to make a type specimen book.',
+                  content:
+                      'Lorem Ipsum is simply dummy text of the printing and typesetting industry. Lorem Ipsum has been the industry\'s standard dummy text ever since the 1500s, when an unknown printer took a galley of type and scrambled it to make a type specimen book.',
                 ),
               ),
             ),
@@ -127,7 +148,8 @@ class _ProfileTabState extends ConsumerState<ProfileTab> {
               MaterialPageRoute(
                 builder: (_) => const StaticContentPage(
                   title: 'Terms & Conditions',
-                  content: 'Lorem Ipsum is simply dummy text of the printing and typesetting industry. Lorem Ipsum has been the industry\'s standard dummy text ever since the 1500s, when an unknown printer took a galley of type and scrambled it to make a type specimen book.',
+                  content:
+                      'Lorem Ipsum is simply dummy text of the printing and typesetting industry. Lorem Ipsum has been the industry\'s standard dummy text ever since the 1500s, when an unknown printer took a galley of type and scrambled it to make a type specimen book.',
                 ),
               ),
             ),
@@ -140,13 +162,17 @@ class _ProfileTabState extends ConsumerState<ProfileTab> {
               MaterialPageRoute(builder: (_) => const LanguagePage()),
             ),
           ),
-          
+
           // Push Notifications Toggle
           Padding(
             padding: const EdgeInsets.symmetric(vertical: 8),
             child: Row(
               children: [
-                const Icon(Icons.notifications_outlined, color: Color(0xFF243041), size: 22),
+                const Icon(
+                  Icons.notifications_outlined,
+                  color: Color(0xFF243041),
+                  size: 22,
+                ),
                 const SizedBox(width: 16),
                 const Expanded(
                   child: Text(
@@ -169,7 +195,7 @@ class _ProfileTabState extends ConsumerState<ProfileTab> {
               ],
             ),
           ),
-          
+
           const SizedBox(height: 20),
           // Log Out
           GestureDetector(
@@ -178,7 +204,10 @@ class _ProfileTabState extends ConsumerState<ProfileTab> {
               if (confirm == true) {
                 await ref.read(authControllerProvider.notifier).logout();
                 if (mounted) {
-                  Navigator.of(context).pushNamedAndRemoveUntil(AuthRoutes.signIn, (route) => false);
+                  Navigator.of(context).pushNamedAndRemoveUntil(
+                    AuthRoutes.signIn,
+                    (route) => false,
+                  );
                 }
               }
             },
@@ -187,7 +216,11 @@ class _ProfileTabState extends ConsumerState<ProfileTab> {
               padding: EdgeInsets.symmetric(vertical: 12),
               child: Row(
                 children: [
-                  Icon(Icons.logout_outlined, color: Color(0xFF5A91C4), size: 22),
+                  Icon(
+                    Icons.logout_outlined,
+                    color: Color(0xFF5A91C4),
+                    size: 22,
+                  ),
                   const SizedBox(width: 16),
                   const Text(
                     'Log Out',

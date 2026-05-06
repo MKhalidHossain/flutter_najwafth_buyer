@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 
 import '../../../auth/application/auth_controller.dart';
+import '../../../notification/application/notification_provider.dart';
 import '../../application/store_controller.dart';
 import '../../domain/store_models.dart';
 import 'book_card_mini.dart';
@@ -15,6 +16,7 @@ class HomeTab extends ConsumerStatefulWidget {
     required this.categories,
     required this.popularBooks,
     required this.onBookTap,
+    required this.onCategoryTap,
     required this.onFeaturedTap,
     required this.onPopularTap,
     required this.onNotificationsTap,
@@ -24,6 +26,7 @@ class HomeTab extends ConsumerStatefulWidget {
   final List<BookCategory> categories;
   final List<BookItem> popularBooks;
   final ValueChanged<BookItem> onBookTap;
+  final ValueChanged<BookCategory> onCategoryTap;
   final VoidCallback onFeaturedTap;
   final VoidCallback onPopularTap;
   final VoidCallback onNotificationsTap;
@@ -38,8 +41,8 @@ class _HomeTabState extends ConsumerState<HomeTab> {
   @override
   Widget build(BuildContext context) {
     final authState = ref.watch(authControllerProvider);
-    final storeState = ref.watch(storeControllerProvider);
-    final cartItemCount = storeState.totalItems;
+    final unreadAsync = ref.watch(unreadNotificationCountProvider);
+    final unreadCount = unreadAsync.asData?.value ?? 0;
     final allBooks = ref.watch(storeCatalogProvider);
 
     return SafeArea(
@@ -50,7 +53,9 @@ class _HomeTabState extends ConsumerState<HomeTab> {
             children: [
               const CircleAvatar(
                 radius: 20,
-                backgroundImage: AssetImage('assets/images/profile_placeholder.png'),
+                backgroundImage: AssetImage(
+                  'assets/images/profile_placeholder.png',
+                ),
                 backgroundColor: Color(0xFFDCE3EC),
               ),
               const SizedBox(width: 8),
@@ -89,7 +94,7 @@ class _HomeTabState extends ConsumerState<HomeTab> {
                         color: Colors.black,
                         size: 30,
                       ),
-                      if (cartItemCount > 0)
+                      if (unreadCount > 0)
                         Positioned(
                           top: 4,
                           right: 4,
@@ -106,7 +111,7 @@ class _HomeTabState extends ConsumerState<HomeTab> {
                             ),
                             child: Center(
                               child: Text(
-                                '$cartItemCount',
+                                '$unreadCount',
                                 style: const TextStyle(
                                   color: Colors.white,
                                   fontSize: 12,
@@ -185,54 +190,70 @@ class _HomeTabState extends ConsumerState<HomeTab> {
                     itemBuilder: (context, index) {
                       final category = widget.categories[index];
                       final previewPath = category.previewImageAsset;
+                      final previewUrl = category.previewImageUrl;
 
                       return SizedBox(
                         width: itemWidth,
-                        child: Container(
-                          color: Colors.grey[200],
-                          child: Column(
-                            mainAxisAlignment: MainAxisAlignment.center,
-                            children: [
-                              Container(
-                                width: thumbSize,
-                                height: thumbSize,
-                                decoration: BoxDecoration(
-                                  color: Colors.white,
-                                  borderRadius: BorderRadius.circular(10),
-                                  border: Border.all(
-                                    color: const Color(0xFFE8ECF1),
+                        child: GestureDetector(
+                          onTap: () => widget.onCategoryTap(category),
+                          child: Container(
+                            color: Colors.grey[200],
+                            child: Column(
+                              mainAxisAlignment: MainAxisAlignment.center,
+                              children: [
+                                Container(
+                                  width: thumbSize,
+                                  height: thumbSize,
+                                  decoration: BoxDecoration(
+                                    color: Colors.white,
+                                    borderRadius: BorderRadius.circular(10),
+                                    border: Border.all(
+                                      color: const Color(0xFFE8ECF1),
+                                    ),
+                                  ),
+                                  child: ClipRRect(
+                                    borderRadius: BorderRadius.circular(7),
+                                    child:
+                                        (previewUrl != null &&
+                                            previewUrl.isNotEmpty)
+                                        ? Image.network(
+                                            previewUrl,
+                                            fit: BoxFit.cover,
+                                            errorBuilder: (_, __, ___) =>
+                                                const Icon(
+                                                  Icons.menu_book_outlined,
+                                                  color: Color(0xFF9CA6B3),
+                                                ),
+                                          )
+                                        : (previewPath == null ||
+                                              previewPath.isEmpty)
+                                        ? const Icon(
+                                            Icons.menu_book_outlined,
+                                            color: Color(0xFF9CA6B3),
+                                          )
+                                        : Image.asset(
+                                            previewPath,
+                                            fit: BoxFit.cover,
+                                            errorBuilder: (_, __, ___) =>
+                                                const Icon(
+                                                  Icons.menu_book_outlined,
+                                                  color: Color(0xFF9CA6B3),
+                                                ),
+                                          ),
                                   ),
                                 ),
-                                child: ClipRRect(
-                                  borderRadius: BorderRadius.circular(7),
-                                  child:
-                                      previewPath == null || previewPath.isEmpty
-                                      ? const Icon(
-                                          Icons.menu_book_outlined,
-                                          color: Color(0xFF9CA6B3),
-                                        )
-                                      : Image.asset(
-                                          previewPath,
-                                          fit: BoxFit.cover,
-                                          errorBuilder: (_, __, ___) =>
-                                              const Icon(
-                                                Icons.menu_book_outlined,
-                                                color: Color(0xFF9CA6B3),
-                                              ),
-                                        ),
+                                const SizedBox(height: 4),
+                                Text(
+                                  category.name,
+                                  maxLines: 1,
+                                  overflow: TextOverflow.ellipsis,
+                                  style: const TextStyle(
+                                    fontSize: 12,
+                                    fontWeight: FontWeight.w600,
+                                  ),
                                 ),
-                              ),
-                              const SizedBox(height: 4),
-                              Text(
-                                category.name,
-                                maxLines: 1,
-                                overflow: TextOverflow.ellipsis,
-                                style: const TextStyle(
-                                  fontSize: 12,
-                                  fontWeight: FontWeight.w600,
-                                ),
-                              ),
-                            ],
+                              ],
+                            ),
                           ),
                         ),
                       );

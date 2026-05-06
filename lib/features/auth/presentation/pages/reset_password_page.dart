@@ -22,6 +22,7 @@ class _ResetPasswordPageState extends ConsumerState<ResetPasswordPage> {
   bool _obscurePassword = true;
   bool _obscureConfirmPassword = true;
   bool _isSubmitting = false;
+  bool _allowOtpGuardRedirect = true;
 
   @override
   void dispose() {
@@ -37,6 +38,7 @@ class _ResetPasswordPageState extends ConsumerState<ResetPasswordPage> {
     }
 
     setState(() => _isSubmitting = true);
+    _allowOtpGuardRedirect = false;
     try {
       await ref
           .read(authControllerProvider.notifier)
@@ -59,6 +61,7 @@ class _ResetPasswordPageState extends ConsumerState<ResetPasswordPage> {
         context,
       ).pushNamedAndRemoveUntil(AuthRoutes.signIn, (route) => false);
     } on AuthFlowException catch (error) {
+      _allowOtpGuardRedirect = true;
       _showMessage(error.message);
     } finally {
       if (mounted) {
@@ -77,7 +80,7 @@ class _ResetPasswordPageState extends ConsumerState<ResetPasswordPage> {
   Widget build(BuildContext context) {
     final authState = ref.watch(authControllerProvider);
 
-    if (!authState.otpVerified) {
+    if (_allowOtpGuardRedirect && !authState.otpVerified) {
       WidgetsBinding.instance.addPostFrameCallback((_) {
         if (mounted) {
           Navigator.of(context).pushReplacementNamed(AuthRoutes.forgotPassword);

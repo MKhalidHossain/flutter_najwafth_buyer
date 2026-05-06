@@ -112,8 +112,19 @@ final class BookItem {
 
     final coverImage = json['coverImage']?.toString();
 
+    final rawId = (json['_id'] ?? json['id'])?.toString() ?? '';
+    final rawStock = json['stock'];
+    final inStock = switch (rawStock) {
+      bool value => value,
+      num value => value > 0,
+      String value => int.tryParse(value) != null
+          ? int.parse(value) > 0
+          : value.toLowerCase() == 'true',
+      _ => true,
+    };
+
     return BookItem(
-      id: json['_id']?.toString() ?? '',
+      id: rawId,
       title: json['title']?.toString() ?? '',
       author: json['author']?.toString() ?? '',
       coverImageUrl: (coverImage != null && coverImage.isNotEmpty)
@@ -123,7 +134,7 @@ final class BookItem {
       description: json['description']?.toString() ?? '',
       categoryId: categoryId,
       categoryName: categoryName,
-      stock: json['stock'] as bool? ?? true,
+      stock: inStock,
       shopName: shopName,
       isPopular: true,
     );

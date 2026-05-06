@@ -1,7 +1,11 @@
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 
+import '../../../core/errors/result.dart';
 import '../../../core/storage/key_value_storage.dart';
 import '../../../core/storage/storage_providers.dart';
+import '../../auth/application/auth_controller.dart';
+import '../../cart_order/data/cart_repository.dart';
+import '../../../core/network/network_providers.dart';
 import '../domain/store_models.dart';
 import 'book_provider.dart';
 import 'category_provider.dart';
@@ -18,6 +22,10 @@ final storeCategoriesProvider = Provider<List<BookCategory>>((ref) {
 final storeControllerProvider = NotifierProvider<StoreController, StoreState>(
   StoreController.new,
 );
+
+final cartRepositoryProvider = Provider<CartRepository>((ref) {
+  return CartRepository(ref.watch(apiClientProvider));
+});
 
 final class StoreState {
   const StoreState({
@@ -56,12 +64,13 @@ final class StoreController extends Notifier<StoreState> {
   static const _languageKey = 'selected_language';
   static const _deliveryFee = 2.50;
 
-  late final KeyValueStorage _storage;
+  KeyValueStorage? _storage;
 
   @override
   StoreState build() {
-    _storage = ref.watch(keyValueStorageProvider);
-    final rawLanguage = _storage.readString(_languageKey);
+    _storage ??= ref.watch(keyValueStorageProvider);
+    final authState = ref.watch(authControllerProvider);
+    final rawLanguage = _storage!.readString(_languageKey);
     AppLanguage? selectedLanguage;
 
     for (final language in AppLanguage.values) {
@@ -71,19 +80,37 @@ final class StoreController extends Notifier<StoreState> {
       }
     }
 
-    return StoreState(
+    final initial = StoreState(
       selectedLanguage: selectedLanguage,
       cartQuantities: const {},
       lastOrder: null,
     );
+
+    if (authState.isAuthenticated) {
+      Future<void>.microtask(_loadRemoteCart);
+    }
+
+    ref.listen(authControllerProvider, (previous, next) {
+      final wasAuthenticated = previous?.isAuthenticated ?? false;
+      if (!wasAuthenticated && next.isAuthenticated) {
+        Future<void>.microtask(_loadRemoteCart);
+      }
+      if (wasAuthenticated && !next.isAuthenticated) {
+        state = state.copyWith(cartQuantities: const {}, clearLastOrder: true);
+      }
+    });
+
+    return initial;
   }
 
   Future<void> setLanguage(AppLanguage language) async {
     state = state.copyWith(selectedLanguage: language);
-    await _storage.writeString(_languageKey, language.name);
+    await _storage!.writeString(_languageKey, language.name);
   }
 
-  void addToCart(BookItem book, {int quantity = 1}) {
+  Future<void> addToCart(BookItem book, {int quantity = 1}) async {
+    if (quantity <= 0 || book.id.trim().isEmpty) return;
+    final previous = state.cartQuantities;
     final updated = Map<String, int>.from(state.cartQuantities);
     updated.update(
       book.id,
@@ -91,9 +118,24 @@ final class StoreController extends Notifier<StoreState> {
       ifAbsent: () => quantity,
     );
     state = state.copyWith(cartQuantities: updated, clearLastOrder: true);
+
+    final isAuthenticated = ref.read(authControllerProvider).isAuthenticated;
+    if (!isAuthenticated) return;
+
+    final result = await ref
+        .read(cartRepositoryProvider)
+        .addToCart(productId: book.id, quantity: quantity);
+    switch (result) {
+      case Success(data: final cart):
+        state = state.copyWith(cartQuantities: cart.quantities);
+      case ResultFailure():
+        state = state.copyWith(cartQuantities: previous);
+    }
   }
 
-  void setQuantity(BookItem book, int quantity) {
+  Future<void> setQuantity(BookItem book, int quantity) async {
+    if (book.id.trim().isEmpty) return;
+    final previous = state.cartQuantities;
     final updated = Map<String, int>.from(state.cartQuantities);
     if (quantity <= 0) {
       updated.remove(book.id);
@@ -101,10 +143,27 @@ final class StoreController extends Notifier<StoreState> {
       updated[book.id] = quantity;
     }
     state = state.copyWith(cartQuantities: updated);
+
+    final isAuthenticated = ref.read(authControllerProvider).isAuthenticated;
+    if (!isAuthenticated) return;
+
+    final result = await ref
+        .read(cartRepositoryProvider)
+        .updateCart(productId: book.id, quantity: quantity);
+    switch (result) {
+      case Success(data: final cart):
+        state = state.copyWith(cartQuantities: cart.quantities);
+      case ResultFailure():
+        state = state.copyWith(cartQuantities: previous);
+    }
   }
 
-  void clearCart() {
+  Future<void> clearCart() async {
     state = state.copyWith(cartQuantities: const {});
+
+    final isAuthenticated = ref.read(authControllerProvider).isAuthenticated;
+    if (!isAuthenticated) return;
+    await ref.read(cartRepositoryProvider).clearCart();
   }
 
   double subtotal(List<BookItem> books) {
@@ -152,5 +211,15 @@ final class StoreController extends Notifier<StoreState> {
 
   void clearOrderReceipt() {
     state = state.copyWith(clearLastOrder: true);
+  }
+
+  Future<void> _loadRemoteCart() async {
+    final result = await ref.read(cartRepositoryProvider).getCart();
+    switch (result) {
+      case Success(data: final cart):
+        state = state.copyWith(cartQuantities: cart.quantities);
+      case ResultFailure():
+        state = state.copyWith(cartQuantities: state.cartQuantities);
+    }
   }
 }

@@ -16,6 +16,7 @@ class HomeTab extends ConsumerStatefulWidget {
     required this.categories,
     required this.popularBooks,
     required this.onBookTap,
+    required this.onCategoryTap,
     required this.onFeaturedTap,
     required this.onPopularTap,
     required this.onNotificationsTap,
@@ -25,6 +26,7 @@ class HomeTab extends ConsumerStatefulWidget {
   final List<BookCategory> categories;
   final List<BookItem> popularBooks;
   final ValueChanged<BookItem> onBookTap;
+  final ValueChanged<BookCategory> onCategoryTap;
   final VoidCallback onFeaturedTap;
   final VoidCallback onPopularTap;
   final VoidCallback onNotificationsTap;
@@ -192,63 +194,66 @@ class _HomeTabState extends ConsumerState<HomeTab> {
 
                       return SizedBox(
                         width: itemWidth,
-                        child: Container(
-                          color: Colors.grey[200],
-                          child: Column(
-                            mainAxisAlignment: MainAxisAlignment.center,
-                            children: [
-                              Container(
-                                width: thumbSize,
-                                height: thumbSize,
-                                decoration: BoxDecoration(
-                                  color: Colors.white,
-                                  borderRadius: BorderRadius.circular(10),
-                                  border: Border.all(
-                                    color: const Color(0xFFE8ECF1),
+                        child: GestureDetector(
+                          onTap: () => widget.onCategoryTap(category),
+                          child: Container(
+                            color: Colors.grey[200],
+                            child: Column(
+                              mainAxisAlignment: MainAxisAlignment.center,
+                              children: [
+                                Container(
+                                  width: thumbSize,
+                                  height: thumbSize,
+                                  decoration: BoxDecoration(
+                                    color: Colors.white,
+                                    borderRadius: BorderRadius.circular(10),
+                                    border: Border.all(
+                                      color: const Color(0xFFE8ECF1),
+                                    ),
+                                  ),
+                                  child: ClipRRect(
+                                    borderRadius: BorderRadius.circular(7),
+                                    child:
+                                        (previewUrl != null &&
+                                            previewUrl.isNotEmpty)
+                                        ? Image.network(
+                                            previewUrl,
+                                            fit: BoxFit.cover,
+                                            errorBuilder: (_, __, ___) =>
+                                                const Icon(
+                                                  Icons.menu_book_outlined,
+                                                  color: Color(0xFF9CA6B3),
+                                                ),
+                                          )
+                                        : (previewPath == null ||
+                                              previewPath.isEmpty)
+                                        ? const Icon(
+                                            Icons.menu_book_outlined,
+                                            color: Color(0xFF9CA6B3),
+                                          )
+                                        : Image.asset(
+                                            previewPath,
+                                            fit: BoxFit.cover,
+                                            errorBuilder: (_, __, ___) =>
+                                                const Icon(
+                                                  Icons.menu_book_outlined,
+                                                  color: Color(0xFF9CA6B3),
+                                                ),
+                                          ),
                                   ),
                                 ),
-                                child: ClipRRect(
-                                  borderRadius: BorderRadius.circular(7),
-                                  child:
-                                      (previewUrl != null &&
-                                          previewUrl.isNotEmpty)
-                                      ? Image.network(
-                                          previewUrl,
-                                          fit: BoxFit.cover,
-                                          errorBuilder: (_, __, ___) =>
-                                              const Icon(
-                                                Icons.menu_book_outlined,
-                                                color: Color(0xFF9CA6B3),
-                                              ),
-                                        )
-                                      : (previewPath == null ||
-                                            previewPath.isEmpty)
-                                      ? const Icon(
-                                          Icons.menu_book_outlined,
-                                          color: Color(0xFF9CA6B3),
-                                        )
-                                      : Image.asset(
-                                          previewPath,
-                                          fit: BoxFit.cover,
-                                          errorBuilder: (_, __, ___) =>
-                                              const Icon(
-                                                Icons.menu_book_outlined,
-                                                color: Color(0xFF9CA6B3),
-                                              ),
-                                        ),
+                                const SizedBox(height: 4),
+                                Text(
+                                  category.name,
+                                  maxLines: 1,
+                                  overflow: TextOverflow.ellipsis,
+                                  style: const TextStyle(
+                                    fontSize: 12,
+                                    fontWeight: FontWeight.w600,
+                                  ),
                                 ),
-                              ),
-                              const SizedBox(height: 4),
-                              Text(
-                                category.name,
-                                maxLines: 1,
-                                overflow: TextOverflow.ellipsis,
-                                style: const TextStyle(
-                                  fontSize: 12,
-                                  fontWeight: FontWeight.w600,
-                                ),
-                              ),
-                            ],
+                              ],
+                            ),
                           ),
                         ),
                       );

@@ -9,14 +9,14 @@ final class OrderRepository {
 
   Future<Result<List<OrderModel>>> getMyOrders() async {
     final myOrders = await _client.get<List<OrderModel>>(
-      '/orders/my-orders',
+      '/order/my-orders',
       parser: _parseOrderListResponse,
     );
 
     return switch (myOrders) {
       Success(data: final orders) when orders.isNotEmpty => Success(orders),
       _ => _client.get<List<OrderModel>>(
-        '/orders',
+        '/order',
         parser: _parseOrderListResponse,
       ),
     };
@@ -27,7 +27,7 @@ final class OrderRepository {
     required String address,
   }) {
     return _client.post<OrderModel>(
-      '/orders/create',
+      '/order/create',
       data: {
         'items': items
             .map(

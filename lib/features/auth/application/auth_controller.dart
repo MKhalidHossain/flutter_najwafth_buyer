@@ -10,7 +10,7 @@ import '../../../core/errors/result.dart';
 final authControllerProvider = NotifierProvider<AuthController, AuthState>(
   AuthController.new,
 );
-const _appRole = 'seller';
+const _appRole = 'buyer';
 
 final class AuthState {
   const AuthState({

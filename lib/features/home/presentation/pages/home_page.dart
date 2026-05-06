@@ -50,6 +50,7 @@ class _StoreShellState extends ConsumerState<_StoreShell> {
         categories: categories,
         popularBooks: books,
         onBookTap: _openBookDetails,
+        onCategoryTap: _openCategory,
         onNotificationsTap: _openNotifications,
         onFeaturedTap: _openFeatured,
         onPopularTap: _openPopular,
@@ -156,7 +157,7 @@ class _StoreShellState extends ConsumerState<_StoreShell> {
       MaterialPageRoute<void>(
         builder: (_) => BooksGridPage(
           title: category.name,
-          books: filtered.isEmpty ? all : filtered,
+          books: filtered,
           onBookTap: _openBookDetails,
         ),
       ),

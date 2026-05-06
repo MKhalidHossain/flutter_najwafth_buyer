@@ -12,7 +12,7 @@ final class NotificationRepository {
     int limit = 20,
   }) {
     return _client.get<NotificationsPageData>(
-      '/notifications',
+      '/notification',
       queryParameters: {'page': page, 'limit': limit},
       parser: (data) {
         if (data is! Map<String, dynamic>) {
@@ -39,7 +39,7 @@ final class NotificationRepository {
 
   Future<Result<int>> getUnreadCount() {
     return _client.get<int>(
-      '/notifications/unread-count',
+      '/notification/unread-count',
       parser: (data) {
         if (data is! Map<String, dynamic>) {
           throw Exception('Invalid unread count response');
@@ -54,7 +54,7 @@ final class NotificationRepository {
   }
 
   Future<Result<void>> markAsRead(String id) async {
-    final result = await _client.patch<dynamic>('/notifications/$id/read');
+    final result = await _client.patch<dynamic>('/notification/$id/read');
     return switch (result) {
       Success() => const Success(null),
       ResultFailure(error: final e) => ResultFailure(e),
@@ -62,7 +62,7 @@ final class NotificationRepository {
   }
 
   Future<Result<void>> markAllAsRead() async {
-    final result = await _client.patch<dynamic>('/notifications/read-all');
+    final result = await _client.patch<dynamic>('/notification/read-all');
     return switch (result) {
       Success() => const Success(null),
       ResultFailure(error: final e) => ResultFailure(e),

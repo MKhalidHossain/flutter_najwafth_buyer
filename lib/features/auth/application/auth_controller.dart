@@ -10,7 +10,7 @@ import '../../../core/errors/result.dart';
 final authControllerProvider = NotifierProvider<AuthController, AuthState>(
   AuthController.new,
 );
-const _appRole = 'seller';
+const _appRole = 'buyer';
 
 final class AuthState {
   const AuthState({
@@ -38,8 +38,7 @@ final class AuthState {
       isAuthenticated:
           storage.readBool(_AuthStorageKeys.isAuthenticated) ?? false,
       fullName: storage.readString(_AuthStorageKeys.fullName) ?? 'Book Lover',
-      email:
-          storage.readString(_AuthStorageKeys.email) ?? 'buyer@bookswheels.com',
+      email: storage.readString(_AuthStorageKeys.email) ?? 'buyer@bookswheels.com',
       phone: storage.readString(_AuthStorageKeys.phone) ?? '+8801712345678',
       password: storage.readString(_AuthStorageKeys.password) ?? 'Password@123',
       accessToken: storage.readString(_AuthStorageKeys.accessToken),
@@ -137,12 +136,24 @@ final class AuthState {
 }
 
 final class AuthController extends Notifier<AuthState> {
-  late final KeyValueStorage _storage;
+  KeyValueStorage? _storage;
 
   @override
   AuthState build() {
-    _storage = ref.watch(keyValueStorageProvider);
-    final initial = AuthState.initial(_storage);
+    _storage ??= ref.watch(keyValueStorageProvider);
+    final initial = AuthState.initial(_storage!);
+    if (initial.isAuthenticated && initial.role != _appRole) {
+      Future<void>.microtask(_clearSession);
+      final sanitized = initial.copyWith(
+        isAuthenticated: false,
+        accessToken: null,
+        refreshToken: null,
+        userId: null,
+        role: null,
+      );
+      _log('init:sanitized-non-buyer-session', sanitized);
+      return sanitized;
+    }
     _log('init', initial);
     return initial;
   }
@@ -150,7 +161,7 @@ final class AuthController extends Notifier<AuthState> {
   Future<void> completeOnboarding() async {
     _logStep('completeOnboarding:start');
     state = state.copyWith(onboardingCompleted: true);
-    await _storage.writeBool(_AuthStorageKeys.onboarding, true);
+    await _storage!.writeBool(_AuthStorageKeys.onboarding, true);
     _log('completeOnboarding:done', state);
   }
 
@@ -187,6 +198,13 @@ final class AuthController extends Notifier<AuthState> {
       );
     }
 
+    if (role.isNotEmpty && role != _appRole) {
+      _logStep('signIn:error invalid role=$role');
+      throw const AuthFlowException(
+        'This account is not authorized for the buyer application.',
+      );
+    }
+
     state = state.copyWith(
       isAuthenticated: true,
       rememberMe: rememberMe,
@@ -199,18 +217,18 @@ final class AuthController extends Notifier<AuthState> {
       role: role.isEmpty ? null : role,
     );
 
-    await _storage.writeBool(_AuthStorageKeys.isAuthenticated, true);
-    await _storage.writeBool(_AuthStorageKeys.rememberMe, rememberMe);
-    await _storage.writeBool(_AuthStorageKeys.onboarding, true);
-    await _storage.writeString(_AuthStorageKeys.email, normalizedEmail);
-    await _storage.writeString(_AuthStorageKeys.fullName, name);
-    await _storage.writeString(_AuthStorageKeys.accessToken, accessToken);
-    await _storage.writeString(_AuthStorageKeys.refreshToken, refreshToken);
+    await _storage!.writeBool(_AuthStorageKeys.isAuthenticated, true);
+    await _storage!.writeBool(_AuthStorageKeys.rememberMe, rememberMe);
+    await _storage!.writeBool(_AuthStorageKeys.onboarding, true);
+    await _storage!.writeString(_AuthStorageKeys.email, normalizedEmail);
+    await _storage!.writeString(_AuthStorageKeys.fullName, name);
+    await _storage!.writeString(_AuthStorageKeys.accessToken, accessToken);
+    await _storage!.writeString(_AuthStorageKeys.refreshToken, refreshToken);
     if (userId.isNotEmpty) {
-      await _storage.writeString(_AuthStorageKeys.userId, userId);
+      await _storage!.writeString(_AuthStorageKeys.userId, userId);
     }
     if (role.isNotEmpty) {
-      await _storage.writeString(_AuthStorageKeys.role, role);
+      await _storage!.writeString(_AuthStorageKeys.role, role);
     }
     _log('signIn:done', state);
   }
@@ -258,25 +276,25 @@ final class AuthController extends Notifier<AuthState> {
       role: role.isEmpty ? null : role,
     );
 
-    await _storage.writeString(_AuthStorageKeys.fullName, state.fullName);
-    await _storage.writeString(_AuthStorageKeys.email, state.email);
-    await _storage.writeString(_AuthStorageKeys.phone, state.phone);
-    await _storage.writeString(_AuthStorageKeys.password, state.password);
+    await _storage!.writeString(_AuthStorageKeys.fullName, state.fullName);
+    await _storage!.writeString(_AuthStorageKeys.email, state.email);
+    await _storage!.writeString(_AuthStorageKeys.phone, state.phone);
+    await _storage!.writeString(_AuthStorageKeys.password, state.password);
     if (accessToken.isNotEmpty) {
-      await _storage.writeString(_AuthStorageKeys.accessToken, accessToken);
+      await _storage!.writeString(_AuthStorageKeys.accessToken, accessToken);
     }
     if (refreshToken.isNotEmpty) {
-      await _storage.writeString(_AuthStorageKeys.refreshToken, refreshToken);
+      await _storage!.writeString(_AuthStorageKeys.refreshToken, refreshToken);
     }
     if (userId.isNotEmpty) {
-      await _storage.writeString(_AuthStorageKeys.userId, userId);
+      await _storage!.writeString(_AuthStorageKeys.userId, userId);
     }
     if (role.isNotEmpty) {
-      await _storage.writeString(_AuthStorageKeys.role, role);
+      await _storage!.writeString(_AuthStorageKeys.role, role);
     }
-    await _storage.writeBool(_AuthStorageKeys.rememberMe, true);
-    await _storage.writeBool(_AuthStorageKeys.isAuthenticated, true);
-    await _storage.writeBool(_AuthStorageKeys.onboarding, true);
+    await _storage!.writeBool(_AuthStorageKeys.rememberMe, true);
+    await _storage!.writeBool(_AuthStorageKeys.isAuthenticated, true);
+    await _storage!.writeBool(_AuthStorageKeys.onboarding, true);
     _log('signUp:done', state);
   }
 
@@ -301,16 +319,16 @@ final class AuthController extends Notifier<AuthState> {
       clearVerifiedResetOtp: true,
     );
 
-    await _storage.writeString(
+    await _storage!.writeString(
       _AuthStorageKeys.pendingResetEmail,
       normalizedEmail,
     );
-    await _storage.writeString(
+    await _storage!.writeString(
       _AuthStorageKeys.otpRequestedAt,
       now.toIso8601String(),
     );
-    await _storage.writeBool(_AuthStorageKeys.otpVerified, false);
-    await _storage.remove(_AuthStorageKeys.verifiedResetOtp);
+    await _storage!.writeBool(_AuthStorageKeys.otpVerified, false);
+    await _storage!.remove(_AuthStorageKeys.verifiedResetOtp);
     _log('requestOtp:done', state);
   }
 
@@ -350,8 +368,8 @@ final class AuthController extends Notifier<AuthState> {
     _unwrap(result);
 
     state = state.copyWith(otpVerified: true, verifiedResetOtp: enteredOtp);
-    await _storage.writeBool(_AuthStorageKeys.otpVerified, true);
-    await _storage.writeString(_AuthStorageKeys.verifiedResetOtp, enteredOtp);
+    await _storage!.writeBool(_AuthStorageKeys.otpVerified, true);
+    await _storage!.writeString(_AuthStorageKeys.verifiedResetOtp, enteredOtp);
     _log('verifyOtp:done', state);
   }
 
@@ -398,14 +416,14 @@ final class AuthController extends Notifier<AuthState> {
       refreshToken: null,
     );
 
-    await _storage.writeString(_AuthStorageKeys.password, newPassword);
-    await _storage.writeBool(_AuthStorageKeys.isAuthenticated, false);
-    await _storage.writeBool(_AuthStorageKeys.otpVerified, false);
-    await _storage.remove(_AuthStorageKeys.pendingResetEmail);
-    await _storage.remove(_AuthStorageKeys.otpRequestedAt);
-    await _storage.remove(_AuthStorageKeys.verifiedResetOtp);
-    await _storage.remove(_AuthStorageKeys.accessToken);
-    await _storage.remove(_AuthStorageKeys.refreshToken);
+    await _storage!.writeString(_AuthStorageKeys.password, newPassword);
+    await _storage!.writeBool(_AuthStorageKeys.isAuthenticated, false);
+    await _storage!.writeBool(_AuthStorageKeys.otpVerified, false);
+    await _storage!.remove(_AuthStorageKeys.pendingResetEmail);
+    await _storage!.remove(_AuthStorageKeys.otpRequestedAt);
+    await _storage!.remove(_AuthStorageKeys.verifiedResetOtp);
+    await _storage!.remove(_AuthStorageKeys.accessToken);
+    await _storage!.remove(_AuthStorageKeys.refreshToken);
     _log('resetPassword:done', state);
   }
 
@@ -426,11 +444,11 @@ final class AuthController extends Notifier<AuthState> {
       userId: null,
       role: null,
     );
-    await _storage.writeBool(_AuthStorageKeys.isAuthenticated, false);
-    await _storage.remove(_AuthStorageKeys.accessToken);
-    await _storage.remove(_AuthStorageKeys.refreshToken);
-    await _storage.remove(_AuthStorageKeys.userId);
-    await _storage.remove(_AuthStorageKeys.role);
+    await _storage!.writeBool(_AuthStorageKeys.isAuthenticated, false);
+    await _storage!.remove(_AuthStorageKeys.accessToken);
+    await _storage!.remove(_AuthStorageKeys.refreshToken);
+    await _storage!.remove(_AuthStorageKeys.userId);
+    await _storage!.remove(_AuthStorageKeys.role);
     _log('logout:done', state);
   }
 
@@ -442,9 +460,24 @@ final class AuthController extends Notifier<AuthState> {
       fullName: fullName.trim().isEmpty ? state.fullName : fullName.trim(),
       phone: phone == null ? state.phone : phone.trim(),
     );
-    await _storage.writeString(_AuthStorageKeys.fullName, state.fullName);
-    await _storage.writeString(_AuthStorageKeys.phone, state.phone);
+    await _storage!.writeString(_AuthStorageKeys.fullName, state.fullName);
+    await _storage!.writeString(_AuthStorageKeys.phone, state.phone);
     _log('updateProfileBasics:done', state);
+  }
+
+  Future<void> _clearSession() async {
+    state = state.copyWith(
+      isAuthenticated: false,
+      accessToken: null,
+      refreshToken: null,
+      userId: null,
+      role: null,
+    );
+    await _storage!.writeBool(_AuthStorageKeys.isAuthenticated, false);
+    await _storage!.remove(_AuthStorageKeys.accessToken);
+    await _storage!.remove(_AuthStorageKeys.refreshToken);
+    await _storage!.remove(_AuthStorageKeys.userId);
+    await _storage!.remove(_AuthStorageKeys.role);
   }
 
   void _logStep(String message) {

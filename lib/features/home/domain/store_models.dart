@@ -29,12 +29,46 @@ final class BookCategory {
     required this.name,
     required this.color,
     this.previewImageAsset,
+    this.previewImageUrl,
   });
+
+  factory BookCategory.fromJson(Map<String, dynamic> json) {
+    final image = json['image'];
+    String? imageUrl;
+
+    if (image is Map<String, dynamic>) {
+      imageUrl = image['url']?.toString();
+    }
+
+    return BookCategory(
+      id: json['_id']?.toString() ?? '',
+      name: json['name']?.toString() ?? '',
+      color: _parseCategoryColor(json['color']),
+      previewImageUrl: (imageUrl != null && imageUrl.isNotEmpty)
+          ? imageUrl
+          : null,
+    );
+  }
 
   final String id;
   final String name;
   final Color color;
   final String? previewImageAsset;
+  final String? previewImageUrl;
+}
+
+Color _parseCategoryColor(dynamic input) {
+  final fallback = const Color(0xFFE8EEF6);
+  if (input == null) return fallback;
+
+  final raw = input.toString().trim();
+  if (raw.isEmpty) return fallback;
+
+  final hex = raw.startsWith('#') ? raw.substring(1) : raw;
+  final normalized = hex.length == 6 ? 'FF$hex' : hex;
+
+  final value = int.tryParse(normalized, radix: 16);
+  return value == null ? fallback : Color(value);
 }
 
 final class BookItem {
@@ -78,16 +112,29 @@ final class BookItem {
 
     final coverImage = json['coverImage']?.toString();
 
+    final rawId = (json['_id'] ?? json['id'])?.toString() ?? '';
+    final rawStock = json['stock'];
+    final inStock = switch (rawStock) {
+      bool value => value,
+      num value => value > 0,
+      String value => int.tryParse(value) != null
+          ? int.parse(value) > 0
+          : value.toLowerCase() == 'true',
+      _ => true,
+    };
+
     return BookItem(
-      id: json['_id']?.toString() ?? '',
+      id: rawId,
       title: json['title']?.toString() ?? '',
       author: json['author']?.toString() ?? '',
-      coverImageUrl: (coverImage != null && coverImage.isNotEmpty) ? coverImage : null,
+      coverImageUrl: (coverImage != null && coverImage.isNotEmpty)
+          ? coverImage
+          : null,
       price: (json['price'] as num?)?.toDouble() ?? 0.0,
       description: json['description']?.toString() ?? '',
       categoryId: categoryId,
       categoryName: categoryName,
-      stock: json['stock'] as bool? ?? true,
+      stock: inStock,
       shopName: shopName,
       isPopular: true,
     );

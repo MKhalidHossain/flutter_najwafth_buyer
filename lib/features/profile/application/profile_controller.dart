@@ -83,6 +83,11 @@ final class ProfileController extends AsyncNotifier<ProfileState> {
   Future<void> updateProfile({
     required String name,
     required String phone,
+    required String bio,
+    required String gender,
+    required String dob,
+    required String age,
+    required String address,
     String? avatarPath,
   }) async {
     final token = _authToken;
@@ -90,32 +95,38 @@ final class ProfileController extends AsyncNotifier<ProfileState> {
       throw const AuthFlowException('Please sign in again.');
     }
 
-    final payload = avatarPath == null
-        ? <String, dynamic>{'name': name.trim(), 'phone': phone.trim()}
-        : FormData.fromMap({
-            'name': name.trim(),
-            'phone': phone.trim(),
-            'avatar': await MultipartFile.fromFile(
-              avatarPath,
-              filename: avatarPath.split('/').last,
-            ),
-          });
+    final fields = <String, dynamic>{
+      'name': name.trim(),
+      'phone': phone.trim(),
+      'bio': bio.trim(),
+      'gender': gender.trim(),
+      'dob': dob.trim(),
+      'age': age.trim(),
+      'address': address.trim(),
+    };
 
-    final options = avatarPath == null
-        ? Options(
-            headers: {'Authorization': 'Bearer $token'},
-          )
-        : Options(
-            headers: {'Authorization': 'Bearer $token'},
-            contentType: 'multipart/form-data',
-          );
+    final payload = FormData.fromMap({
+      ...fields,
+      if (avatarPath != null && avatarPath.trim().isNotEmpty)
+        'avatar': await MultipartFile.fromFile(
+          avatarPath,
+          filename: avatarPath.split('/').last,
+        ),
+    });
 
-    final result = await ref.read(apiClientProvider).patch<ProfileState>(
-      '/user/me',
-      data: payload,
-      options: options,
-      parser: _extractProfileData,
+    final options = Options(
+      headers: {'Authorization': 'Bearer $token'},
+      contentType: 'multipart/form-data',
     );
+
+    final result = await ref
+        .read(apiClientProvider)
+        .patch<ProfileState>(
+          '/user/me',
+          data: payload,
+          options: options,
+          parser: _extractProfileData,
+        );
 
     final updated = _unwrapProfile(result);
     state = AsyncValue.data(updated);
@@ -137,18 +148,18 @@ final class ProfileController extends AsyncNotifier<ProfileState> {
       throw const AuthFlowException('Please sign in again.');
     }
 
-    final result = await ref.read(apiClientProvider).patch<ProfileState>(
-      '/user/change-password',
-      data: {
-        'currentPassword': currentPassword,
-        'newPassword': newPassword,
-        'confirmPassword': confirmPassword,
-      },
-      options: Options(
-        headers: {'Authorization': 'Bearer $token'},
-      ),
-      parser: _extractProfileData,
-    );
+    final result = await ref
+        .read(apiClientProvider)
+        .patch<ProfileState>(
+          '/user/change-password',
+          data: {
+            'currentPassword': currentPassword,
+            'newPassword': newPassword,
+            'confirmPassword': confirmPassword,
+          },
+          options: Options(headers: {'Authorization': 'Bearer $token'}),
+          parser: _extractProfileData,
+        );
     _unwrapProfile(result);
   }
 
@@ -160,13 +171,13 @@ final class ProfileController extends AsyncNotifier<ProfileState> {
       return const ProfileState.empty();
     }
 
-    final result = await ref.read(apiClientProvider).get<ProfileState>(
-      '/user/me',
-      options: Options(
-        headers: {'Authorization': 'Bearer $token'},
-      ),
-      parser: _extractProfileData,
-    );
+    final result = await ref
+        .read(apiClientProvider)
+        .get<ProfileState>(
+          '/user/me',
+          options: Options(headers: {'Authorization': 'Bearer $token'}),
+          parser: _extractProfileData,
+        );
     final profile = _unwrapProfile(result);
 
     await ref

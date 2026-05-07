@@ -8,7 +8,7 @@ import '../storage/storage_providers.dart';
 import 'api_client.dart';
 
 final appConfigProvider = Provider<AppConfig>((ref) {
-  return const AppConfig.development();
+  return AppConfig.development();
 });
 
 final dioProvider = Provider<Dio>((ref) {

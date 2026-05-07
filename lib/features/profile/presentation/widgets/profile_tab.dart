@@ -221,8 +221,8 @@ class _ProfileTabState extends ConsumerState<ProfileTab> {
                     color: Color(0xFF5A91C4),
                     size: 22,
                   ),
-                  const SizedBox(width: 16),
-                  const Text(
+                   SizedBox(width: 16),
+                   Text(
                     'Log Out',
                     style: TextStyle(
                       fontSize: 15,
@@ -230,7 +230,7 @@ class _ProfileTabState extends ConsumerState<ProfileTab> {
                       color: Color(0xFF5A91C4),
                     ),
                   ),
-                  const Spacer(),
+                   Spacer(),
                   Icon(Icons.chevron_right, color: Color(0xFF5A91C4), size: 20),
                 ],
               ),

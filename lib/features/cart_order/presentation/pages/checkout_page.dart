@@ -15,9 +15,9 @@ class CheckoutPage extends ConsumerStatefulWidget {
 }
 
 class _CheckoutPageState extends ConsumerState<CheckoutPage> {
-  final _nameController = TextEditingController(text: 'Tanjila Hafiza Lata');
+  final _nameController = TextEditingController(text: 'Your Name');
   final _addressController = TextEditingController(text: 'Dhaka, Bangladesh');
-  final _phoneController = TextEditingController(text: '01810641003');
+  final _phoneController = TextEditingController(text: '01800000000');
 
   @override
   void dispose() {

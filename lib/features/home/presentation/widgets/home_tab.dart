@@ -3,6 +3,7 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 
 import '../../../auth/application/auth_controller.dart';
 import '../../../notification/application/notification_provider.dart';
+import '../../../profile/application/profile_controller.dart';
 import '../../application/store_controller.dart';
 import '../../domain/store_models.dart';
 import 'book_card_mini.dart';
@@ -41,6 +42,8 @@ class _HomeTabState extends ConsumerState<HomeTab> {
   @override
   Widget build(BuildContext context) {
     final authState = ref.watch(authControllerProvider);
+    final profileAsync = ref.watch(profileControllerProvider);
+    final avatarUrl = profileAsync.asData?.value.avatarUrl.trim() ?? '';
     final unreadAsync = ref.watch(unreadNotificationCountProvider);
     final unreadCount = unreadAsync.asData?.value ?? 0;
     final allBooks = ref.watch(storeCatalogProvider);
@@ -51,12 +54,14 @@ class _HomeTabState extends ConsumerState<HomeTab> {
         children: [
           Row(
             children: [
-              const CircleAvatar(
+              CircleAvatar(
                 radius: 20,
-                backgroundImage: AssetImage(
-                  'assets/images/profile_placeholder.png',
-                ),
                 backgroundColor: Color(0xFFDCE3EC),
+                backgroundImage: avatarUrl.isNotEmpty
+                    ? NetworkImage(avatarUrl)
+                    : const AssetImage(
+                        'assets/images/profile_placeholder.png',
+                      ),
               ),
               const SizedBox(width: 8),
               Expanded(

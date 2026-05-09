@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 
+import '../../../../core/localization/app_localizations.dart';
 import '../../domain/order_models.dart';
 
 class OrderCard extends StatelessWidget {
@@ -10,6 +11,7 @@ class OrderCard extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    final l10n = AppLocalizations.of(context);
     final firstItem = order.items.isNotEmpty ? order.items.first : null;
 
     return GestureDetector(
@@ -69,7 +71,7 @@ class OrderCard extends StatelessWidget {
                           crossAxisAlignment: CrossAxisAlignment.start,
                           children: [
                             Text(
-                              firstItem?.title ?? 'Unknown Item',
+                              firstItem?.title ?? l10n.unknownItem,
                               maxLines: 1,
                               overflow: TextOverflow.ellipsis,
                               style: const TextStyle(
@@ -126,7 +128,7 @@ class OrderCard extends StatelessWidget {
                           borderRadius: BorderRadius.circular(12),
                         ),
                         child: Text(
-                          order.status.label,
+                          order.status.label(l10n),
                           style: TextStyle(
                             fontSize: 10,
                             fontWeight: FontWeight.w600,
@@ -192,7 +194,7 @@ class OrderCard extends StatelessWidget {
                             ),
                           ),
                           Text(
-                            '${order.items.length} items',
+                            l10n.itemCount(order.items.length),
                             style: const TextStyle(
                               fontSize: 10,
                               fontWeight: FontWeight.w500,

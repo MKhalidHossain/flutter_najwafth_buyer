@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 
+import '../../../../core/localization/app_localizations.dart';
 import '../../domain/store_models.dart';
 import '../widgets/book_card_mini.dart';
 
@@ -17,6 +18,7 @@ class BooksGridPage extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    final l10n = AppLocalizations.of(context);
     return Scaffold(
       backgroundColor: const Color(0xFFF5F6F8),
       appBar: AppBar(
@@ -27,9 +29,9 @@ class BooksGridPage extends StatelessWidget {
         backgroundColor: const Color(0xFFF5F6F8),
       ),
       body: books.isEmpty
-          ? const Center(
+          ? Center(
               child: Text(
-                'No books found in this category',
+                l10n.noBooksFoundInCategory,
                 style: TextStyle(color: Color(0xFF8E98A5), fontSize: 14),
               ),
             )

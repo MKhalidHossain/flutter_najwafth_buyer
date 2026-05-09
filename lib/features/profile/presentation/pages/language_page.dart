@@ -1,5 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
+
+import '../../../../core/localization/app_localizations.dart';
 import '../../../home/application/store_controller.dart';
 import '../../../home/domain/store_models.dart';
 
@@ -21,6 +23,8 @@ class _LanguagePageState extends ConsumerState<LanguagePage> {
 
   @override
   Widget build(BuildContext context) {
+    final l10n = AppLocalizations.of(context);
+
     return Scaffold(
       backgroundColor: Colors.white,
       appBar: AppBar(
@@ -31,8 +35,8 @@ class _LanguagePageState extends ConsumerState<LanguagePage> {
           onPressed: () => Navigator.pop(context),
           icon: const Icon(Icons.chevron_left, color: Color(0xFF243041), size: 28),
         ),
-        title: const Text(
-          'Choose Language',
+        title: Text(
+          l10n.chooseLanguage,
           style: TextStyle(
             fontSize: 18,
             fontWeight: FontWeight.w600,
@@ -46,15 +50,15 @@ class _LanguagePageState extends ConsumerState<LanguagePage> {
           children: [
             _buildLanguageOption(
               AppLanguage.english,
-              'English',
-              'United Kingdom',
+              l10n.english,
+              l10n.unitedKingdom,
               'assets/images/flags/uk.png', // Need flag assets or placeholder
             ),
             const SizedBox(height: 16),
             _buildLanguageOption(
               AppLanguage.french,
-              'France',
-              'France',
+              l10n.france,
+              l10n.franceCountry,
               'assets/images/flags/france.png',
             ),
             const Spacer(),
@@ -72,8 +76,8 @@ class _LanguagePageState extends ConsumerState<LanguagePage> {
                     borderRadius: BorderRadius.circular(8),
                   ),
                 ),
-                child: const Text(
-                  'Save',
+                child: Text(
+                  l10n.save,
                   style: TextStyle(
                     color: Colors.white,
                     fontSize: 16,

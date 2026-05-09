@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 
+import '../../../../core/localization/app_localizations.dart';
 import '../../../../core/utils/validators.dart';
 import '../../application/auth_controller.dart';
 import '../auth_routes.dart';
@@ -77,6 +78,8 @@ class _SignUpPageState extends ConsumerState<SignUpPage> {
 
   @override
   Widget build(BuildContext context) {
+    final l10n = AppLocalizations.of(context);
+
     return AuthScaffold(
       child: Form(
         key: _formKey,
@@ -84,45 +87,58 @@ class _SignUpPageState extends ConsumerState<SignUpPage> {
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
             const BrandHeader(topSpacing: 20, bottomSpacing: 16),
-            const AuthTitleBlock(
-              title: 'Let’s Get Started!',
-              subtitle: 'Create an account',
+            AuthTitleBlock(
+              title: l10n.letsGetStarted,
+              subtitle: l10n.createAnAccount,
             ),
-            const AuthFieldLabel('User  Name'),
+            AuthFieldLabel(l10n.userName),
             AuthTextField(
               controller: _nameController,
-              hintText: 'Enter your First Name',
+              hintText: l10n.enterYourFirstName,
               validator: (value) =>
-                  Validators.required(value, label: 'Full name'),
+                  Validators.required(
+                    value,
+                    label: l10n.fullNameLabel,
+                    l10n: l10n,
+                  ),
               prefixIcon: const Icon(Icons.person_outline_rounded),
             ),
             const SizedBox(height: 18),
-            const AuthFieldLabel('Your Email'),
+            AuthFieldLabel(l10n.yourEmail),
             AuthTextField(
               controller: _emailController,
-              hintText: 'Enter your Email',
+              hintText: l10n.enterYourEmail,
               keyboardType: TextInputType.emailAddress,
-              validator: Validators.email,
+              validator: (value) => Validators.email(value, l10n: l10n),
               prefixIcon: const Icon(Icons.mail_outline_rounded),
             ),
             const SizedBox(height: 18),
-            const AuthFieldLabel('Phone Number'),
+            AuthFieldLabel(l10n.phoneNumber),
             AuthTextField(
               controller: _phoneController,
-              hintText: 'Enter your phone number',
+              hintText: l10n.enterYourPhoneNumber,
               keyboardType: TextInputType.phone,
               validator: (value) =>
-                  Validators.required(value, label: 'Phone number'),
+                  Validators.required(
+                    value,
+                    label: l10n.phoneNumber,
+                    l10n: l10n,
+                  ),
               prefixIcon: const Icon(Icons.phone_outlined),
             ),
             const SizedBox(height: 18),
-            const AuthFieldLabel('Password'),
+            AuthFieldLabel(l10n.password),
             AuthTextField(
               controller: _passwordController,
-              hintText: 'Enter your Password',
+              hintText: l10n.enterYourPassword,
               obscureText: _obscurePassword,
               validator: (value) =>
-                  Validators.minLength(value, 8, label: 'Password'),
+                  Validators.minLength(
+                    value,
+                    8,
+                    label: l10n.password,
+                    l10n: l10n,
+                  ),
               prefixIcon: const Icon(Icons.lock_outline_rounded),
               suffixIcon: GestureDetector(
                 onTap: () {
@@ -141,22 +157,23 @@ class _SignUpPageState extends ConsumerState<SignUpPage> {
               ),
             ),
             const SizedBox(height: 18),
-            const AuthFieldLabel('Confirm Password'),
+            AuthFieldLabel(l10n.confirmPassword),
             AuthTextField(
               controller: _confirmPasswordController,
-              hintText: 'Enter Confirm Password',
+              hintText: l10n.enterConfirmPassword,
               obscureText: _obscureConfirmPassword,
               validator: (value) {
                 final message = Validators.minLength(
                   value,
                   8,
-                  label: 'Confirm password',
+                  label: l10n.confirmPasswordLabel,
+                  l10n: l10n,
                 );
                 if (message != null) {
                   return message;
                 }
                 if (value != _passwordController.text) {
-                  return 'Passwords do not match.';
+                  return l10n.passwordsDoNotMatch;
                 }
                 return null;
               },
@@ -181,15 +198,15 @@ class _SignUpPageState extends ConsumerState<SignUpPage> {
             ),
             const SizedBox(height: 24),
             AuthPrimaryButton(
-              label: 'Sign up',
+              label: l10n.signUp,
               onPressed: _submit,
               isBusy: _isSubmitting,
             ),
             const SizedBox(height: 24),
             Center(
               child: InlineAuthLink(
-                leadingText: 'Already have an account?',
-                actionText: 'Sign In Here',
+                leadingText: l10n.alreadyHaveAccount,
+                actionText: l10n.signInHere,
                 onTap: () {
                   Navigator.of(context).pop();
                 },

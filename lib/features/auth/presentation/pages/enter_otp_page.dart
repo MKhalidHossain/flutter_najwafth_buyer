@@ -4,6 +4,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 
+import '../../../../core/localization/app_localizations.dart';
 import '../../application/auth_controller.dart';
 import '../auth_routes.dart';
 import '../widgets/auth_scaffold.dart';
@@ -62,8 +63,9 @@ class _EnterOtpPageState extends ConsumerState<EnterOtpPage> {
       _controllers.map((controller) => controller.text.trim()).join();
 
   Future<void> _verifyOtp() async {
+    final l10n = AppLocalizations.of(context);
     if (_otpValue.length != 6) {
-      _showMessage('Enter the complete 6-digit OTP.');
+      _showMessage(l10n.enterCompleteOtp);
       return;
     }
 
@@ -84,19 +86,20 @@ class _EnterOtpPageState extends ConsumerState<EnterOtpPage> {
   }
 
   Future<void> _resendOtp() async {
+    final l10n = AppLocalizations.of(context);
     if (_isResending) {
       return;
     }
 
     if (_secondsLeft > 0) {
-      _showMessage('Please wait ${_secondsLeft}s before resending OTP.');
+      _showMessage(l10n.waitBeforeResendingOtp(_secondsLeft));
       return;
     }
 
     setState(() => _isResending = true);
     try {
       await ref.read(authControllerProvider.notifier).resendOtp();
-      _showMessage('A new OTP has been sent to your email address.');
+      _showMessage(l10n.newOtpSent);
       _syncTimer();
     } on AuthFlowException catch (error) {
       _showMessage(error.message);
@@ -116,6 +119,7 @@ class _EnterOtpPageState extends ConsumerState<EnterOtpPage> {
   @override
   Widget build(BuildContext context) {
     final authState = ref.watch(authControllerProvider);
+    final l10n = AppLocalizations.of(context);
 
     if (!authState.hasPendingOtp) {
       WidgetsBinding.instance.addPostFrameCallback((_) {
@@ -126,10 +130,10 @@ class _EnterOtpPageState extends ConsumerState<EnterOtpPage> {
     }
 
     return AuthScaffold(
-      child: Column(
-        children: [
-          const BrandHeader(topSpacing: 80, bottomSpacing: 20),
-          const AuthTitleBlock(title: 'Enter OTP', bottomSpacing: 24),
+        child: Column(
+          children: [
+            const BrandHeader(topSpacing: 80, bottomSpacing: 20),
+            AuthTitleBlock(title: l10n.enterOtp, bottomSpacing: 24),
           LayoutBuilder(
             builder: (context, constraints) {
               const spacing = 8.0;
@@ -190,10 +194,10 @@ class _EnterOtpPageState extends ConsumerState<EnterOtpPage> {
           const SizedBox(height: 20),
           Text(
             _isResending
-                ? 'Sending a new OTP...'
+                ? l10n.sendingNewOtp
                 : _secondsLeft > 0
-                ? 'Resend code in ${_secondsLeft}s'
-                : 'You can resend the OTP now',
+                ? l10n.resendCodeIn(_secondsLeft)
+                : l10n.canResendOtpNow,
             style: Theme.of(context).textTheme.titleLarge?.copyWith(
               color: const Color(0xFF717171),
               fontWeight: FontWeight.w400,
@@ -201,13 +205,13 @@ class _EnterOtpPageState extends ConsumerState<EnterOtpPage> {
           ),
           const SizedBox(height: 16),
           InlineAuthLink(
-            leadingText: 'Didn’t Receive OTP?',
-            actionText: 'RESEND OTP',
+            leadingText: l10n.didntReceiveOtp,
+            actionText: l10n.resendOtp,
             onTap: _isResending ? null : _resendOtp,
           ),
           const SizedBox(height: 24),
           AuthPrimaryButton(
-            label: 'Verify Now',
+            label: l10n.verifyNow,
             onPressed: _verifyOtp,
             isBusy: _isSubmitting,
           ),

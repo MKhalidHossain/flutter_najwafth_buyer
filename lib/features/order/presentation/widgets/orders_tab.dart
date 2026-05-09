@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 
+import '../../../../core/localization/app_localizations.dart';
 import '../../application/order_controller.dart';
 import '../../domain/order_models.dart';
 import '../pages/order_details_page.dart';
@@ -16,28 +17,28 @@ class OrdersTab extends ConsumerStatefulWidget {
 }
 
 class _OrdersTabState extends ConsumerState<OrdersTab> {
-  String _selectedFilter = 'All';
+  String _selectedFilter = OrderStatusFilter.all.name;
 
   @override
   Widget build(BuildContext context) {
+    final l10n = AppLocalizations.of(context);
     final ordersAsync = ref.watch(orderControllerProvider);
 
     final orders = ordersAsync.asData?.value ?? const <OrderModel>[];
-    final filteredOrders = _selectedFilter == 'All'
+    final filteredOrders = _selectedFilter == OrderStatusFilter.all.name
         ? orders
         : orders
               .where(
                 (o) =>
-                    o.status.label.toLowerCase() ==
-                    _selectedFilter.toLowerCase(),
+                    o.status.name == _selectedFilter,
               )
               .toList();
 
     return Scaffold(
       backgroundColor: Colors.white,
       appBar: AppBar(
-        title: const Text(
-          'My Orders',
+        title: Text(
+          l10n.myOrders,
           style: TextStyle(
             fontSize: 18,
             fontWeight: FontWeight.w600,
@@ -58,27 +59,31 @@ class _OrdersTabState extends ConsumerState<OrdersTab> {
               scrollDirection: Axis.horizontal,
               padding: const EdgeInsets.symmetric(horizontal: 16),
               children: [
-                _buildFilterChip('All', orders.length),
+                _buildFilterChip(context, OrderStatusFilter.all.name, orders.length),
                 const SizedBox(width: 8),
                 _buildFilterChip(
-                  'Pending',
+                  context,
+                  OrderStatus.pending.name,
                   orders.where((o) => o.status == OrderStatus.pending).length,
                 ),
                 const SizedBox(width: 8),
                 _buildFilterChip(
-                  'Processing',
+                  context,
+                  OrderStatus.processing.name,
                   orders
                       .where((o) => o.status == OrderStatus.processing)
                       .length,
                 ),
                 const SizedBox(width: 8),
                 _buildFilterChip(
-                  'Picked',
+                  context,
+                  OrderStatus.picked.name,
                   orders.where((o) => o.status == OrderStatus.picked).length,
                 ),
                 const SizedBox(width: 8),
                 _buildFilterChip(
-                  'Delivered',
+                  context,
+                  OrderStatus.delivered.name,
                   orders.where((o) => o.status == OrderStatus.delivered).length,
                 ),
               ],
@@ -95,23 +100,23 @@ class _OrdersTabState extends ConsumerState<OrdersTab> {
                 child: Column(
                   mainAxisSize: MainAxisSize.min,
                   children: [
-                    const Text(
-                      'Failed to load orders',
+                    Text(
+                      l10n.failedToLoadOrders,
                       style: TextStyle(color: Color(0xFF8E98A5), fontSize: 14),
                     ),
                     const SizedBox(height: 10),
                     ElevatedButton(
                       onPressed: () =>
                           ref.read(orderControllerProvider.notifier).refresh(),
-                      child: const Text('Retry'),
+                      child: Text(l10n.retry),
                     ),
                   ],
                 ),
               ),
               data: (_) => filteredOrders.isEmpty
-                  ? const Center(
+                  ? Center(
                       child: Text(
-                        'No orders found',
+                        l10n.noOrdersFound,
                         style: TextStyle(
                           color: Color(0xFF8E98A5),
                           fontSize: 14,
@@ -147,20 +152,28 @@ class _OrdersTabState extends ConsumerState<OrdersTab> {
     );
   }
 
-  Widget _buildFilterChip(String label, int count) {
+  Widget _buildFilterChip(BuildContext context, String filter, int count) {
+    final l10n = AppLocalizations.of(context);
+    final label = switch (filter) {
+      'pending' => l10n.pending,
+      'processing' => l10n.processing,
+      'picked' => l10n.picked,
+      'delivered' => l10n.delivered,
+      _ => l10n.all,
+    };
     String displayLabel = label;
-    if (label == 'Pending' || label == 'Picked') {
+    if (filter == OrderStatus.pending.name || filter == OrderStatus.picked.name) {
       if (count > 0) {
         displayLabel = '$label ($count)';
       }
     }
 
-    final isSelected = _selectedFilter == label;
+    final isSelected = _selectedFilter == filter;
 
     return GestureDetector(
       onTap: () {
         setState(() {
-          _selectedFilter = label;
+          _selectedFilter = filter;
         });
       },
       child: Container(
@@ -183,3 +196,5 @@ class _OrdersTabState extends ConsumerState<OrdersTab> {
     );
   }
 }
+
+enum OrderStatusFilter { all }

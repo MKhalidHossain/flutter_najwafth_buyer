@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 
+import '../../../../core/localization/app_localizations.dart';
 import '../../../auth/application/auth_controller.dart';
 import '../../../notification/application/notification_provider.dart';
 import '../../../profile/application/profile_controller.dart';
@@ -41,6 +42,7 @@ class _HomeTabState extends ConsumerState<HomeTab> {
 
   @override
   Widget build(BuildContext context) {
+    final l10n = AppLocalizations.of(context);
     final authState = ref.watch(authControllerProvider);
     final profileAsync = ref.watch(profileControllerProvider);
     final avatarUrl = profileAsync.asData?.value.avatarUrl.trim() ?? '';
@@ -75,8 +77,8 @@ class _HomeTabState extends ConsumerState<HomeTab> {
                         fontWeight: FontWeight.w600,
                       ),
                     ),
-                    const Text(
-                      'Hi, Good Morning!',
+                    Text(
+                      l10n.goodMorning,
                       style: TextStyle(fontSize: 12, color: Color(0xFF9CA6B3)),
                     ),
                   ],
@@ -141,12 +143,12 @@ class _HomeTabState extends ConsumerState<HomeTab> {
             },
           ),
           if (_searchQuery.isNotEmpty)
-            ..._buildSearchResults(allBooks)
+            ..._buildSearchResults(context, allBooks)
           else ...[
             const SizedBox(height: 14),
             SectionTitle(
-              title: 'Featured Bookstores',
-              actionText: 'See all',
+              title: l10n.featuredBookstores,
+              actionText: l10n.seeAll,
               onActionTap: widget.onFeaturedTap,
             ),
             const SizedBox(height: 10),
@@ -167,8 +169,8 @@ class _HomeTabState extends ConsumerState<HomeTab> {
             ),
             const SizedBox(height: 14),
             SectionTitle(
-              title: 'Categories',
-              actionText: 'See all',
+              title: l10n.categories,
+              actionText: l10n.seeAll,
               onActionTap: widget.onFeaturedTap,
             ),
             const SizedBox(height: 10),
@@ -269,8 +271,8 @@ class _HomeTabState extends ConsumerState<HomeTab> {
             ),
             const SizedBox(height: 8),
             SectionTitle(
-              title: 'Popular Books',
-              actionText: 'See all',
+              title: l10n.popularBooks,
+              actionText: l10n.seeAll,
               onActionTap: widget.onPopularTap,
             ),
             const SizedBox(height: 10),
@@ -287,9 +289,9 @@ class _HomeTabState extends ConsumerState<HomeTab> {
                 if (widget.popularBooks.isEmpty) {
                   return SizedBox(
                     height: listHeight,
-                    child: const Center(
+                    child: Center(
                       child: Text(
-                        'No popular books available',
+                        l10n.noPopularBooksAvailable,
                         style: TextStyle(
                           color: Color(0xFF9CA6B3),
                           fontSize: 13,
@@ -324,7 +326,8 @@ class _HomeTabState extends ConsumerState<HomeTab> {
     );
   }
 
-  List<Widget> _buildSearchResults(List<BookItem> allBooks) {
+  List<Widget> _buildSearchResults(BuildContext context, List<BookItem> allBooks) {
+    final l10n = AppLocalizations.of(context);
     final query = _searchQuery.toLowerCase();
     final filteredBooks = allBooks.where((book) {
       return book.title.toLowerCase().contains(query) ||
@@ -334,14 +337,14 @@ class _HomeTabState extends ConsumerState<HomeTab> {
 
     return [
       const SizedBox(height: 14),
-      const SectionTitle(title: 'Search Results'),
+      SectionTitle(title: l10n.searchResults),
       const SizedBox(height: 10),
       if (filteredBooks.isEmpty)
-        const Padding(
+        Padding(
           padding: EdgeInsets.all(32.0),
           child: Center(
             child: Text(
-              'No books match your search.',
+              l10n.noBooksMatchSearch,
               style: TextStyle(color: Color(0xFF9CA6B3), fontSize: 14),
             ),
           ),

@@ -1,4 +1,6 @@
 import 'package:flutter/material.dart';
+
+import '../../../../core/localization/app_localizations.dart';
 import '../../domain/order_models.dart';
 import '../widgets/review_bottom_sheet.dart';
 
@@ -9,6 +11,7 @@ class OrderDetailsPage extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    final l10n = AppLocalizations.of(context);
     return Scaffold(
       backgroundColor: Colors.white,
       appBar: AppBar(
@@ -19,8 +22,8 @@ class OrderDetailsPage extends StatelessWidget {
           icon: const Icon(Icons.chevron_left, color: Color(0xFF243041), size: 28),
           onPressed: () => Navigator.of(context).pop(),
         ),
-        title: const Text(
-          'Order Details',
+        title: Text(
+          l10n.orderDetails,
           style: TextStyle(
             fontSize: 18,
             fontWeight: FontWeight.w600,
@@ -32,13 +35,13 @@ class OrderDetailsPage extends StatelessWidget {
         padding: const EdgeInsets.all(16),
         child: Column(
           children: [
-            _buildDeliveryAndContact(),
+            _buildDeliveryAndContact(context),
             const SizedBox(height: 16),
-            _buildOrderSummary(),
+            _buildOrderSummary(context),
             const SizedBox(height: 16),
-            _buildItemsList(),
+            _buildItemsList(context),
             const SizedBox(height: 16),
-            _buildTimeline(),
+            _buildTimeline(context),
             const SizedBox(height: 32),
           ],
         ),
@@ -48,13 +51,16 @@ class OrderDetailsPage extends StatelessWidget {
               onPressed: () => ReviewBottomSheet.show(context),
               backgroundColor: const Color(0xFF5A91C4),
               icon: const Icon(Icons.rate_review, color: Colors.white),
-              label: const Text('Leave a Review', style: TextStyle(color: Colors.white)),
+              label: Text(
+                l10n.leaveAReview,
+                style: const TextStyle(color: Colors.white),
+              ),
             )
           : null,
     );
   }
 
-  Widget _buildDeliveryAndContact() {
+  Widget _buildDeliveryAndContact(BuildContext context) {
     final dateStr = '${order.createdAt.day}/${order.createdAt.month}/${order.createdAt.year}';
     return Container(
       padding: const EdgeInsets.all(16),
@@ -74,8 +80,8 @@ class OrderDetailsPage extends StatelessWidget {
                   children: [
                     const Icon(Icons.location_on_outlined, size: 16, color: Color(0xFF5A91C4)),
                     const SizedBox(width: 6),
-                    const Text(
-                      'Delivery Address',
+                    Text(
+                      AppLocalizations.of(context).deliveryAddress,
                       style: TextStyle(fontSize: 13, fontWeight: FontWeight.w600, color: Color(0xFF243041)),
                     ),
                   ],
@@ -97,9 +103,9 @@ class OrderDetailsPage extends StatelessWidget {
                   children: [
                     const Icon(Icons.phone_in_talk_outlined, size: 16, color: Color(0xFF5A91C4)),
                     const SizedBox(width: 6),
-                    const Expanded(
+                    Expanded(
                       child: Text(
-                        'Contact Information',
+                        AppLocalizations.of(context).contactInformation,
                         style: TextStyle(fontSize: 13, fontWeight: FontWeight.w600, color: Color(0xFF243041)),
                         overflow: TextOverflow.ellipsis,
                       ),
@@ -107,11 +113,11 @@ class OrderDetailsPage extends StatelessWidget {
                   ],
                 ),
                 const SizedBox(height: 8),
-                _buildInfoRow('Order Date:', dateStr),
+                _buildInfoRow(AppLocalizations.of(context).orderDate, dateStr),
                 const SizedBox(height: 4),
-                _buildInfoRow('Phone:', order.phone),
+                _buildInfoRow(AppLocalizations.of(context).phone, order.phone),
                 const SizedBox(height: 4),
-                _buildInfoRow('Order ID:', order.orderNumber),
+                _buildInfoRow(AppLocalizations.of(context).orderId, order.orderNumber),
               ],
             ),
           ),
@@ -139,7 +145,7 @@ class OrderDetailsPage extends StatelessWidget {
     );
   }
 
-  Widget _buildOrderSummary() {
+  Widget _buildOrderSummary(BuildContext context) {
     return Container(
       padding: const EdgeInsets.all(16),
       decoration: BoxDecoration(
@@ -153,16 +159,16 @@ class OrderDetailsPage extends StatelessWidget {
             children: [
               const Icon(Icons.receipt_long_outlined, size: 20, color: Color(0xFF5A91C4)),
               const SizedBox(width: 8),
-              const Text(
-                'Order Summary',
+              Text(
+                AppLocalizations.of(context).orderSummary,
                 style: TextStyle(fontSize: 14, fontWeight: FontWeight.w600, color: Color(0xFF243041)),
               ),
             ],
           ),
           const SizedBox(height: 16),
-          _buildSummaryRow('Subtotal', '\$${order.subtotal.toStringAsFixed(2)}'),
+          _buildSummaryRow(AppLocalizations.of(context).subtotal, '\$${order.subtotal.toStringAsFixed(2)}'),
           const SizedBox(height: 8),
-          _buildSummaryRow('Delivery Fee', '\$${order.deliveryFee.toStringAsFixed(2)}'),
+          _buildSummaryRow(AppLocalizations.of(context).deliveryFee, '\$${order.deliveryFee.toStringAsFixed(2)}'),
           const Padding(
             padding: EdgeInsets.symmetric(vertical: 12),
             child: Divider(color: Color(0xFFE8EBF0), height: 1),
@@ -170,8 +176,8 @@ class OrderDetailsPage extends StatelessWidget {
           Row(
             mainAxisAlignment: MainAxisAlignment.spaceBetween,
             children: [
-              const Text(
-                'Total',
+              Text(
+                AppLocalizations.of(context).total,
                 style: TextStyle(fontSize: 14, fontWeight: FontWeight.w700, color: Color(0xFF243041)),
               ),
               Text(
@@ -201,7 +207,7 @@ class OrderDetailsPage extends StatelessWidget {
     );
   }
 
-  Widget _buildItemsList() {
+  Widget _buildItemsList(BuildContext context) {
     return Container(
       padding: const EdgeInsets.all(16),
       decoration: BoxDecoration(
@@ -217,7 +223,7 @@ class OrderDetailsPage extends StatelessWidget {
               const Icon(Icons.shopping_cart_outlined, size: 20, color: Color(0xFF5A91C4)),
               const SizedBox(width: 8),
               Text(
-                'Items (${order.items.length})',
+                AppLocalizations.of(context).itemsCount(order.items.length),
                 style: const TextStyle(fontSize: 14, fontWeight: FontWeight.w600, color: Color(0xFF243041)),
               ),
             ],
@@ -326,8 +332,8 @@ class OrderDetailsPage extends StatelessWidget {
                                     '\$ ${item.price.toStringAsFixed(2)}',
                                     style: const TextStyle(fontSize: 14, fontWeight: FontWeight.w700, color: Color(0xFF5A91C4)),
                                   ),
-                                  const Text(
-                                    '1 items',
+                                  Text(
+                                    AppLocalizations.of(context).itemCount(1),
                                     style: TextStyle(fontSize: 10, fontWeight: FontWeight.w500, color: Color(0xFF5A91C4)),
                                   ),
                                 ],
@@ -347,7 +353,8 @@ class OrderDetailsPage extends StatelessWidget {
     );
   }
 
-  Widget _buildTimeline() {
+  Widget _buildTimeline(BuildContext context) {
+    final l10n = AppLocalizations.of(context);
     int currentStep = 0;
     if (order.status == OrderStatus.processing) currentStep = 1;
     if (order.status == OrderStatus.picked) currentStep = 2;
@@ -367,17 +374,17 @@ class OrderDetailsPage extends StatelessWidget {
             children: [
               const Icon(Icons.local_shipping_outlined, size: 20, color: Color(0xFF5A91C4)),
               const SizedBox(width: 8),
-              const Text(
-                'Order Status',
+              Text(
+                l10n.orderStatus,
                 style: TextStyle(fontSize: 14, fontWeight: FontWeight.w600, color: Color(0xFF243041)),
               ),
             ],
           ),
           const SizedBox(height: 24),
-          _buildTimelineItem('Pending', 'Order received by store', isActive: currentStep >= 0, isLast: false),
-          _buildTimelineItem('Processing', 'Store is preparing your order', isActive: currentStep >= 1, isLast: false),
-          _buildTimelineItem('Picked', 'Delivery partner picked up order', isActive: currentStep >= 2, isLast: false),
-          _buildTimelineItem('Delivered', 'Order delivered successfully', isActive: currentStep >= 3, isLast: true),
+          _buildTimelineItem(l10n.pending, l10n.orderReceivedByStore, isActive: currentStep >= 0, isLast: false),
+          _buildTimelineItem(l10n.processing, l10n.storePreparingOrder, isActive: currentStep >= 1, isLast: false),
+          _buildTimelineItem(l10n.picked, l10n.deliveryPartnerPickedUpOrder, isActive: currentStep >= 2, isLast: false),
+          _buildTimelineItem(l10n.delivered, l10n.orderDeliveredSuccessfully, isActive: currentStep >= 3, isLast: true),
         ],
       ),
     );

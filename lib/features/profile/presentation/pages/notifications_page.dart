@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 
+import '../../../../core/localization/app_localizations.dart';
 import '../../../notification/application/notification_provider.dart';
 import '../../../notification/domain/notification_models.dart';
 
@@ -9,6 +10,7 @@ class NotificationsPage extends ConsumerWidget {
 
   @override
   Widget build(BuildContext context, WidgetRef ref) {
+    final l10n = AppLocalizations.of(context);
     final notificationsAsync = ref.watch(notificationsProvider);
 
     return Scaffold(
@@ -25,8 +27,8 @@ class NotificationsPage extends ConsumerWidget {
             size: 28,
           ),
         ),
-        title: const Text(
-          'Notifications',
+        title: Text(
+          l10n.notifications,
           style: TextStyle(
             fontSize: 18,
             fontWeight: FontWeight.w600,
@@ -37,7 +39,7 @@ class NotificationsPage extends ConsumerWidget {
           TextButton(
             onPressed: () =>
                 ref.read(notificationsProvider.notifier).markAllRead(),
-            child: const Text('Mark all read'),
+            child: Text(l10n.markAllRead),
           ),
         ],
       ),
@@ -49,12 +51,12 @@ class NotificationsPage extends ConsumerWidget {
           child: Column(
             mainAxisSize: MainAxisSize.min,
             children: [
-              const Text('Failed to load notifications'),
+              Text(l10n.failedToLoadNotifications),
               const SizedBox(height: 8),
               ElevatedButton(
                 onPressed: () =>
                     ref.read(notificationsProvider.notifier).refresh(),
-                child: const Text('Retry'),
+                child: Text(l10n.retry),
               ),
             ],
           ),
@@ -68,9 +70,9 @@ class NotificationsPage extends ConsumerWidget {
               .toList(growable: false);
 
           if (data.items.isEmpty) {
-            return const Center(
+            return Center(
               child: Text(
-                'No notifications yet',
+                l10n.noNotificationsYet,
                 style: TextStyle(fontSize: 14, color: Color(0xFF8E98A5)),
               ),
             );
@@ -83,8 +85,8 @@ class NotificationsPage extends ConsumerWidget {
               children: [
                 const SizedBox(height: 10),
                 if (unread.isNotEmpty) ...[
-                  const Text(
-                    'New',
+                  Text(
+                    l10n.newLabel,
                     style: TextStyle(
                       fontSize: 16,
                       fontWeight: FontWeight.w700,
@@ -96,8 +98,8 @@ class NotificationsPage extends ConsumerWidget {
                   const SizedBox(height: 20),
                 ],
                 if (read.isNotEmpty) ...[
-                  const Text(
-                    'Earlier',
+                  Text(
+                    l10n.earlier,
                     style: TextStyle(
                       fontSize: 16,
                       fontWeight: FontWeight.w700,
@@ -176,7 +178,7 @@ class _NotificationTile extends ConsumerWidget {
               ),
               const SizedBox(width: 8),
               Text(
-                _relative(item.createdAt),
+                _relative(context, item.createdAt),
                 style: const TextStyle(fontSize: 11, color: Color(0xFF8E98A5)),
               ),
             ],
@@ -187,10 +189,11 @@ class _NotificationTile extends ConsumerWidget {
   }
 }
 
-String _relative(DateTime date) {
+String _relative(BuildContext context, DateTime date) {
+  final l10n = AppLocalizations.of(context);
   final diff = DateTime.now().difference(date);
-  if (diff.inMinutes < 1) return 'now';
-  if (diff.inMinutes < 60) return '${diff.inMinutes}m';
-  if (diff.inHours < 24) return '${diff.inHours}h';
-  return '${diff.inDays}d';
+  if (diff.inMinutes < 1) return l10n.now;
+  if (diff.inMinutes < 60) return l10n.minutesAgoShort(diff.inMinutes);
+  if (diff.inHours < 24) return l10n.hoursAgoShort(diff.inHours);
+  return l10n.daysAgoShort(diff.inDays);
 }

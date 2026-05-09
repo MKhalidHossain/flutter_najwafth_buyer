@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 
+import '../../../../core/localization/app_localizations.dart';
 import '../../../../core/utils/validators.dart';
 import '../../application/auth_controller.dart';
 import '../auth_routes.dart';
@@ -27,6 +28,7 @@ class _ForgotPasswordPageState extends ConsumerState<ForgotPasswordPage> {
   }
 
   Future<void> _submit() async {
+    final l10n = AppLocalizations.of(context);
     FocusScope.of(context).unfocus();
     if (!_formKey.currentState!.validate()) {
       return;
@@ -42,13 +44,9 @@ class _ForgotPasswordPageState extends ConsumerState<ForgotPasswordPage> {
         return;
       }
 
-      ScaffoldMessenger.of(context).showSnackBar(
-        const SnackBar(
-          content: Text(
-            'An OTP has been sent to your email address.',
-          ),
-        ),
-      );
+      ScaffoldMessenger.of(
+        context,
+      ).showSnackBar(SnackBar(content: Text(l10n.otpSentToEmail)));
 
       Navigator.of(context).pushNamed(AuthRoutes.enterOtp);
     } on AuthFlowException catch (error) {
@@ -68,6 +66,8 @@ class _ForgotPasswordPageState extends ConsumerState<ForgotPasswordPage> {
 
   @override
   Widget build(BuildContext context) {
+    final l10n = AppLocalizations.of(context);
+
     return AuthScaffold(
       child: Form(
         key: _formKey,
@@ -75,21 +75,21 @@ class _ForgotPasswordPageState extends ConsumerState<ForgotPasswordPage> {
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
             const BrandHeader(topSpacing: 72, bottomSpacing: 24),
-            const AuthTitleBlock(
-              title: 'Reset password',
-              subtitle: 'Enter your email to receive the OTP',
+            AuthTitleBlock(
+              title: l10n.resetPassword,
+              subtitle: l10n.enterEmailToReceiveOtp,
             ),
-            const AuthFieldLabel('Your Email'),
+            AuthFieldLabel(l10n.yourEmail),
             AuthTextField(
               controller: _emailController,
-              hintText: 'Enter your Email',
+              hintText: l10n.enterYourEmail,
               keyboardType: TextInputType.emailAddress,
-              validator: Validators.email,
+              validator: (value) => Validators.email(value, l10n: l10n),
               prefixIcon: const Icon(Icons.mail_outline_rounded),
             ),
             const SizedBox(height: 24),
             AuthPrimaryButton(
-              label: 'Send OTP',
+              label: l10n.sendOtp,
               onPressed: _submit,
               isBusy: _isSubmitting,
             ),

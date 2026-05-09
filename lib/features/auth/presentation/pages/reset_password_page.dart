@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 
+import '../../../../core/localization/app_localizations.dart';
 import '../../../../core/utils/validators.dart';
 import '../../application/auth_controller.dart';
 import '../auth_routes.dart';
@@ -32,6 +33,7 @@ class _ResetPasswordPageState extends ConsumerState<ResetPasswordPage> {
   }
 
   Future<void> _submit() async {
+    final l10n = AppLocalizations.of(context);
     FocusScope.of(context).unfocus();
     if (!_formKey.currentState!.validate()) {
       return;
@@ -53,9 +55,7 @@ class _ResetPasswordPageState extends ConsumerState<ResetPasswordPage> {
 
       ScaffoldMessenger.of(context)
         ..hideCurrentSnackBar()
-        ..showSnackBar(
-          const SnackBar(content: Text('Password reset successfully.')),
-        );
+        ..showSnackBar(SnackBar(content: Text(l10n.passwordResetSuccessfully)));
 
       Navigator.of(
         context,
@@ -79,6 +79,7 @@ class _ResetPasswordPageState extends ConsumerState<ResetPasswordPage> {
   @override
   Widget build(BuildContext context) {
     final authState = ref.watch(authControllerProvider);
+    final l10n = AppLocalizations.of(context);
 
     if (_allowOtpGuardRedirect && !authState.otpVerified) {
       WidgetsBinding.instance.addPostFrameCallback((_) {
@@ -95,17 +96,22 @@ class _ResetPasswordPageState extends ConsumerState<ResetPasswordPage> {
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
             const BrandHeader(topSpacing: 72, bottomSpacing: 24),
-            const AuthTitleBlock(
-              title: 'Reset Password',
-              subtitle: 'Enter and confirm your new password',
+            AuthTitleBlock(
+              title: l10n.resetPasswordTitle,
+              subtitle: l10n.enterAndConfirmNewPassword,
             ),
-            const AuthFieldLabel('New Password'),
+            AuthFieldLabel(l10n.newPassword),
             AuthTextField(
               controller: _passwordController,
-              hintText: 'Enter your Password',
+              hintText: l10n.enterYourPassword,
               obscureText: _obscurePassword,
               validator: (value) =>
-                  Validators.minLength(value, 8, label: 'Password'),
+                  Validators.minLength(
+                    value,
+                    8,
+                    label: l10n.password,
+                    l10n: l10n,
+                  ),
               prefixIcon: const Icon(Icons.lock_outline_rounded),
               suffixIcon: IconButton(
                 onPressed: () {
@@ -119,22 +125,23 @@ class _ResetPasswordPageState extends ConsumerState<ResetPasswordPage> {
               ),
             ),
             const SizedBox(height: 20),
-            const AuthFieldLabel('Confirm Password'),
+            AuthFieldLabel(l10n.confirmPassword),
             AuthTextField(
               controller: _confirmPasswordController,
-              hintText: 'Enter Confirm Password',
+              hintText: l10n.enterConfirmPassword,
               obscureText: _obscureConfirmPassword,
               validator: (value) {
                 final message = Validators.minLength(
                   value,
                   8,
-                  label: 'Confirm password',
+                  label: l10n.confirmPasswordLabel,
+                  l10n: l10n,
                 );
                 if (message != null) {
                   return message;
                 }
                 if (value != _passwordController.text) {
-                  return 'Passwords do not match.';
+                  return l10n.passwordsDoNotMatch;
                 }
                 return null;
               },
@@ -154,7 +161,7 @@ class _ResetPasswordPageState extends ConsumerState<ResetPasswordPage> {
             ),
             const SizedBox(height: 24),
             AuthPrimaryButton(
-              label: 'Continue',
+              label: l10n.continueLabel,
               onPressed: _submit,
               isBusy: _isSubmitting,
             ),

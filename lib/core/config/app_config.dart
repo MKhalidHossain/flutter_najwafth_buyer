@@ -11,18 +11,12 @@ final class AppConfig {
     this.receiveTimeout = const Duration(seconds: 20),
   });
 
-  factory AppConfig.development() {
-    const configuredBaseUrl = String.fromEnvironment('API_BASE_URL');
-    final baseUrl = configuredBaseUrl.isNotEmpty
-        ? configuredBaseUrl
-        : _defaultDevBaseUrl();
-
-    return AppConfig(
-      appName: 'Books on wheels',
-      environment: AppEnvironment.development,
-      baseUrl: baseUrl,
-    );
-  }
+  const AppConfig.development()
+    : this(
+        appName: 'Najwafth Buyer',
+        environment: AppEnvironment.development,
+        baseUrl: 'https://api.example.com/api/v1',
+      );
 
   final String appName;
   final AppEnvironment environment;

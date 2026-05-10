@@ -96,7 +96,7 @@ class _EnterOtpPageState extends ConsumerState<EnterOtpPage> {
     setState(() => _isResending = true);
     try {
       await ref.read(authControllerProvider.notifier).resendOtp();
-      _showMessage('A new OTP has been sent to your email address.');
+      _showMessage('OTP resent to your email.');
       _syncTimer();
     } on AuthFlowException catch (error) {
       _showMessage(error.message);

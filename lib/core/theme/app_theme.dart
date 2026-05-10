@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:google_fonts/google_fonts.dart';
 
 import 'app_radius.dart';
 
@@ -32,7 +33,7 @@ final class AppTheme {
 
   static ThemeData _base(ColorScheme colorScheme) {
     final base = ThemeData(useMaterial3: true, colorScheme: colorScheme);
-    final textTheme = base.textTheme.copyWith(
+    final textTheme = GoogleFonts.poppinsTextTheme(base.textTheme).copyWith(
       headlineLarge: const TextStyle(fontSize: 28, fontWeight: FontWeight.w700),
       headlineMedium: const TextStyle(
         fontSize: 24,
@@ -48,6 +49,7 @@ final class AppTheme {
     return ThemeData(
       useMaterial3: true,
       colorScheme: colorScheme,
+      fontFamily: GoogleFonts.poppins().fontFamily,
       scaffoldBackgroundColor: colorScheme.surface,
       textTheme: textTheme.apply(
         bodyColor: colorScheme.onSurface,

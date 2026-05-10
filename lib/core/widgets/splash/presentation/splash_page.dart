@@ -4,8 +4,8 @@ import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 
-import '../../auth/application/auth_controller.dart';
-import '../../auth/presentation/auth_routes.dart';
+import '../../../../features/auth/application/auth_controller.dart';
+import '../../../../features/auth/presentation/auth_routes.dart';
 
 final class SplashPage extends ConsumerStatefulWidget {
   const SplashPage({super.key});

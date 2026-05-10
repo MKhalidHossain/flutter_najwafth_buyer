@@ -267,7 +267,7 @@ class InlineAuthLink extends StatelessWidget {
 
   final String leadingText;
   final String actionText;
-  final VoidCallback onTap;
+  final VoidCallback? onTap;
 
   @override
   Widget build(BuildContext context) {
@@ -292,7 +292,9 @@ class InlineAuthLink extends StatelessWidget {
             actionText,
             style: Theme.of(context).textTheme.titleLarge?.copyWith(
               fontWeight: FontWeight.w500,
-              color: const Color(0xFF005FC5),
+              color: onTap == null
+                  ? const Color(0xFF9CA6B3)
+                  : const Color(0xFF005FC5),
               fontSize: compact ? 15 : 16,
             ),
           ),

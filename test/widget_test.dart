@@ -8,7 +8,7 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_najwafth_buyer/app/app.dart';
 import 'package:flutter_najwafth_buyer/core/bootstrap/app_bootstrap.dart';
-import 'package:flutter_najwafth_buyer/features/splash/presentation/splash_page.dart';
+import 'package:flutter_najwafth_buyer/core/widgets/splash/presentation/splash_page.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 

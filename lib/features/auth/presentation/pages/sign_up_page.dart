@@ -51,6 +51,7 @@ class _SignUpPageState extends ConsumerState<SignUpPage> {
             email: _emailController.text,
             phone: _phoneController.text,
             password: _passwordController.text,
+            confirmPassword: _confirmPasswordController.text,
           );
 
       if (!mounted) {

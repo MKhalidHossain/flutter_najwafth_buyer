@@ -42,13 +42,11 @@ class _ForgotPasswordPageState extends ConsumerState<ForgotPasswordPage> {
         return;
       }
 
-      ScaffoldMessenger.of(context).showSnackBar(
-        const SnackBar(
-          content: Text(
-            'An OTP has been sent to your email address.',
-          ),
-        ),
-      );
+      ScaffoldMessenger.of(context)
+        ..hideCurrentSnackBar()
+        ..showSnackBar(
+          const SnackBar(content: Text('OTP sent to your email.')),
+        );
 
       Navigator.of(context).pushNamed(AuthRoutes.enterOtp);
     } on AuthFlowException catch (error) {
@@ -78,6 +76,7 @@ class _ForgotPasswordPageState extends ConsumerState<ForgotPasswordPage> {
             const AuthTitleBlock(
               title: 'Reset password',
               subtitle: 'Enter your email to receive the OTP',
+              centered: true,
             ),
             const AuthFieldLabel('Your Email'),
             AuthTextField(

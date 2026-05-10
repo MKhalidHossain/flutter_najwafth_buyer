@@ -11,8 +11,8 @@ import '../features/auth/presentation/pages/onboarding_page.dart';
 import '../features/auth/presentation/pages/reset_password_page.dart';
 import '../features/auth/presentation/pages/sign_in_page.dart';
 import '../features/auth/presentation/pages/sign_up_page.dart';
-import '../features/home/presentation/home_page.dart';
-import '../features/splash/presentation/splash_page.dart';
+import '../features/home/presentation/pages/home_page.dart';
+import '../core/widgets/splash/presentation/splash_page.dart';
 
 final class NajwafthBuyerApp extends ConsumerWidget {
   const NajwafthBuyerApp({super.key});
@@ -22,6 +22,7 @@ final class NajwafthBuyerApp extends ConsumerWidget {
     final config = ref.watch(appConfigProvider);
 
     return MaterialApp(
+      
       title: config.appName,
       debugShowCheckedModeBanner: config.isDevelopment,
       theme: AppTheme.light(),

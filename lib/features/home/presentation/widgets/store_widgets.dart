@@ -3,7 +3,10 @@ import 'package:intl/intl.dart';
 
 import '../../domain/store_models.dart';
 
-final _currencyFormatter = NumberFormat.currency(symbol: '\$', decimalDigits: 2);
+final _currencyFormatter = NumberFormat.currency(
+  symbol: '\$',
+  decimalDigits: 2,
+);
 
 String formatPrice(double value) => _currencyFormatter.format(value);
 
@@ -51,11 +54,7 @@ class StorePageScaffold extends StatelessWidget {
 }
 
 class StoreSearchField extends StatelessWidget {
-  const StoreSearchField({
-    super.key,
-    required this.hintText,
-    this.onChanged,
-  });
+  const StoreSearchField({super.key, required this.hintText, this.onChanged});
 
   final String hintText;
   final ValueChanged<String>? onChanged;
@@ -69,7 +68,11 @@ class StoreSearchField extends StatelessWidget {
         filled: true,
         fillColor: const Color(0xFFF4F5F8),
         contentPadding: const EdgeInsets.symmetric(horizontal: 14, vertical: 0),
-        prefixIcon: const Icon(Icons.search, color: Color(0xFF738194), size: 20),
+        prefixIcon: const Icon(
+          Icons.search,
+          color: Color(0xFF738194),
+          size: 20,
+        ),
         suffixIcon: Container(
           margin: const EdgeInsets.all(6),
           decoration: BoxDecoration(
@@ -214,16 +217,13 @@ class BookCard extends StatelessWidget {
                 BookCover(
                   title: book.title,
                   imageAsset: book.coverImageAsset,
+                  imageUrl: book.coverImageUrl,
                   color: book.coverColor,
                   accentColor: book.coverAccent,
                   height: compact ? 110 : 118,
                 ),
                 if (trailing != null)
-                  Positioned(
-                    top: 8,
-                    right: 8,
-                    child: trailing!,
-                  ),
+                  Positioned(top: 8, right: 8, child: trailing!),
               ],
             ),
             const SizedBox(height: 8),
@@ -280,11 +280,7 @@ class BookCard extends StatelessWidget {
 }
 
 class BookGridTile extends StatelessWidget {
-  const BookGridTile({
-    super.key,
-    required this.book,
-    required this.onTap,
-  });
+  const BookGridTile({super.key, required this.book, required this.onTap});
 
   final BookItem book;
   final VoidCallback onTap;
@@ -298,7 +294,12 @@ class BookGridTile extends StatelessWidget {
         borderRadius: BorderRadius.circular(14),
         border: Border.all(color: const Color(0xFFE8EBF0)),
       ),
-      child: BookCard(book: book, onTap: onTap, width: double.infinity, compact: true),
+      child: BookCard(
+        book: book,
+        onTap: onTap,
+        width: double.infinity,
+        compact: true,
+      ),
     );
   }
 }
@@ -308,6 +309,7 @@ class BookCover extends StatelessWidget {
     super.key,
     required this.title,
     this.imageAsset,
+    this.imageUrl,
     required this.color,
     required this.accentColor,
     this.height = 118,
@@ -316,6 +318,7 @@ class BookCover extends StatelessWidget {
 
   final String title;
   final String? imageAsset;
+  final String? imageUrl;
   final Color color;
   final Color accentColor;
   final double height;
@@ -323,42 +326,53 @@ class BookCover extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    if (imageAsset != null) {
-      return Container(
-        height: height,
-        decoration: BoxDecoration(
-          borderRadius: BorderRadius.circular(radius),
-          boxShadow: const [
-            BoxShadow(
-              color: Color(0x12000000),
-              blurRadius: 14,
-              offset: Offset(0, 8),
-            ),
-          ],
-        ),
-        child: ClipRRect(
-          borderRadius: BorderRadius.circular(radius),
-          child: Image.asset(
-            imageAsset!,
-            fit: BoxFit.cover,
-            errorBuilder: (_, _, _) => _BookCoverFallback(
-              title: title,
-              color: color,
-              accentColor: accentColor,
-              height: height,
-              radius: radius,
-            ),
-          ),
-        ),
-      );
-    }
-
-    return _BookCoverFallback(
+    final fallback = _BookCoverFallback(
       title: title,
       color: color,
       accentColor: accentColor,
       height: height,
       radius: radius,
+    );
+
+    Widget? imageWidget;
+
+    if (imageUrl != null && imageUrl!.isNotEmpty) {
+      imageWidget = Image.network(
+        imageUrl!,
+        width: double.infinity,
+        fit: BoxFit.cover,
+        errorBuilder: (ctx, err, st) => fallback,
+        loadingBuilder: (_, child, progress) =>
+            progress == null ? child : fallback,
+      );
+    } else if (imageAsset != null && imageAsset!.isNotEmpty) {
+      imageWidget = Image.asset(
+        imageAsset!,
+        width: double.infinity,
+        fit: BoxFit.cover,
+        errorBuilder: (ctx, err, st) => fallback,
+      );
+    }
+
+    if (imageWidget == null) return fallback;
+
+    return Container(
+      height: height,
+      width: double.infinity,
+      decoration: BoxDecoration(
+        borderRadius: BorderRadius.circular(radius),
+        boxShadow: const [
+          BoxShadow(
+            color: Color(0x12000000),
+            blurRadius: 14,
+            offset: Offset(0, 8),
+          ),
+        ],
+      ),
+      child: ClipRRect(
+        borderRadius: BorderRadius.circular(radius),
+        child: imageWidget,
+      ),
     );
   }
 }
@@ -382,6 +396,7 @@ class _BookCoverFallback extends StatelessWidget {
   Widget build(BuildContext context) {
     return Container(
       height: height,
+      width: double.infinity,
       decoration: BoxDecoration(
         borderRadius: BorderRadius.circular(radius),
         gradient: LinearGradient(
@@ -433,11 +448,7 @@ class _BookCoverFallback extends StatelessWidget {
 }
 
 class CartBadgeButton extends StatelessWidget {
-  const CartBadgeButton({
-    super.key,
-    required this.count,
-    required this.onTap,
-  });
+  const CartBadgeButton({super.key, required this.count, required this.onTap});
 
   final int count;
   final VoidCallback onTap;
@@ -451,7 +462,10 @@ class CartBadgeButton extends StatelessWidget {
         children: [
           IconButton(
             onPressed: onTap,
-            icon: const Icon(Icons.shopping_bag_outlined, color: Color(0xFF364152)),
+            icon: const Icon(
+              Icons.shopping_bag_outlined,
+              color: Color(0xFF364152),
+            ),
           ),
           if (count > 0)
             Positioned(
@@ -502,7 +516,10 @@ class QuantitySelector extends StatelessWidget {
       child: Row(
         mainAxisSize: MainAxisSize.min,
         children: [
-          _QuantityButton(icon: Icons.remove, onTap: () => onChanged(quantity - 1)),
+          _QuantityButton(
+            icon: Icons.remove,
+            onTap: () => onChanged(quantity - 1),
+          ),
           Padding(
             padding: const EdgeInsets.symmetric(horizontal: 12),
             child: Text(
@@ -514,7 +531,10 @@ class QuantitySelector extends StatelessWidget {
               ),
             ),
           ),
-          _QuantityButton(icon: Icons.add, onTap: () => onChanged(quantity + 1)),
+          _QuantityButton(
+            icon: Icons.add,
+            onTap: () => onChanged(quantity + 1),
+          ),
         ],
       ),
     );

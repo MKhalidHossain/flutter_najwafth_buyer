@@ -22,6 +22,7 @@ class _EnterOtpPageState extends ConsumerState<EnterOtpPage> {
   Timer? _timer;
 
   bool _isSubmitting = false;
+  bool _isResending = false;
   int _secondsLeft = 0;
 
   @override
@@ -83,12 +84,26 @@ class _EnterOtpPageState extends ConsumerState<EnterOtpPage> {
   }
 
   Future<void> _resendOtp() async {
+    if (_isResending) {
+      return;
+    }
+
+    if (_secondsLeft > 0) {
+      _showMessage('Please wait ${_secondsLeft}s before resending OTP.');
+      return;
+    }
+
+    setState(() => _isResending = true);
     try {
       await ref.read(authControllerProvider.notifier).resendOtp();
       _showMessage('OTP resent to your email.');
       _syncTimer();
     } on AuthFlowException catch (error) {
       _showMessage(error.message);
+    } finally {
+      if (mounted) {
+        setState(() => _isResending = false);
+      }
     }
   }
 
@@ -174,7 +189,9 @@ class _EnterOtpPageState extends ConsumerState<EnterOtpPage> {
           ),
           const SizedBox(height: 20),
           Text(
-            _secondsLeft > 0
+            _isResending
+                ? 'Sending a new OTP...'
+                : _secondsLeft > 0
                 ? 'Resend code in ${_secondsLeft}s'
                 : 'You can resend the OTP now',
             style: Theme.of(context).textTheme.titleLarge?.copyWith(
@@ -186,7 +203,7 @@ class _EnterOtpPageState extends ConsumerState<EnterOtpPage> {
           InlineAuthLink(
             leadingText: 'Didn’t Receive OTP?',
             actionText: 'RESEND OTP',
-            onTap: _secondsLeft == 0 ? _resendOtp : () {},
+            onTap: _isResending ? null : _resendOtp,
           ),
           const SizedBox(height: 24),
           AuthPrimaryButton(

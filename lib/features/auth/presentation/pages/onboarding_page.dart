@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:smooth_page_indicator/smooth_page_indicator.dart';
 
+import '../../../../core/localization/app_localizations.dart';
 import '../../../../core/theme/app_breakpoints.dart';
 import '../../application/auth_controller.dart';
 import '../auth_routes.dart';
@@ -19,24 +20,9 @@ class _OnboardingPageState extends ConsumerState<OnboardingPage> {
   int _currentIndex = 0;
 
   final List<_OnboardingItem> _items = const [
-    _OnboardingItem(
-      imageAsset: 'assets/images/onboarding/onboarding_books.png',
-      title: 'Discover Books',
-      subtitle:
-          'Browse a curated collection and find your next favorite read in seconds.',
-    ),
-    _OnboardingItem(
-      imageAsset: 'assets/images/onboarding/onboarding_delivery.png',
-      title: 'Quick Delivery',
-      subtitle:
-          'Get your selected books delivered fast, reliably, and right to your door.',
-    ),
-    _OnboardingItem(
-      imageAsset: 'assets/images/onboarding/onboarding_orders.png',
-      title: 'Track Orders',
-      subtitle:
-          'Stay updated from checkout to doorstep with a simple order tracking flow.',
-    ),
+    _OnboardingItem(imageAsset: 'assets/images/onboarding/onboarding_books.png'),
+    _OnboardingItem(imageAsset: 'assets/images/onboarding/onboarding_delivery.png'),
+    _OnboardingItem(imageAsset: 'assets/images/onboarding/onboarding_orders.png'),
   ];
 
   @override
@@ -78,6 +64,7 @@ class _OnboardingPageState extends ConsumerState<OnboardingPage> {
 
   @override
   Widget build(BuildContext context) {
+    final l10n = AppLocalizations.of(context);
     final size = MediaQuery.sizeOf(context);
     final width = size.width;
     final isTablet = width >= AppBreakpoints.tablet;
@@ -102,7 +89,7 @@ class _OnboardingPageState extends ConsumerState<OnboardingPage> {
                   const Spacer(),
                   TextButton(
                     onPressed: _completeFlow,
-                    child: const Text('Skip'),
+                    child: Text(l10n.skip),
                   ),
                 ],
               ),
@@ -116,6 +103,16 @@ class _OnboardingPageState extends ConsumerState<OnboardingPage> {
                 },
                 itemBuilder: (context, index) {
                   final item = _items[index];
+                  final title = switch (index) {
+                    0 => l10n.discoverBooks,
+                    1 => l10n.quickDelivery,
+                    _ => l10n.trackOrders,
+                  };
+                  final subtitle = switch (index) {
+                    0 => l10n.discoverBooksSubtitle,
+                    1 => l10n.quickDeliverySubtitle,
+                    _ => l10n.trackOrdersSubtitle,
+                  };
 
                   return Column(
                     mainAxisAlignment: MainAxisAlignment.center,
@@ -133,7 +130,7 @@ class _OnboardingPageState extends ConsumerState<OnboardingPage> {
                         ),
                       ),
                       Text(
-                        item.title,
+                        title,
                         style: Theme.of(context).textTheme.headlineMedium
                             ?.copyWith(
                               fontWeight: FontWeight.w700,
@@ -147,7 +144,7 @@ class _OnboardingPageState extends ConsumerState<OnboardingPage> {
                           horizontal: isTablet ? 52 : 12,
                         ),
                         child: Text(
-                          item.subtitle,
+                          subtitle,
                           textAlign: TextAlign.center,
                           style: Theme.of(context).textTheme.titleMedium
                               ?.copyWith(
@@ -186,7 +183,9 @@ class _OnboardingPageState extends ConsumerState<OnboardingPage> {
               child: ElevatedButton(
                 onPressed: _goNext,
                 child: Text(
-                  _currentIndex == _items.length - 1 ? 'Get Started' : 'Next',
+                  _currentIndex == _items.length - 1
+                      ? l10n.getStarted
+                      : l10n.next,
                 ),
               ),
             ),
@@ -201,11 +200,7 @@ class _OnboardingPageState extends ConsumerState<OnboardingPage> {
 class _OnboardingItem {
   const _OnboardingItem({
     required this.imageAsset,
-    required this.title,
-    required this.subtitle,
   });
 
   final String imageAsset;
-  final String title;
-  final String subtitle;
 }

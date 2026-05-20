@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 
+import '../../../../core/localization/app_localizations.dart';
 import '../../../../core/utils/validators.dart';
 import '../../application/auth_controller.dart';
 import '../auth_routes.dart';
@@ -68,6 +69,8 @@ class _SignInPageState extends ConsumerState<SignInPage> {
 
   @override
   Widget build(BuildContext context) {
+    final l10n = AppLocalizations.of(context);
+
     return AuthScaffold(
       child: Form(
         key: _formKey,
@@ -75,22 +78,27 @@ class _SignInPageState extends ConsumerState<SignInPage> {
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
             const BrandHeader(topSpacing: 48, bottomSpacing: 28),
-            const AuthFieldLabel('User Email'),
+            AuthFieldLabel(l10n.userEmail),
             AuthTextField(
               controller: _emailController,
-              hintText: 'Enter your Email',
+              hintText: l10n.enterYourEmail,
               keyboardType: TextInputType.emailAddress,
-              validator: Validators.email,
+              validator: (value) => Validators.email(value, l10n: l10n),
               prefixIcon: const Icon(Icons.mail_outline_rounded),
             ),
             const SizedBox(height: 20),
-            const AuthFieldLabel('Password'),
+            AuthFieldLabel(l10n.password),
             AuthTextField(
               controller: _passwordController,
-              hintText: 'Enter your Password',
+              hintText: l10n.enterYourPassword,
               obscureText: _obscurePassword,
               validator: (value) =>
-                  Validators.minLength(value, 8, label: 'Password'),
+                  Validators.minLength(
+                    value,
+                    8,
+                    label: l10n.password,
+                    l10n: l10n,
+                  ),
               prefixIcon: const Icon(Icons.lock_outline_rounded),
               suffixIcon: GestureDetector(
                 onTap: () {
@@ -123,7 +131,7 @@ class _SignInPageState extends ConsumerState<SignInPage> {
                 ),
                 const SizedBox(width: 12),
                 Text(
-                  'Remember me',
+                  l10n.rememberMe,
                   style: Theme.of(context).textTheme.titleLarge?.copyWith(
                     color: const Color(0xFF808080),
                   ),
@@ -133,21 +141,21 @@ class _SignInPageState extends ConsumerState<SignInPage> {
                   onPressed: () {
                     Navigator.of(context).pushNamed(AuthRoutes.forgotPassword);
                   },
-                  child: const Text('Forgot password?'),
+                  child: Text(l10n.forgotPassword),
                 ),
               ],
             ),
             const SizedBox(height: 20),
             AuthPrimaryButton(
-              label: 'Sign in',
+              label: l10n.signIn,
               onPressed: _submit,
               isBusy: _isSubmitting,
             ),
             const SizedBox(height: 28),
             Center(
               child: InlineAuthLink(
-                leadingText: 'Don’t have an account?',
-                actionText: 'Sign Up Here',
+                leadingText: l10n.dontHaveAccount,
+                actionText: l10n.signUpHere,
                 onTap: () {
                   Navigator.of(context).pushNamed(AuthRoutes.signUp);
                 },
@@ -157,18 +165,18 @@ class _SignInPageState extends ConsumerState<SignInPage> {
             SocialActionButton(
               icon: Icons.g_mobiledata_rounded,
               iconColor: const Color(0xFFEA4335),
-              label: 'Continue with Google',
+              label: l10n.continueWithGoogle,
               onPressed: () {
-                _showMessage('Google sign-in is not configured yet.');
+                _showMessage(l10n.googleNotConfigured);
               },
             ),
             const SizedBox(height: 12),
             SocialActionButton(
               icon: Icons.facebook_rounded,
               iconColor: const Color(0xFF1877F2),
-              label: 'Continue with Facebook',
+              label: l10n.continueWithFacebook,
               onPressed: () {
-                _showMessage('Facebook sign-in is not configured yet.');
+                _showMessage(l10n.facebookNotConfigured);
               },
             ),
             const SizedBox(height: 16),

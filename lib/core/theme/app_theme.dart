@@ -1,5 +1,4 @@
 import 'package:flutter/material.dart';
-import 'package:google_fonts/google_fonts.dart';
 
 import 'app_radius.dart';
 
@@ -32,24 +31,46 @@ final class AppTheme {
   }
 
   static ThemeData _base(ColorScheme colorScheme) {
+    const poppinsFontFamily = 'Poppins';
     final base = ThemeData(useMaterial3: true, colorScheme: colorScheme);
-    final textTheme = GoogleFonts.poppinsTextTheme(base.textTheme).copyWith(
-      headlineLarge: const TextStyle(fontSize: 28, fontWeight: FontWeight.w700),
-      headlineMedium: const TextStyle(
+    final poppinsTextTheme = base.textTheme.apply(
+      fontFamily: poppinsFontFamily,
+    );
+    final textTheme = poppinsTextTheme.copyWith(
+      headlineLarge: poppinsTextTheme.headlineLarge?.copyWith(
+        fontSize: 28,
+        fontWeight: FontWeight.w700,
+      ),
+      headlineMedium: poppinsTextTheme.headlineMedium?.copyWith(
         fontSize: 24,
         fontWeight: FontWeight.w700,
       ),
-      headlineSmall: const TextStyle(fontSize: 18, fontWeight: FontWeight.w600),
-      titleLarge: const TextStyle(fontSize: 16, fontWeight: FontWeight.w500),
-      titleMedium: const TextStyle(fontSize: 14, fontWeight: FontWeight.w400),
-      bodyLarge: const TextStyle(fontSize: 15, fontWeight: FontWeight.w400),
-      bodyMedium: const TextStyle(fontSize: 14, fontWeight: FontWeight.w400),
+      headlineSmall: poppinsTextTheme.headlineSmall?.copyWith(
+        fontSize: 18,
+        fontWeight: FontWeight.w600,
+      ),
+      titleLarge: poppinsTextTheme.titleLarge?.copyWith(
+        fontSize: 16,
+        fontWeight: FontWeight.w500,
+      ),
+      titleMedium: poppinsTextTheme.titleMedium?.copyWith(
+        fontSize: 14,
+        fontWeight: FontWeight.w400,
+      ),
+      bodyLarge: poppinsTextTheme.bodyLarge?.copyWith(
+        fontSize: 15,
+        fontWeight: FontWeight.w400,
+      ),
+      bodyMedium: poppinsTextTheme.bodyMedium?.copyWith(
+        fontSize: 14,
+        fontWeight: FontWeight.w400,
+      ),
     );
 
     return ThemeData(
       useMaterial3: true,
       colorScheme: colorScheme,
-      fontFamily: GoogleFonts.poppins().fontFamily,
+      fontFamily: poppinsFontFamily,
       scaffoldBackgroundColor: colorScheme.surface,
       textTheme: textTheme.apply(
         bodyColor: colorScheme.onSurface,
@@ -70,6 +91,7 @@ final class AppTheme {
       inputDecorationTheme: InputDecorationTheme(
         filled: false,
         hintStyle: TextStyle(
+          fontFamily: poppinsFontFamily,
           color: const Color(0xFF888888),
           fontSize: 16,
           fontWeight: FontWeight.w400,
@@ -107,7 +129,11 @@ final class AppTheme {
           disabledBackgroundColor: const Color(0xFF9CB7D1),
           minimumSize: const Size(48, 54),
           padding: const EdgeInsets.symmetric(horizontal: 20, vertical: 14),
-          textStyle: const TextStyle(fontSize: 17, fontWeight: FontWeight.w600),
+          textStyle: TextStyle(
+            fontFamily: poppinsFontFamily,
+            fontSize: 17,
+            fontWeight: FontWeight.w600,
+          ),
           shape: RoundedRectangleBorder(
             borderRadius: BorderRadius.circular(16),
           ),
@@ -130,7 +156,10 @@ final class AppTheme {
       ),
       snackBarTheme: SnackBarThemeData(
         backgroundColor: const Color(0xFF23252B),
-        contentTextStyle: const TextStyle(color: Colors.white),
+        contentTextStyle: TextStyle(
+          fontFamily: poppinsFontFamily,
+          color: Colors.white,
+        ),
         behavior: SnackBarBehavior.floating,
         shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(14)),
       ),

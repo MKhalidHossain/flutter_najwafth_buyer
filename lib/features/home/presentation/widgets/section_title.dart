@@ -11,7 +11,7 @@ class SectionTitle extends StatelessWidget {
   Widget build(BuildContext context) {
     return Row(
       children: [
-        Expanded(child: Text(title, style: const TextStyle(fontSize: 26, fontWeight: FontWeight.w500))),
+        Expanded(child: Text(title, style: const TextStyle(fontSize: 26, color : Colors.black, fontWeight: FontWeight.w500))),
         if (actionText != null)
           GestureDetector(
             onTap: onActionTap,

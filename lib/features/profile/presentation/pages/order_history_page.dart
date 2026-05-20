@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 
+import '../../../../core/localization/app_localizations.dart';
 import '../../../order/application/order_controller.dart';
 import '../../../order/domain/order_models.dart';
 import '../../../order/presentation/pages/order_details_page.dart';
@@ -14,18 +15,19 @@ class OrderHistoryPage extends ConsumerStatefulWidget {
 }
 
 class _OrderHistoryPageState extends ConsumerState<OrderHistoryPage> {
-  String _selectedFilter = 'All';
+  String _selectedFilter = 'all';
 
   @override
   Widget build(BuildContext context) {
+    final l10n = AppLocalizations.of(context);
     final ordersAsync = ref.watch(orderControllerProvider);
     final orders = ordersAsync.asData?.value ?? const <OrderModel>[];
 
     final filteredOrders = orders.where((order) {
-      if (_selectedFilter == 'All') return true;
-      if (_selectedFilter == 'Completed')
+      if (_selectedFilter == 'all') return true;
+      if (_selectedFilter == 'completed')
         return order.status == OrderStatus.delivered;
-      if (_selectedFilter == 'Picked')
+      if (_selectedFilter == 'picked')
         return order.status == OrderStatus.picked;
       return true;
     }).toList();
@@ -44,8 +46,8 @@ class _OrderHistoryPageState extends ConsumerState<OrderHistoryPage> {
             size: 28,
           ),
         ),
-        title: const Text(
-          'Order History',
+        title: Text(
+          l10n.orderHistory,
           style: TextStyle(
             fontSize: 18,
             fontWeight: FontWeight.w600,
@@ -62,11 +64,11 @@ class _OrderHistoryPageState extends ConsumerState<OrderHistoryPage> {
             padding: const EdgeInsets.symmetric(horizontal: 20),
             child: Row(
               children: [
-                _buildFilterChip('All'),
+                _buildFilterChip(context, 'all'),
                 const SizedBox(width: 12),
-                _buildFilterChip('Completed', count: 3),
+                _buildFilterChip(context, 'completed', count: 3),
                 const SizedBox(width: 12),
-                _buildFilterChip('Picked', count: 3),
+                _buildFilterChip(context, 'picked', count: 3),
               ],
             ),
           ),
@@ -80,18 +82,18 @@ class _OrderHistoryPageState extends ConsumerState<OrderHistoryPage> {
                 child: Column(
                   mainAxisSize: MainAxisSize.min,
                   children: [
-                    const Text('Failed to load orders'),
+                    Text(l10n.failedToLoadOrders),
                     const SizedBox(height: 10),
                     ElevatedButton(
                       onPressed: () =>
                           ref.read(orderControllerProvider.notifier).refresh(),
-                      child: const Text('Retry'),
+                      child: Text(l10n.retry),
                     ),
                   ],
                 ),
               ),
               data: (_) => filteredOrders.isEmpty
-                  ? const Center(child: Text('No orders found'))
+                  ? Center(child: Text(l10n.noOrdersFound))
                   : ListView.builder(
                       padding: const EdgeInsets.symmetric(horizontal: 20),
                       itemCount: filteredOrders.length,
@@ -115,12 +117,18 @@ class _OrderHistoryPageState extends ConsumerState<OrderHistoryPage> {
     );
   }
 
-  Widget _buildFilterChip(String label, {int? count}) {
-    final isSelected = _selectedFilter == label;
+  Widget _buildFilterChip(BuildContext context, String filter, {int? count}) {
+    final l10n = AppLocalizations.of(context);
+    final label = switch (filter) {
+      'completed' => l10n.completed,
+      'picked' => l10n.picked,
+      _ => l10n.all,
+    };
+    final isSelected = _selectedFilter == filter;
     final displayLabel = count != null ? '$label ($count)' : label;
 
     return GestureDetector(
-      onTap: () => setState(() => _selectedFilter = label),
+      onTap: () => setState(() => _selectedFilter = filter),
       child: Container(
         padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 8),
         decoration: BoxDecoration(

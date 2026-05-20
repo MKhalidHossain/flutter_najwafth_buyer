@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 
+import '../../../../core/localization/app_localizations.dart';
 import '../../domain/store_models.dart';
 import '../widgets/featured_book_card.dart';
 
@@ -19,6 +20,7 @@ class FeaturedPage extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    final l10n = AppLocalizations.of(context);
     return Scaffold(
       backgroundColor: const Color(0xFFF5F6F8),
       appBar: AppBar(
@@ -26,8 +28,8 @@ class FeaturedPage extends StatelessWidget {
         backgroundColor: const Color(0xFFF5F6F8),
         leading: BackButton(),
         titleSpacing: 0,
-        title: const Text(
-          'Featured Bookstores',
+        title: Text(
+          l10n.featuredBookstores,
           style: TextStyle(
             fontSize: 25,
             fontWeight: FontWeight.w600,
@@ -40,8 +42,8 @@ class FeaturedPage extends StatelessWidget {
         children: [
           const _FeaturedSearchBar(),
           const SizedBox(height: 14),
-          const Text(
-            'Categories',
+          Text(
+            l10n.categories,
             style: TextStyle(
               fontSize: 21,
               fontWeight: FontWeight.w600,
@@ -132,10 +134,10 @@ class FeaturedPage extends StatelessWidget {
           ),
           const SizedBox(height: 10),
           Row(
-            children: const [
+            children: [
               Expanded(
                 child: Text(
-                  'Popular Books',
+                  l10n.popularBooks,
                   style: TextStyle(
                     fontSize: 29,
                     fontWeight: FontWeight.w600,
@@ -144,7 +146,7 @@ class FeaturedPage extends StatelessWidget {
                 ),
               ),
               Text(
-                'See all',
+                l10n.seeAll,
                 style: TextStyle(
                   fontSize: 17,
                   fontWeight: FontWeight.w600,
@@ -180,11 +182,12 @@ class _FeaturedSearchBar extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    final l10n = AppLocalizations.of(context);
     return SizedBox(
       height: 52,
       child: TextField(
         decoration: InputDecoration(
-          hintText: 'Search books, authors, stores...',
+          hintText: l10n.searchHint,
           hintStyle: const TextStyle(fontSize: 13, color: Color(0xFFA6AFBA)),
           contentPadding: const EdgeInsets.symmetric(horizontal: 14),
           border: OutlineInputBorder(

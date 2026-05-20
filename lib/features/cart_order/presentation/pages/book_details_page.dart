@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 
+import '../../../../core/localization/app_localizations.dart';
 import '../../../home/application/book_provider.dart';
 import '../../../home/application/store_controller.dart';
 import '../../../home/domain/store_models.dart';
@@ -20,6 +21,7 @@ class _BookDetailsPageState extends ConsumerState<BookDetailsPage> {
 
   @override
   Widget build(BuildContext context) {
+    final l10n = AppLocalizations.of(context);
     final bookAsync = ref.watch(bookDetailProvider(widget.book.id));
     final book = bookAsync.asData?.value ?? widget.book;
     final isLoading = bookAsync.isLoading;
@@ -125,7 +127,7 @@ class _BookDetailsPageState extends ConsumerState<BookDetailsPage> {
                     const Icon(Icons.location_on_outlined, size: 14, color: Color(0xFF5A91C4)),
                     const SizedBox(width: 4),
                     Expanded(
-                      child: Text(
+                        child: Text(
                         book.shopName ?? '123 Library, Book City',
                         maxLines: 1,
                         overflow: TextOverflow.ellipsis,
@@ -146,7 +148,7 @@ class _BookDetailsPageState extends ConsumerState<BookDetailsPage> {
                       borderRadius: BorderRadius.circular(20),
                     ),
                     child: Text(
-                      book.categoryName.isNotEmpty ? book.categoryName : 'General',
+                      book.categoryName.isNotEmpty ? book.categoryName : l10n.general,
                       style: const TextStyle(
                         fontSize: 12,
                         color: Color(0xFF5A91C4),
@@ -158,8 +160,8 @@ class _BookDetailsPageState extends ConsumerState<BookDetailsPage> {
                 const SizedBox(height: 24),
 
                 // ── Description ───────────────────────────────────────
-                const Text(
-                  'Description',
+                Text(
+                  l10n.description,
                   style: TextStyle(
                     fontSize: 16,
                     fontWeight: FontWeight.w600,
@@ -170,7 +172,7 @@ class _BookDetailsPageState extends ConsumerState<BookDetailsPage> {
                 Text(
                   book.description.isNotEmpty
                       ? book.description
-                      : 'No description available.',
+                      : l10n.noDescriptionAvailable,
                   maxLines: _descriptionExpanded ? null : 3,
                   overflow: _descriptionExpanded ? null : TextOverflow.ellipsis,
                   style: const TextStyle(
@@ -183,7 +185,7 @@ class _BookDetailsPageState extends ConsumerState<BookDetailsPage> {
                 GestureDetector(
                   onTap: () => setState(() => _descriptionExpanded = !_descriptionExpanded),
                   child: Text(
-                    _descriptionExpanded ? 'Show less' : 'Read more',
+                    _descriptionExpanded ? l10n.showLess : l10n.readMore,
                     style: const TextStyle(
                       fontSize: 13,
                       color: Color(0xFF5A91C4),
@@ -303,7 +305,7 @@ class _BookDetailsPageState extends ConsumerState<BookDetailsPage> {
                   ),
                   icon: const Icon(Icons.shopping_cart_outlined, color: Colors.white, size: 20),
                   label: Text(
-                    book.stock ? 'Add to Cart' : 'Out of Stock',
+                    book.stock ? l10n.addToCart : l10n.outOfStock,
                     style: const TextStyle(
                       fontSize: 16,
                       fontWeight: FontWeight.w600,
@@ -343,9 +345,10 @@ class _BookDetailsPageState extends ConsumerState<BookDetailsPage> {
   }
 
   void _addToCart(BookItem book) {
+    final l10n = AppLocalizations.of(context);
     ref.read(storeControllerProvider.notifier).addToCart(book, quantity: _quantity);
     ScaffoldMessenger.of(context).showSnackBar(
-      SnackBar(content: Text('${book.title} added to cart')),
+      SnackBar(content: Text(l10n.addedToCart(book.title))),
     );
     Navigator.of(context).pop();
   }

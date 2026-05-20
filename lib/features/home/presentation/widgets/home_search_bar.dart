@@ -1,5 +1,7 @@
 import 'package:flutter/material.dart';
 
+import '../../../../core/localization/app_localizations.dart';
+
 class HomeSearchBar extends StatelessWidget {
   const HomeSearchBar({super.key, this.onChanged});
 
@@ -7,12 +9,14 @@ class HomeSearchBar extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    final l10n = AppLocalizations.of(context);
+
     return SizedBox(
       height: 50,
       child: TextField(
         onChanged: onChanged,
         decoration: InputDecoration(
-          hintText: 'Search books, authors, stores...',
+          hintText: l10n.searchHint,
           hintStyle: const TextStyle(fontSize: 12, color: Color(0xFFA6AFBA)),
           contentPadding: const EdgeInsets.symmetric(horizontal: 10),
           border: OutlineInputBorder(

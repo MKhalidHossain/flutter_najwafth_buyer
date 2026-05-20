@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 
+import '../../../../core/localization/app_localizations.dart';
 import '../../../home/application/store_controller.dart';
 import '../../../home/domain/store_models.dart';
 import 'cart_item_card.dart';
@@ -17,6 +18,7 @@ class CartTab extends ConsumerWidget {
 
   @override
   Widget build(BuildContext context, WidgetRef ref) {
+    final l10n = AppLocalizations.of(context);
     final storeState = ref.watch(storeControllerProvider);
     final catalog = ref.watch(storeCatalogProvider);
 
@@ -28,9 +30,9 @@ class CartTab extends ConsumerWidget {
     return Scaffold(
       backgroundColor: Colors.white,
       appBar: AppBar(
-        title: const Text(
-          'My Cart',
-          style: TextStyle(
+        title: Text(
+          l10n.myCart,
+          style: const TextStyle(
             fontSize: 18,
             fontWeight: FontWeight.w600,
             color: Color(0xFF243041),
@@ -48,6 +50,7 @@ class CartTab extends ConsumerWidget {
   }
 
   Widget _buildEmptyCart(BuildContext context) {
+    final l10n = AppLocalizations.of(context);
     return Center(
       child: Padding(
         padding: const EdgeInsets.symmetric(horizontal: 24),
@@ -75,8 +78,8 @@ class CartTab extends ConsumerWidget {
                   ),
                 ),
                 const SizedBox(height: 24),
-                const Text(
-                  'Your cart is empty',
+                Text(
+                  l10n.yourCartIsEmpty,
                   style: TextStyle(
                     fontSize: 20,
                     fontWeight: FontWeight.w600,
@@ -84,8 +87,8 @@ class CartTab extends ConsumerWidget {
                   ),
                 ),
                 const SizedBox(height: 8),
-                const Text(
-                  'Looks like you haven\'t added any books\nto your cart yet.',
+                Text(
+                  l10n.cartEmptyMessage,
                   textAlign: TextAlign.center,
                   style: TextStyle(
                     fontSize: 14,
@@ -103,8 +106,8 @@ class CartTab extends ConsumerWidget {
                       borderRadius: BorderRadius.circular(8),
                     ),
                   ),
-                  child: const Text(
-                    'Browse Books',
+                  child: Text(
+                    l10n.browseBooks,
                     style: TextStyle(
                       fontSize: 14,
                       fontWeight: FontWeight.w600,
@@ -126,6 +129,7 @@ class CartTab extends ConsumerWidget {
     WidgetRef ref,
     StoreState storeState,
   ) {
+    final l10n = AppLocalizations.of(context);
     return Column(
       children: [
         Expanded(
@@ -166,8 +170,8 @@ class CartTab extends ConsumerWidget {
                   crossAxisAlignment: CrossAxisAlignment.start,
                   mainAxisSize: MainAxisSize.min,
                   children: [
-                    const Text(
-                      'Total Price',
+                    Text(
+                      l10n.totalPrice,
                       style: TextStyle(
                         fontSize: 12,
                         color: Color(0xFF8E98A5),
@@ -193,8 +197,8 @@ class CartTab extends ConsumerWidget {
                       borderRadius: BorderRadius.circular(8),
                     ),
                   ),
-                  child: const Text(
-                    'Proceed to Checkout',
+                  child: Text(
+                    l10n.proceedToCheckout,
                     style: TextStyle(
                       fontSize: 14,
                       fontWeight: FontWeight.w600,

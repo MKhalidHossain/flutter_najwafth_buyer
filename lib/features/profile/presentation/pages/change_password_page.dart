@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 
+import '../../../../core/localization/app_localizations.dart';
 import '../../application/profile_controller.dart';
 
 class ChangePasswordPage extends ConsumerStatefulWidget {
@@ -25,15 +26,16 @@ class _ChangePasswordPageState extends ConsumerState<ChangePasswordPage> {
   }
 
   Future<void> _save() async {
+    final l10n = AppLocalizations.of(context);
     FocusScope.of(context).unfocus();
     if (_currentController.text.isEmpty ||
         _newController.text.isEmpty ||
         _confirmController.text.isEmpty) {
-      _showMessage('Please fill in all required password fields.');
+      _showMessage(l10n.fillRequiredPasswordFields);
       return;
     }
     if (_newController.text != _confirmController.text) {
-      _showMessage('New password and confirm password do not match.');
+      _showMessage(l10n.newAndConfirmPasswordDoNotMatch);
       return;
     }
 
@@ -47,7 +49,7 @@ class _ChangePasswordPageState extends ConsumerState<ChangePasswordPage> {
       if (!mounted) {
         return;
       }
-      _showMessage('Password changed successfully.');
+      _showMessage(l10n.passwordChangedSuccessfully);
       Navigator.pop(context);
     } on Exception catch (error) {
       _showMessage(error.toString().replaceFirst('Exception: ', ''));
@@ -66,6 +68,7 @@ class _ChangePasswordPageState extends ConsumerState<ChangePasswordPage> {
 
   @override
   Widget build(BuildContext context) {
+    final l10n = AppLocalizations.of(context);
     return Scaffold(
       backgroundColor: Colors.white,
       appBar: AppBar(
@@ -76,8 +79,8 @@ class _ChangePasswordPageState extends ConsumerState<ChangePasswordPage> {
           onPressed: () => Navigator.pop(context),
           icon: const Icon(Icons.chevron_left, color: Color(0xFF243041), size: 28),
         ),
-        title: const Text(
-          'Change Password',
+        title: Text(
+          l10n.changePassword,
           style: TextStyle(
             fontSize: 18,
             fontWeight: FontWeight.w600,
@@ -90,11 +93,11 @@ class _ChangePasswordPageState extends ConsumerState<ChangePasswordPage> {
         child: Column(
           children: [
             const SizedBox(height: 10),
-            _buildPasswordField(_currentController, 'Current Password'),
+            _buildPasswordField(_currentController, l10n.currentPassword),
             const SizedBox(height: 16),
-            _buildPasswordField(_newController, 'New Password'),
+            _buildPasswordField(_newController, l10n.newPassword),
             const SizedBox(height: 16),
-            _buildPasswordField(_confirmController, 'Confirm New Password'),
+            _buildPasswordField(_confirmController, l10n.confirmNewPassword),
             const Spacer(),
             SizedBox(
               width: double.infinity,
@@ -116,8 +119,8 @@ class _ChangePasswordPageState extends ConsumerState<ChangePasswordPage> {
                           valueColor: AlwaysStoppedAnimation<Color>(Colors.white),
                         ),
                       )
-                    : const Text(
-                        'Save',
+                    : Text(
+                        l10n.save,
                         style: TextStyle(
                           color: Colors.white,
                           fontSize: 16,

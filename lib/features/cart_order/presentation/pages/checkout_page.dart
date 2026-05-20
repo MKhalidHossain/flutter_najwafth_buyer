@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 
+import '../../../../core/localization/app_localizations.dart';
 import '../../../../core/errors/result.dart';
 import '../../../home/application/store_controller.dart';
 import '../../../home/domain/store_models.dart';
@@ -15,9 +16,9 @@ class CheckoutPage extends ConsumerStatefulWidget {
 }
 
 class _CheckoutPageState extends ConsumerState<CheckoutPage> {
-  final _nameController = TextEditingController(text: 'Tanjila Hafiza Lata');
-  final _addressController = TextEditingController(text: 'Dhaka, Bangladesh');
-  final _phoneController = TextEditingController(text: '01810641003');
+  final _nameController = TextEditingController();
+  final _addressController = TextEditingController();
+  final _phoneController = TextEditingController();
 
   @override
   void dispose() {
@@ -29,6 +30,7 @@ class _CheckoutPageState extends ConsumerState<CheckoutPage> {
 
   @override
   Widget build(BuildContext context) {
+    final l10n = AppLocalizations.of(context);
     final storeState = ref.watch(storeControllerProvider);
     final catalog = ref.watch(storeCatalogProvider);
 
@@ -60,8 +62,8 @@ class _CheckoutPageState extends ConsumerState<CheckoutPage> {
             size: 28,
           ),
         ),
-        title: const Text(
-          'Payment details',
+        title: Text(
+          l10n.paymentDetails,
           style: TextStyle(
             fontSize: 18,
             fontWeight: FontWeight.w600,
@@ -81,8 +83,8 @@ class _CheckoutPageState extends ConsumerState<CheckoutPage> {
           child: Column(
             crossAxisAlignment: CrossAxisAlignment.start,
             children: [
-              const Text(
-                'Checkout',
+              Text(
+                l10n.checkout,
                 style: TextStyle(
                   fontSize: 18,
                   fontWeight: FontWeight.w600,
@@ -90,25 +92,25 @@ class _CheckoutPageState extends ConsumerState<CheckoutPage> {
                 ),
               ),
               const SizedBox(height: 4),
-              const Text(
-                'Complete your order details',
+              Text(
+                l10n.completeOrderDetails,
                 style: TextStyle(fontSize: 12, color: Color(0xFF8E98A5)),
               ),
               const SizedBox(height: 24),
 
-              _buildInputLabel(Icons.person_outline, 'Name'),
+              _buildInputLabel(Icons.person_outline, l10n.name),
               const SizedBox(height: 8),
-              _buildTextField(_nameController),
+              _buildTextField(_nameController, l10n.enterYourName),
               const SizedBox(height: 16),
 
-              _buildInputLabel(Icons.location_on_outlined, 'Address'),
+              _buildInputLabel(Icons.location_on_outlined, l10n.address),
               const SizedBox(height: 8),
-              _buildTextField(_addressController),
+              _buildTextField(_addressController, l10n.enterYourAddress),
               const SizedBox(height: 16),
 
-              _buildInputLabel(Icons.phone_in_talk_outlined, 'Phone number'),
+              _buildInputLabel(Icons.phone_in_talk_outlined, l10n.phoneNumber),
               const SizedBox(height: 8),
-              _buildTextField(_phoneController),
+              _buildTextField(_phoneController, l10n.enterYourPhoneNumber),
               const SizedBox(height: 24),
 
               // Order Summary
@@ -120,8 +122,8 @@ class _CheckoutPageState extends ConsumerState<CheckoutPage> {
                     color: Color(0xFF5A91C4),
                   ),
                   const SizedBox(width: 8),
-                  const Text(
-                    'Order Summary',
+                  Text(
+                    l10n.orderSummary,
                     style: TextStyle(
                       fontSize: 14,
                       fontWeight: FontWeight.w600,
@@ -131,10 +133,10 @@ class _CheckoutPageState extends ConsumerState<CheckoutPage> {
                 ],
               ),
               const SizedBox(height: 12),
-              _buildSummaryRow('Subtotal', '\$${subtotal.toStringAsFixed(2)}'),
+              _buildSummaryRow(l10n.subtotal, '\$${subtotal.toStringAsFixed(2)}'),
               const SizedBox(height: 8),
               _buildSummaryRow(
-                'Delivery fee',
+                l10n.deliveryFee,
                 '\$${deliveryFee.toStringAsFixed(2)}',
               ),
               const Padding(
@@ -144,8 +146,8 @@ class _CheckoutPageState extends ConsumerState<CheckoutPage> {
               Row(
                 mainAxisAlignment: MainAxisAlignment.spaceBetween,
                 children: [
-                  const Text(
-                    'Total',
+                  Text(
+                    l10n.total,
                     style: TextStyle(
                       fontSize: 14,
                       fontWeight: FontWeight.w700,
@@ -173,8 +175,8 @@ class _CheckoutPageState extends ConsumerState<CheckoutPage> {
                     color: Color(0xFF5A91C4),
                   ),
                   const SizedBox(width: 8),
-                  const Text(
-                    'Payment',
+                  Text(
+                    l10n.payment,
                     style: TextStyle(
                       fontSize: 14,
                       fontWeight: FontWeight.w600,
@@ -191,8 +193,8 @@ class _CheckoutPageState extends ConsumerState<CheckoutPage> {
                   color: const Color(0xFFF3F8FC),
                   borderRadius: BorderRadius.circular(8),
                 ),
-                child: const Text(
-                  'stripe',
+                child: Text(
+                  l10n.stripe,
                   style: TextStyle(
                     fontSize: 18,
                     fontWeight: FontWeight.w900,
@@ -220,8 +222,8 @@ class _CheckoutPageState extends ConsumerState<CheckoutPage> {
                     color: Colors.white,
                     size: 20,
                   ),
-                  label: const Text(
-                    'Place Order',
+                  label: Text(
+                    l10n.placeOrder,
                     style: TextStyle(
                       fontSize: 16,
                       fontWeight: FontWeight.w600,
@@ -254,11 +256,12 @@ class _CheckoutPageState extends ConsumerState<CheckoutPage> {
     );
   }
 
-  Widget _buildTextField(TextEditingController controller) {
+  Widget _buildTextField(TextEditingController controller, String hintText) {
     return TextField(
       controller: controller,
       style: const TextStyle(fontSize: 13, color: Color(0xFF243041)),
       decoration: InputDecoration(
+        hintText: hintText,
         filled: true,
         fillColor: const Color(0xFFF3F8FC),
         contentPadding: const EdgeInsets.symmetric(
@@ -299,11 +302,12 @@ class _CheckoutPageState extends ConsumerState<CheckoutPage> {
     double deliveryFee,
     double total,
   ) async {
+    final l10n = AppLocalizations.of(context);
     final storeState = ref.read(storeControllerProvider);
     if (storeState.cartQuantities.isEmpty) {
       ScaffoldMessenger.of(
         context,
-      ).showSnackBar(const SnackBar(content: Text('Cart is empty')));
+      ).showSnackBar(SnackBar(content: Text(l10n.cartIsEmpty)));
       return;
     }
 

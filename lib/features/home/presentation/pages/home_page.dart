@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 
+import '../../../../core/localization/app_localizations.dart';
 import '../../../cart_order/presentation/pages/book_details_page.dart';
 import '../../../cart_order/presentation/pages/checkout_page.dart';
 import '../../../../core/errors/result.dart';
@@ -36,6 +37,7 @@ class _StoreShellState extends ConsumerState<_StoreShell> {
 
   @override
   Widget build(BuildContext context) {
+    final l10n = AppLocalizations.of(context);
     final booksAsync = ref.watch(booksAsyncProvider);
     final categories = ref.watch(storeCategoriesProvider);
 
@@ -89,25 +91,25 @@ class _StoreShellState extends ConsumerState<_StoreShell> {
         ),
         iconSize: 28,
         onTap: (index) => setState(() => _currentIndex = index),
-        items: const [
+        items: [
           BottomNavigationBarItem(
             icon: Icon(Icons.home_outlined),
             activeIcon: Icon(Icons.home_outlined),
-            label: 'Home',
+            label: l10n.home,
           ),
           BottomNavigationBarItem(
             icon: Icon(Icons.inventory_2_outlined),
             activeIcon: Icon(Icons.inventory_2_outlined),
-            label: 'Order',
+            label: l10n.order,
           ),
           BottomNavigationBarItem(
             icon: Icon(Icons.shopping_cart_checkout_outlined),
             activeIcon: Icon(Icons.shopping_cart_checkout_outlined),
-            label: 'Cart',
+            label: l10n.cart,
           ),
           BottomNavigationBarItem(
             icon: Icon(Icons.person_outline),
-            label: 'Profile',
+            label: l10n.profile,
           ),
         ],
       ),
@@ -129,11 +131,12 @@ class _StoreShellState extends ConsumerState<_StoreShell> {
   }
 
   void _openPopular() {
+    final l10n = AppLocalizations.of(context);
     final books = ref.read(storeCatalogProvider);
     Navigator.of(context).push(
       MaterialPageRoute<void>(
         builder: (_) => BooksGridPage(
-          title: 'Popular Books',
+          title: l10n.popularBooks,
           books: books,
           onBookTap: _openBookDetails,
         ),
@@ -203,6 +206,7 @@ class _BooksErrorView extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    final l10n = AppLocalizations.of(context);
     return Scaffold(
       backgroundColor: const Color(0xFFF5F6F8),
       body: Center(
@@ -217,8 +221,8 @@ class _BooksErrorView extends StatelessWidget {
                 color: Color(0xFF9CA6B3),
               ),
               const SizedBox(height: 16),
-              const Text(
-                'Could not load books',
+              Text(
+                l10n.couldNotLoadBooks,
                 style: TextStyle(
                   fontSize: 16,
                   fontWeight: FontWeight.w600,
@@ -241,8 +245,8 @@ class _BooksErrorView extends StatelessWidget {
                   ),
                 ),
                 icon: const Icon(Icons.refresh, color: Colors.white),
-                label: const Text(
-                  'Retry',
+                label: Text(
+                  l10n.retry,
                   style: TextStyle(color: Colors.white),
                 ),
               ),

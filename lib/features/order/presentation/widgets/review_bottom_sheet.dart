@@ -1,10 +1,13 @@
 import 'package:flutter/material.dart';
 
+import '../../../../core/localization/app_localizations.dart';
+
 class ReviewBottomSheet extends StatelessWidget {
   const ReviewBottomSheet({super.key});
 
   @override
   Widget build(BuildContext context) {
+    final l10n = AppLocalizations.of(context);
     return Container(
       padding: EdgeInsets.only(
         left: 20,
@@ -51,7 +54,7 @@ class ReviewBottomSheet extends StatelessWidget {
           TextField(
             maxLines: 4,
             decoration: InputDecoration(
-              hintText: 'Write a short review to help fellow books lovers...',
+              hintText: l10n.writeShortReview,
               hintStyle: const TextStyle(fontSize: 12, color: Color(0xFF8E98A5)),
               border: OutlineInputBorder(
                 borderRadius: BorderRadius.circular(8),
@@ -81,8 +84,8 @@ class ReviewBottomSheet extends StatelessWidget {
                       borderRadius: BorderRadius.circular(8),
                     ),
                   ),
-                  child: const Text(
-                    'Cancel',
+                  child: Text(
+                    l10n.cancel,
                     style: TextStyle(
                       fontSize: 14,
                       fontWeight: FontWeight.w600,
@@ -106,8 +109,8 @@ class ReviewBottomSheet extends StatelessWidget {
                       borderRadius: BorderRadius.circular(8),
                     ),
                   ),
-                  child: const Text(
-                    'Post',
+                  child: Text(
+                    l10n.post,
                     style: TextStyle(
                       fontSize: 14,
                       fontWeight: FontWeight.w600,

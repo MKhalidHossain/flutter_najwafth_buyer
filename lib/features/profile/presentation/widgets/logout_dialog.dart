@@ -1,10 +1,14 @@
 import 'package:flutter/material.dart';
 
+import '../../../../core/localization/app_localizations.dart';
+
 class LogoutDialog extends StatelessWidget {
   const LogoutDialog({super.key});
 
   @override
   Widget build(BuildContext context) {
+    final l10n = AppLocalizations.of(context);
+
     return Dialog(
       shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(16)),
       child: Padding(
@@ -12,8 +16,8 @@ class LogoutDialog extends StatelessWidget {
         child: Column(
           mainAxisSize: MainAxisSize.min,
           children: [
-            const Text(
-              'Are you sure to log out?',
+            Text(
+              l10n.areYouSureToLogout,
               style: TextStyle(
                 fontSize: 18,
                 fontWeight: FontWeight.w600,
@@ -33,8 +37,8 @@ class LogoutDialog extends StatelessWidget {
                         borderRadius: BorderRadius.circular(8),
                       ),
                     ),
-                    child: const Text(
-                      'Cancel',
+                    child: Text(
+                      l10n.cancel,
                       style: TextStyle(
                         color: Color(0xFF5A91C4),
                         fontWeight: FontWeight.w600,
@@ -53,8 +57,8 @@ class LogoutDialog extends StatelessWidget {
                         borderRadius: BorderRadius.circular(8),
                       ),
                     ),
-                    child: const Text(
-                      'log out',
+                    child: Text(
+                      l10n.logOut,
                       style: TextStyle(
                         color: Colors.white,
                         fontWeight: FontWeight.w600,

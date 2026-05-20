@@ -22,9 +22,10 @@ class BooksGridPage extends StatelessWidget {
     return Scaffold(
       backgroundColor: const Color(0xFFF5F6F8),
       appBar: AppBar(
+        leading: BackButton(color: Colors.black,),
         title: Text(
           title,
-          style: const TextStyle(fontSize: 18, fontWeight: FontWeight.w700),
+          style: const TextStyle(fontSize: 18,color: Colors.black, fontWeight: FontWeight.w700),
         ),
         backgroundColor: const Color(0xFFF5F6F8),
       ),
@@ -32,7 +33,7 @@ class BooksGridPage extends StatelessWidget {
           ? Center(
               child: Text(
                 l10n.noBooksFoundInCategory,
-                style: TextStyle(color: Color(0xFF8E98A5), fontSize: 14),
+                style: TextStyle(color: Colors.black, fontSize: 14),
               ),
             )
           : GridView.builder(

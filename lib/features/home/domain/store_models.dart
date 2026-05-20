@@ -5,6 +5,11 @@ enum AppLanguage { english, french }
 enum PaymentMethod { paypal, stripe }
 
 extension AppLanguageX on AppLanguage {
+  Locale get locale => switch (this) {
+    AppLanguage.english => const Locale('en'),
+    AppLanguage.french => const Locale('fr'),
+  };
+
   String get label => switch (this) {
     AppLanguage.english => 'English',
     AppLanguage.french => 'France',

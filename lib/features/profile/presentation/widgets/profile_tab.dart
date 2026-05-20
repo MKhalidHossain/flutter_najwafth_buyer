@@ -1,5 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
+
+import '../../../../core/localization/app_localizations.dart';
 import '../../../auth/application/auth_controller.dart';
 import '../../application/profile_controller.dart';
 import '../../../auth/presentation/auth_routes.dart';
@@ -22,6 +24,7 @@ class _ProfileTabState extends ConsumerState<ProfileTab> {
 
   @override
   Widget build(BuildContext context) {
+    final l10n = AppLocalizations.of(context);
     final authState = ref.watch(authControllerProvider);
     final profileAsync = ref.watch(profileControllerProvider);
     final profile = profileAsync.asData?.value;
@@ -30,8 +33,8 @@ class _ProfileTabState extends ConsumerState<ProfileTab> {
     return Scaffold(
       backgroundColor: Colors.white,
       appBar: AppBar(
-        title: const Text(
-          'Profile',
+        title: Text(
+          l10n.profile,
           style: TextStyle(
             fontSize: 18,
             fontWeight: FontWeight.w600,
@@ -90,7 +93,7 @@ class _ProfileTabState extends ConsumerState<ProfileTab> {
 
           _ProfileMenuItem(
             icon: Icons.edit_outlined,
-            title: 'Edit Profile',
+            title: l10n.editProfile,
             onTap: () => Navigator.push(
               context,
               MaterialPageRoute(builder: (_) => const EditProfilePage()),
@@ -98,7 +101,7 @@ class _ProfileTabState extends ConsumerState<ProfileTab> {
           ),
           _ProfileMenuItem(
             icon: Icons.lock_outline,
-            title: 'Change Password',
+            title: l10n.changePassword,
             onTap: () => Navigator.push(
               context,
               MaterialPageRoute(builder: (_) => const ChangePasswordPage()),
@@ -106,7 +109,7 @@ class _ProfileTabState extends ConsumerState<ProfileTab> {
           ),
           _ProfileMenuItem(
             icon: Icons.assignment_outlined,
-            title: 'Order History',
+            title: l10n.orderHistory,
             onTap: () => Navigator.push(
               context,
               MaterialPageRoute(builder: (_) => const OrderHistoryPage()),
@@ -114,49 +117,46 @@ class _ProfileTabState extends ConsumerState<ProfileTab> {
           ),
           _ProfileMenuItem(
             icon: Icons.info_outline,
-            title: 'About App',
+            title: l10n.aboutApp,
             onTap: () => Navigator.push(
               context,
               MaterialPageRoute(
-                builder: (_) => const StaticContentPage(
-                  title: 'About App',
-                  content:
-                      'Lorem Ipsum is simply dummy text of the printing and typesetting industry. Lorem Ipsum has been the industry\'s standard dummy text ever since the 1500s, when an unknown printer took a galley of type and scrambled it to make a type specimen book.',
+                builder: (_) => StaticContentPage(
+                  title: l10n.aboutApp,
+                  content: l10n.aboutAppContent,
                 ),
               ),
             ),
           ),
           _ProfileMenuItem(
             icon: Icons.privacy_tip_outlined,
-            title: 'Privacy Policy',
+            title: l10n.privacyPolicy,
             onTap: () => Navigator.push(
               context,
               MaterialPageRoute(
-                builder: (_) => const StaticContentPage(
-                  title: 'Privacy Policy',
-                  content:
-                      'Lorem Ipsum is simply dummy text of the printing and typesetting industry. Lorem Ipsum has been the industry\'s standard dummy text ever since the 1500s, when an unknown printer took a galley of type and scrambled it to make a type specimen book.',
+                builder: (_) => StaticContentPage(
+                  title: l10n.privacyPolicy,
+                  content: l10n.privacyPolicyContent,
                 ),
               ),
             ),
           ),
           _ProfileMenuItem(
             icon: Icons.description_outlined,
-            title: 'Terms & Conditions',
+            title: l10n.termsAndConditions,
             onTap: () => Navigator.push(
               context,
               MaterialPageRoute(
-                builder: (_) => const StaticContentPage(
-                  title: 'Terms & Conditions',
-                  content:
-                      'Lorem Ipsum is simply dummy text of the printing and typesetting industry. Lorem Ipsum has been the industry\'s standard dummy text ever since the 1500s, when an unknown printer took a galley of type and scrambled it to make a type specimen book.',
+                builder: (_) => StaticContentPage(
+                  title: l10n.termsAndConditions,
+                  content: l10n.termsAndConditionsContent,
                 ),
               ),
             ),
           ),
           _ProfileMenuItem(
             icon: Icons.language_outlined,
-            title: 'Language',
+            title: l10n.language,
             onTap: () => Navigator.push(
               context,
               MaterialPageRoute(builder: (_) => const LanguagePage()),
@@ -174,9 +174,9 @@ class _ProfileTabState extends ConsumerState<ProfileTab> {
                   size: 22,
                 ),
                 const SizedBox(width: 16),
-                const Expanded(
+                Expanded(
                   child: Text(
-                    'Push Notifications',
+                    l10n.pushNotifications,
                     style: TextStyle(
                       fontSize: 15,
                       fontWeight: FontWeight.w500,
@@ -212,7 +212,7 @@ class _ProfileTabState extends ConsumerState<ProfileTab> {
               }
             },
             behavior: HitTestBehavior.opaque,
-            child: const Padding(
+            child: Padding(
               padding: EdgeInsets.symmetric(vertical: 12),
               child: Row(
                 children: [
@@ -222,8 +222,8 @@ class _ProfileTabState extends ConsumerState<ProfileTab> {
                     size: 22,
                   ),
                    SizedBox(width: 16),
-                   Text(
-                    'Log Out',
+                  Text(
+                    l10n.logOut,
                     style: TextStyle(
                       fontSize: 15,
                       fontWeight: FontWeight.w600,

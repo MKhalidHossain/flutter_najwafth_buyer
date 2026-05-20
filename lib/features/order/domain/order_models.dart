@@ -1,15 +1,16 @@
 import 'package:flutter/material.dart';
 
+import '../../../core/localization/app_localizations.dart';
 import '../../home/domain/store_models.dart';
 
 enum OrderStatus { pending, processing, picked, delivered }
 
 extension OrderStatusX on OrderStatus {
-  String get label => switch (this) {
-    OrderStatus.pending => 'Pending',
-    OrderStatus.processing => 'Processing',
-    OrderStatus.picked => 'Picked',
-    OrderStatus.delivered => 'Delivered',
+  String label(AppLocalizations l10n) => switch (this) {
+    OrderStatus.pending => l10n.pending,
+    OrderStatus.processing => l10n.processing,
+    OrderStatus.picked => l10n.picked,
+    OrderStatus.delivered => l10n.delivered,
   };
 
   Color get backgroundColor => switch (this) {

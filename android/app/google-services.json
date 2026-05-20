@@ -1,0 +1,29 @@
+{
+  "project_info": {
+    "project_number": "300855511746",
+    "project_id": "books-on-wheels-d198a",
+    "storage_bucket": "books-on-wheels-d198a.firebasestorage.app"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:300855511746:android:668479e44a8da3290b495b",
+        "android_client_info": {
+          "package_name": "com.najwafth.buyer.flutter_najwafth_buyer"
+        }
+      },
+      "oauth_client": [],
+      "api_key": [
+        {
+          "current_key": "AIzaSyBQ2brVZfiVhXQAyeosKEM_ApSJGL1g7ws"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": []
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}

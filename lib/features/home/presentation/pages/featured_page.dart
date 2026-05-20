@@ -26,7 +26,7 @@ class FeaturedPage extends StatelessWidget {
       appBar: AppBar(
         elevation: 0,
         backgroundColor: const Color(0xFFF5F6F8),
-        leading: BackButton(),
+        leading: BackButton(color: Colors.black,),
         titleSpacing: 0,
         title: Text(
           l10n.featuredBookstores,

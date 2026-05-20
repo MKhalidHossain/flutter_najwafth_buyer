@@ -74,6 +74,7 @@ class _HomeTabState extends ConsumerState<HomeTab> {
                       authState.fullName,
                       style: const TextStyle(
                         fontSize: 16,
+                        color: Colors.black,
                         fontWeight: FontWeight.w600,
                       ),
                     ),

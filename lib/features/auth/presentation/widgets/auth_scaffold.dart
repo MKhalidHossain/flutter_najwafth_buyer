@@ -40,6 +40,7 @@ class _AuthScaffoldBody extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final scaffold = context.findAncestorWidgetOfExactType<AuthScaffold>()!;
+    final canPop = Navigator.of(context).canPop();
     final screenWidth = MediaQuery.sizeOf(context).width;
     final horizontalPadding = screenWidth < AppBreakpoints.mobile
         ? scaffold.horizontalPadding
@@ -50,7 +51,17 @@ class _AuthScaffoldBody extends StatelessWidget {
     final content = Center(
       child: ConstrainedBox(
         constraints: BoxConstraints(maxWidth: contentWidth),
-        child: scaffold.child,
+        child: Column(
+          mainAxisSize: MainAxisSize.min,
+          crossAxisAlignment: CrossAxisAlignment.stretch,
+          children: [
+            if (canPop) ...[
+              const _AuthBackButton(),
+              const SizedBox(height: 8),
+            ],
+            scaffold.child,
+          ],
+        ),
       ),
     );
 
@@ -75,6 +86,29 @@ class _AuthScaffoldBody extends StatelessWidget {
                   child: content,
                 ),
         ),
+      ),
+    );
+  }
+}
+
+class _AuthBackButton extends StatelessWidget {
+  const _AuthBackButton();
+
+  @override
+  Widget build(BuildContext context) {
+    return Align(
+      alignment: Alignment.centerLeft,
+      child: IconButton(
+        onPressed: () => Navigator.of(context).maybePop(),
+        style: IconButton.styleFrom(
+          backgroundColor: Colors.white.withValues(alpha: 0.82),
+          foregroundColor: const Color(0xFF23252B),
+          minimumSize: const Size(44, 44),
+          shape: RoundedRectangleBorder(
+            borderRadius: BorderRadius.circular(14),
+          ),
+        ),
+        icon: const Icon(Icons.arrow_back_ios_new_rounded, size: 18),
       ),
     );
   }

@@ -282,6 +282,12 @@ class AppLocalizations {
   String get writeShortReview => isFrench
       ? 'Écrivez un court avis pour aider les autres lecteurs...'
       : 'Write a short review to help fellow books lovers...';
+  String get rateThisOrder =>
+      isFrench ? 'Évaluez cette commande' : 'Rate this order';
+  String get selectRating =>
+      isFrench ? 'Veuillez sélectionner une note.' : 'Please select a rating.';
+  String get reviewSubmitted =>
+      isFrench ? 'Merci pour votre avis !' : 'Thanks for your review!';
 
   String get requiredField => isFrench ? 'Ce champ' : 'This field';
   String requiredMessage(String label) =>

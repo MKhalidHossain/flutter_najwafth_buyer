@@ -7,6 +7,13 @@ import '../../domain/order_models.dart';
 import '../pages/order_details_page.dart';
 import 'order_card.dart';
 
+/// Brand gradient used for the selected filter chip (matches the Figma design).
+const LinearGradient _kSelectedChipGradient = LinearGradient(
+  begin: Alignment.topLeft,
+  end: Alignment.bottomRight,
+  colors: [Color(0xFF6BA3D6), Color(0xFF5680AB)],
+);
+
 class OrdersTab extends ConsumerStatefulWidget {
   const OrdersTab({super.key, required this.onCheckoutTap});
 
@@ -55,7 +62,7 @@ class _OrdersTabState extends ConsumerState<OrdersTab> {
         children: [
           // Filter Chips Row
           SizedBox(
-            height: 40,
+            height: 46,
             child: ListView(
               scrollDirection: Axis.horizontal,
               padding: const EdgeInsets.symmetric(horizontal: 16),
@@ -178,18 +185,21 @@ class _OrdersTabState extends ConsumerState<OrdersTab> {
         });
       },
       child: Container(
-        padding: const EdgeInsets.symmetric(horizontal: 16),
+        padding: const EdgeInsets.symmetric(horizontal: 22),
         alignment: Alignment.center,
         decoration: BoxDecoration(
-          color: isSelected ? const Color(0xFF5A91C4) : Colors.transparent,
-          borderRadius: BorderRadius.circular(8),
-          border: Border.all(color: const Color(0xFF5A91C4), width: 1),
+          gradient: isSelected ? _kSelectedChipGradient : null,
+          color: isSelected ? null : Colors.white,
+          borderRadius: BorderRadius.circular(12),
+          border: isSelected
+              ? null
+              : Border.all(color: const Color(0xFF5A91C4), width: 1.4),
         ),
         child: Text(
           displayLabel,
           style: TextStyle(
-            fontSize: 13,
-            fontWeight: FontWeight.w500,
+            fontSize: 15,
+            fontWeight: FontWeight.w600,
             color: isSelected ? Colors.white : const Color(0xFF5A91C4),
           ),
         ),

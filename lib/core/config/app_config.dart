@@ -11,12 +11,11 @@ final class AppConfig {
     this.receiveTimeout = const Duration(seconds: 20),
   });
 
-  const AppConfig.development()
-    : this(
-        appName: 'Najwafth Buyer',
-        environment: AppEnvironment.development,
-        baseUrl: 'https://api.example.com/api/v1',
-      );
+  factory AppConfig.development() => AppConfig(
+    appName: 'Najwafth Buyer',
+    environment: AppEnvironment.development,
+    baseUrl: _defaultDevBaseUrl(),
+  );
 
   final String appName;
   final AppEnvironment environment;
@@ -34,6 +33,9 @@ String _defaultDevBaseUrl() {
   }
 
   return switch (defaultTargetPlatform) {
+    // 10.0.2.2 = host machine's localhost as seen from the Android emulator.
+    // For a physical Android device on the same Wi-Fi, use the Mac's LAN IP
+    // instead (currently 10.10.26.113).
     TargetPlatform.android => 'http://10.0.2.2:5001/api/v1',
     _ => 'http://localhost:5001/api/v1',
   };

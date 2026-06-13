@@ -30,6 +30,7 @@ class CartTab extends ConsumerWidget {
     return Scaffold(
       backgroundColor: Colors.white,
       appBar: AppBar(
+        toolbarHeight: 72,
         title: Text(
           l10n.myCart,
           style: const TextStyle(

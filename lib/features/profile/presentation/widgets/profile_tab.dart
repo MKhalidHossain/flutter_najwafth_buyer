@@ -33,6 +33,7 @@ class _ProfileTabState extends ConsumerState<ProfileTab> {
     return Scaffold(
       backgroundColor: Colors.white,
       appBar: AppBar(
+        toolbarHeight: 72,
         title: Text(
           l10n.profile,
           style: TextStyle(

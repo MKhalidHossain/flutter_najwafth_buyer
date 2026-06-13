@@ -37,6 +37,7 @@ class _OrdersTabState extends ConsumerState<OrdersTab> {
     return Scaffold(
       backgroundColor: Colors.white,
       appBar: AppBar(
+        toolbarHeight: 72,
         title: Text(
           l10n.myOrders,
           style: TextStyle(

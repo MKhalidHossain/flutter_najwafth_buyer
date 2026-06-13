@@ -29,14 +29,14 @@ final class AppConfig {
 
 String _defaultDevBaseUrl() {
   if (kIsWeb) {
-    return 'http://localhost:5001/api/v1';
+    return 'http://localhost:5002/api/v1';
   }
 
   return switch (defaultTargetPlatform) {
     // 10.0.2.2 = host machine's localhost as seen from the Android emulator.
     // For a physical Android device on the same Wi-Fi, use the Mac's LAN IP
     // instead (currently 10.10.26.113).
-    TargetPlatform.android => 'http://10.0.2.2:5001/api/v1',
-    _ => 'http://localhost:5001/api/v1',
+    TargetPlatform.android => 'http://10.0.2.2:5002/api/v1',
+    _ => 'http://localhost:5002/api/v1',
   };
 }

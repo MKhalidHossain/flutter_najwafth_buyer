@@ -14,17 +14,17 @@ extension OrderStatusX on OrderStatus {
   };
 
   Color get backgroundColor => switch (this) {
-    OrderStatus.pending => const Color(0xFFFFF7D0),
-    OrderStatus.processing => const Color(0xFF9BD4B1),
-    OrderStatus.picked => const Color(0xFFFFD5B6),
-    OrderStatus.delivered => const Color(0xFFD6E9FA),
+    OrderStatus.pending => const Color(0xFFFCE8A6),
+    OrderStatus.processing => const Color(0xFF9FD7B4),
+    OrderStatus.picked => const Color(0xFFFAD0AC),
+    OrderStatus.delivered => const Color(0xFFCFE6FA),
   };
 
   Color get textColor => switch (this) {
-    OrderStatus.pending => const Color(0xFFD4A017),
-    OrderStatus.processing => const Color(0xFF226E3A),
-    OrderStatus.picked => const Color(0xFFD36F1E),
-    OrderStatus.delivered => const Color(0xFF4EA0F2),
+    OrderStatus.pending => const Color(0xFFB8860B),
+    OrderStatus.processing => const Color(0xFF1F7A3D),
+    OrderStatus.picked => const Color(0xFFD2761F),
+    OrderStatus.delivered => const Color(0xFF2E9BE5),
   };
 }
 
